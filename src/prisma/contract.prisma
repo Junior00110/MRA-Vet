@@ -1,21 +1,36 @@
 // use prisma-next
 
+enum CodigoSetor {
+  CLINICA
+  BANHO_TOSA
+  ADMINISTRATIVO
+}
+
+enum EscopoAcesso {
+  OWN
+  UNIT
+  ALL
+}
+
+enum TipoPerfil {
+  MASTER
+  GESTOR
+  RECEPCIONISTA
+  VETERINARIO
+}
+
+
 model Cliente {
   id              Int      @id @default(autoincrement())
 
-  // Referência do sistema antigo
   codigoAntigo    Int?     @unique
-
-  // Único campo obrigatório
   nome            String
 
-  // Dados opcionais
   cpf             String?
   telefone        String?
   whatsapp        String?
   email           String?
 
-  // Endereço
   cep             String?
   endereco        String?
   numero          String?
@@ -24,16 +39,12 @@ model Cliente {
   cidade          String?
   estado          String?
 
-  // Informações adicionais
   observacoes     String?
 
-  // Controle do cadastro
   ativo           Boolean  @default(true)
 
-  // Pacientes deste cliente
   pacientes       Paciente[]
 
-  // Controle do sistema
   createdAt       TimestamptzString @default(now())
   updatedAt       temporal.updatedAtString()
 }
@@ -42,13 +53,9 @@ model Cliente {
 model Paciente {
   id                Int      @id @default(autoincrement())
 
-  // Referência do sistema antigo
   codigoAntigo      Int?     @unique
-
-  // Único campo obrigatório
   nome              String
 
-  // Dados opcionais
   especie           String?
   sexo              String?
   raca              String?
@@ -58,15 +65,145 @@ model Paciente {
   microchip         String?
   observacoes       String?
 
-  // Informações do paciente
   castrado          Boolean  @default(false)
   ativo             Boolean  @default(true)
 
-  // Tutor
   clienteId         Int?
   cliente           Cliente? @relation(fields: [clienteId], references: [id])
 
-  // Controle do sistema
   createdAt         TimestamptzString @default(now())
   updatedAt         temporal.updatedAtString()
+}
+
+
+model Unidade {
+  id              Int      @id @default(autoincrement())
+
+  nome            String
+  codigo          String   @unique
+
+  ativo           Boolean  @default(true)
+
+  usuarios        UsuarioUnidade[]
+
+  createdAt       TimestamptzString @default(now())
+  updatedAt       temporal.updatedAtString()
+}
+
+
+model Setor {
+  id              Int      @id @default(autoincrement())
+
+  nome            String
+  codigo          CodigoSetor @unique
+
+  ativo           Boolean  @default(true)
+
+  usuarios        UsuarioSetor[]
+
+  createdAt       TimestamptzString @default(now())
+  updatedAt       temporal.updatedAtString()
+}
+
+
+model Perfil {
+  id              Int         @id @default(autoincrement())
+
+  nome            String
+  tipo            TipoPerfil
+
+  ativo           Boolean     @default(true)
+
+  usuarioSetores  UsuarioSetor[]
+  permissoes      PerfilPermissao[]
+
+  createdAt       TimestamptzString @default(now())
+  updatedAt       temporal.updatedAtString()
+
+  @@unique([nome, tipo])
+}
+
+
+model Permissao {
+  id              Int      @id @default(autoincrement())
+
+  codigo          String   @unique
+  descricao       String?
+
+  ativo           Boolean  @default(true)
+
+  perfis          PerfilPermissao[]
+
+  createdAt       TimestamptzString @default(now())
+  updatedAt       temporal.updatedAtString()
+}
+
+
+model Usuario {
+  id              Int      @id @default(autoincrement())
+
+  nome            String
+  email           String   @unique
+  senhaHash       String
+
+  ativo           Boolean  @default(true)
+  isMaster        Boolean  @default(false)
+
+  setores         UsuarioSetor[]
+  unidades        UsuarioUnidade[]
+
+  createdAt       TimestamptzString @default(now())
+  updatedAt       temporal.updatedAtString()
+}
+
+
+model UsuarioSetor {
+  id              Int      @id @default(autoincrement())
+
+  usuarioId       Int
+  setorId         Int
+  perfilId        Int
+
+  ativo           Boolean  @default(true)
+
+  usuario         Usuario  @relation(fields: [usuarioId], references: [id])
+  setor           Setor    @relation(fields: [setorId], references: [id])
+  perfil          Perfil   @relation(fields: [perfilId], references: [id])
+
+  createdAt       TimestamptzString @default(now())
+  updatedAt       temporal.updatedAtString()
+
+  @@unique([usuarioId, setorId])
+}
+
+
+model UsuarioUnidade {
+  id              Int      @id @default(autoincrement())
+
+  usuarioId       Int
+  unidadeId       Int
+
+  usuario         Usuario  @relation(fields: [usuarioId], references: [id])
+  unidade         Unidade  @relation(fields: [unidadeId], references: [id])
+
+  createdAt       TimestamptzString @default(now())
+
+  @@unique([usuarioId, unidadeId])
+}
+
+
+model PerfilPermissao {
+  id              Int           @id @default(autoincrement())
+
+  perfilId        Int
+  permissaoId     Int
+  escopo          EscopoAcesso?
+
+  perfil          Perfil        @relation(fields: [perfilId], references: [id])
+  permissao       Permissao     @relation(fields: [permissaoId], references: [id])
+
+  createdAt       TimestamptzString @default(now())
+  updatedAt       temporal.updatedAtString()
+
+  @@unique([perfilId, permissaoId])
 }

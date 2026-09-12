@@ -1,0 +1,262 @@
+[
+  {
+    "id": "schema.public",
+    "label": "Create schema \"public\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres"
+    },
+    "precheck": [],
+    "execute": [
+      {
+        "description": "Create schema \"public\"",
+        "sql": "CREATE SCHEMA IF NOT EXISTS \"public\"",
+        "params": []
+      }
+    ],
+    "postcheck": []
+  },
+  {
+    "id": "table.cliente",
+    "label": "Create table \"cliente\"",
+    "summary": "Creates table \"cliente\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "cliente"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"cliente\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"cliente\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"cliente\"",
+        "sql": "CREATE TABLE \"public\".\"cliente\" (\n  \"ativo\" bool DEFAULT true NOT NULL,\n  \"bairro\" text,\n  \"cep\" text,\n  \"cidade\" text,\n  \"codigoAntigo\" int4,\n  \"complemento\" text,\n  \"cpf\" text,\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"email\" text,\n  \"endereco\" text,\n  \"estado\" text,\n  \"id\" SERIAL NOT NULL,\n  \"nome\" text NOT NULL,\n  \"numero\" text,\n  \"observacoes\" text,\n  \"telefone\" text,\n  \"updatedAt\" timestamptz NOT NULL,\n  \"whatsapp\" text,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"cliente\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"cliente\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.paciente",
+    "label": "Create table \"paciente\"",
+    "summary": "Creates table \"paciente\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "paciente"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"paciente\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"paciente\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"paciente\"",
+        "sql": "CREATE TABLE \"public\".\"paciente\" (\n  \"ativo\" bool DEFAULT true NOT NULL,\n  \"castrado\" bool DEFAULT false NOT NULL,\n  \"clienteId\" int4,\n  \"codigoAntigo\" int4,\n  \"corPelagem\" text,\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"dataNascimento\" date,\n  \"especie\" text,\n  \"id\" SERIAL NOT NULL,\n  \"microchip\" text,\n  \"nome\" text NOT NULL,\n  \"observacoes\" text,\n  \"peso\" float8,\n  \"raca\" text,\n  \"sexo\" text,\n  \"updatedAt\" timestamptz NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"paciente\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"paciente\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.cliente.cliente_codigoAntigo_key",
+    "label": "Add unique constraint on \"cliente\" (codigoAntigo)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "cliente_codigoAntigo_key",
+        "table": "cliente"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"cliente_codigoAntigo_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "cliente_codigoAntigo_key",
+          "public",
+          "\"public\".\"cliente\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"cliente_codigoAntigo_key\"",
+        "sql": "ALTER TABLE \"public\".\"cliente\" ADD CONSTRAINT \"cliente_codigoAntigo_key\" UNIQUE (\"codigoAntigo\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"cliente_codigoAntigo_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "cliente_codigoAntigo_key",
+          "public",
+          "\"public\".\"cliente\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.paciente.paciente_codigoAntigo_key",
+    "label": "Add unique constraint on \"paciente\" (codigoAntigo)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "paciente_codigoAntigo_key",
+        "table": "paciente"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"paciente_codigoAntigo_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "paciente_codigoAntigo_key",
+          "public",
+          "\"public\".\"paciente\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"paciente_codigoAntigo_key\"",
+        "sql": "ALTER TABLE \"public\".\"paciente\" ADD CONSTRAINT \"paciente_codigoAntigo_key\" UNIQUE (\"codigoAntigo\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"paciente_codigoAntigo_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "paciente_codigoAntigo_key",
+          "public",
+          "\"public\".\"paciente\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.paciente.paciente_clienteId_idx_7ae16308",
+    "label": "Create index \"paciente_clienteId_idx_7ae16308\" on \"paciente\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "paciente_clienteId_idx_7ae16308",
+        "table": "paciente"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"paciente_clienteId_idx_7ae16308\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"paciente_clienteId_idx_7ae16308\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"paciente_clienteId_idx_7ae16308\"",
+        "sql": "CREATE INDEX \"paciente_clienteId_idx_7ae16308\" ON \"public\".\"paciente\" (\"clienteId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"paciente_clienteId_idx_7ae16308\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"paciente_clienteId_idx_7ae16308\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.paciente.paciente_clienteId_fkey",
+    "label": "Add foreign key \"paciente_clienteId_fkey\" on \"paciente\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "paciente_clienteId_fkey",
+        "table": "paciente"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"paciente_clienteId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "paciente_clienteId_fkey",
+          "public",
+          "\"public\".\"paciente\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"paciente_clienteId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"paciente\"\nADD CONSTRAINT \"paciente_clienteId_fkey\"\nFOREIGN KEY (\"clienteId\")\nREFERENCES \"public\".\"cliente\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"paciente_clienteId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "paciente_clienteId_fkey",
+          "public",
+          "\"public\".\"paciente\""
+        ]
+      }
+    ]
+  }
+]

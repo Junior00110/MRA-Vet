@@ -1,0 +1,1217 @@
+[
+  {
+    "id": "table.perfil",
+    "label": "Create table \"perfil\"",
+    "summary": "Creates table \"perfil\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "perfil"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"perfil\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"perfil\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"perfil\"",
+        "sql": "CREATE TABLE \"public\".\"perfil\" (\n  \"ativo\" bool DEFAULT true NOT NULL,\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"id\" SERIAL NOT NULL,\n  \"nome\" text NOT NULL,\n  \"tipo\" text NOT NULL,\n  \"updatedAt\" timestamptz NOT NULL,\n  PRIMARY KEY (\"id\"),\n  CONSTRAINT \"perfil_tipo_check_3b83720c\" CHECK (\"tipo\" IN ('MASTER', 'GESTOR', 'RECEPCIONISTA', 'VETERINARIO'))\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"perfil\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"perfil\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.perfilPermissao",
+    "label": "Create table \"perfilPermissao\"",
+    "summary": "Creates table \"perfilPermissao\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "perfilPermissao"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"perfilPermissao\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"perfilPermissao\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"perfilPermissao\"",
+        "sql": "CREATE TABLE \"public\".\"perfilPermissao\" (\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"escopo\" text,\n  \"id\" SERIAL NOT NULL,\n  \"perfilId\" int4 NOT NULL,\n  \"permissaoId\" int4 NOT NULL,\n  \"updatedAt\" timestamptz NOT NULL,\n  PRIMARY KEY (\"id\"),\n  CONSTRAINT \"perfilPermissao_escopo_check_02c188df\" CHECK (\"escopo\" IN ('OWN', 'UNIT', 'ALL'))\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"perfilPermissao\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"perfilPermissao\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.permissao",
+    "label": "Create table \"permissao\"",
+    "summary": "Creates table \"permissao\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "permissao"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"permissao\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"permissao\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"permissao\"",
+        "sql": "CREATE TABLE \"public\".\"permissao\" (\n  \"ativo\" bool DEFAULT true NOT NULL,\n  \"codigo\" text NOT NULL,\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"descricao\" text,\n  \"id\" SERIAL NOT NULL,\n  \"updatedAt\" timestamptz NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"permissao\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"permissao\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.setor",
+    "label": "Create table \"setor\"",
+    "summary": "Creates table \"setor\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "setor"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"setor\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"setor\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"setor\"",
+        "sql": "CREATE TABLE \"public\".\"setor\" (\n  \"ativo\" bool DEFAULT true NOT NULL,\n  \"codigo\" text NOT NULL,\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"id\" SERIAL NOT NULL,\n  \"nome\" text NOT NULL,\n  \"updatedAt\" timestamptz NOT NULL,\n  PRIMARY KEY (\"id\"),\n  CONSTRAINT \"setor_codigo_check_6f643a5b\" CHECK (\"codigo\" IN ('CLINICA', 'BANHO_TOSA', 'ADMINISTRATIVO'))\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"setor\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"setor\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.unidade",
+    "label": "Create table \"unidade\"",
+    "summary": "Creates table \"unidade\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "unidade"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"unidade\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"unidade\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"unidade\"",
+        "sql": "CREATE TABLE \"public\".\"unidade\" (\n  \"ativo\" bool DEFAULT true NOT NULL,\n  \"codigo\" text NOT NULL,\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"id\" SERIAL NOT NULL,\n  \"nome\" text NOT NULL,\n  \"updatedAt\" timestamptz NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"unidade\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"unidade\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.usuario",
+    "label": "Create table \"usuario\"",
+    "summary": "Creates table \"usuario\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "usuario"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"usuario\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"usuario\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"usuario\"",
+        "sql": "CREATE TABLE \"public\".\"usuario\" (\n  \"ativo\" bool DEFAULT true NOT NULL,\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"email\" text NOT NULL,\n  \"id\" SERIAL NOT NULL,\n  \"isMaster\" bool DEFAULT false NOT NULL,\n  \"nome\" text NOT NULL,\n  \"senhaHash\" text NOT NULL,\n  \"updatedAt\" timestamptz NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"usuario\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"usuario\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.usuarioSetor",
+    "label": "Create table \"usuarioSetor\"",
+    "summary": "Creates table \"usuarioSetor\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "usuarioSetor"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"usuarioSetor\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"usuarioSetor\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"usuarioSetor\"",
+        "sql": "CREATE TABLE \"public\".\"usuarioSetor\" (\n  \"ativo\" bool DEFAULT true NOT NULL,\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"id\" SERIAL NOT NULL,\n  \"perfilId\" int4 NOT NULL,\n  \"setorId\" int4 NOT NULL,\n  \"updatedAt\" timestamptz NOT NULL,\n  \"usuarioId\" int4 NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"usuarioSetor\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"usuarioSetor\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.usuarioUnidade",
+    "label": "Create table \"usuarioUnidade\"",
+    "summary": "Creates table \"usuarioUnidade\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "usuarioUnidade"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"usuarioUnidade\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"usuarioUnidade\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"usuarioUnidade\"",
+        "sql": "CREATE TABLE \"public\".\"usuarioUnidade\" (\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"id\" SERIAL NOT NULL,\n  \"unidadeId\" int4 NOT NULL,\n  \"usuarioId\" int4 NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"usuarioUnidade\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"usuarioUnidade\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.perfil.perfil_nome_tipo_key",
+    "label": "Add unique constraint on \"perfil\" (nome, tipo)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "perfil_nome_tipo_key",
+        "table": "perfil"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"perfil_nome_tipo_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "perfil_nome_tipo_key",
+          "public",
+          "\"public\".\"perfil\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"perfil_nome_tipo_key\"",
+        "sql": "ALTER TABLE \"public\".\"perfil\" ADD CONSTRAINT \"perfil_nome_tipo_key\" UNIQUE (\"nome\", \"tipo\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"perfil_nome_tipo_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "perfil_nome_tipo_key",
+          "public",
+          "\"public\".\"perfil\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.perfilPermissao.perfilPermissao_perfilId_permissaoId_key",
+    "label": "Add unique constraint on \"perfilPermissao\" (perfilId, permissaoId)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "perfilPermissao_perfilId_permissaoId_key",
+        "table": "perfilPermissao"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"perfilPermissao_perfilId_permissaoId_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "perfilPermissao_perfilId_permissaoId_key",
+          "public",
+          "\"public\".\"perfilPermissao\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"perfilPermissao_perfilId_permissaoId_key\"",
+        "sql": "ALTER TABLE \"public\".\"perfilPermissao\" ADD CONSTRAINT \"perfilPermissao_perfilId_permissaoId_key\" UNIQUE (\"perfilId\", \"permissaoId\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"perfilPermissao_perfilId_permissaoId_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "perfilPermissao_perfilId_permissaoId_key",
+          "public",
+          "\"public\".\"perfilPermissao\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.permissao.permissao_codigo_key",
+    "label": "Add unique constraint on \"permissao\" (codigo)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "permissao_codigo_key",
+        "table": "permissao"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"permissao_codigo_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "permissao_codigo_key",
+          "public",
+          "\"public\".\"permissao\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"permissao_codigo_key\"",
+        "sql": "ALTER TABLE \"public\".\"permissao\" ADD CONSTRAINT \"permissao_codigo_key\" UNIQUE (\"codigo\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"permissao_codigo_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "permissao_codigo_key",
+          "public",
+          "\"public\".\"permissao\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.setor.setor_codigo_key",
+    "label": "Add unique constraint on \"setor\" (codigo)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "setor_codigo_key",
+        "table": "setor"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"setor_codigo_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "setor_codigo_key",
+          "public",
+          "\"public\".\"setor\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"setor_codigo_key\"",
+        "sql": "ALTER TABLE \"public\".\"setor\" ADD CONSTRAINT \"setor_codigo_key\" UNIQUE (\"codigo\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"setor_codigo_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "setor_codigo_key",
+          "public",
+          "\"public\".\"setor\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.unidade.unidade_codigo_key",
+    "label": "Add unique constraint on \"unidade\" (codigo)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "unidade_codigo_key",
+        "table": "unidade"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"unidade_codigo_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "unidade_codigo_key",
+          "public",
+          "\"public\".\"unidade\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"unidade_codigo_key\"",
+        "sql": "ALTER TABLE \"public\".\"unidade\" ADD CONSTRAINT \"unidade_codigo_key\" UNIQUE (\"codigo\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"unidade_codigo_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "unidade_codigo_key",
+          "public",
+          "\"public\".\"unidade\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.usuario.usuario_email_key",
+    "label": "Add unique constraint on \"usuario\" (email)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "usuario_email_key",
+        "table": "usuario"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"usuario_email_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "usuario_email_key",
+          "public",
+          "\"public\".\"usuario\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"usuario_email_key\"",
+        "sql": "ALTER TABLE \"public\".\"usuario\" ADD CONSTRAINT \"usuario_email_key\" UNIQUE (\"email\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"usuario_email_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "usuario_email_key",
+          "public",
+          "\"public\".\"usuario\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.usuarioSetor.usuarioSetor_usuarioId_setorId_key",
+    "label": "Add unique constraint on \"usuarioSetor\" (usuarioId, setorId)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "usuarioSetor_usuarioId_setorId_key",
+        "table": "usuarioSetor"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"usuarioSetor_usuarioId_setorId_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "usuarioSetor_usuarioId_setorId_key",
+          "public",
+          "\"public\".\"usuarioSetor\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"usuarioSetor_usuarioId_setorId_key\"",
+        "sql": "ALTER TABLE \"public\".\"usuarioSetor\" ADD CONSTRAINT \"usuarioSetor_usuarioId_setorId_key\" UNIQUE (\"usuarioId\", \"setorId\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"usuarioSetor_usuarioId_setorId_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "usuarioSetor_usuarioId_setorId_key",
+          "public",
+          "\"public\".\"usuarioSetor\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.usuarioUnidade.usuarioUnidade_usuarioId_unidadeId_key",
+    "label": "Add unique constraint on \"usuarioUnidade\" (usuarioId, unidadeId)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "usuarioUnidade_usuarioId_unidadeId_key",
+        "table": "usuarioUnidade"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"usuarioUnidade_usuarioId_unidadeId_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "usuarioUnidade_usuarioId_unidadeId_key",
+          "public",
+          "\"public\".\"usuarioUnidade\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"usuarioUnidade_usuarioId_unidadeId_key\"",
+        "sql": "ALTER TABLE \"public\".\"usuarioUnidade\" ADD CONSTRAINT \"usuarioUnidade_usuarioId_unidadeId_key\" UNIQUE (\"usuarioId\", \"unidadeId\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"usuarioUnidade_usuarioId_unidadeId_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "usuarioUnidade_usuarioId_unidadeId_key",
+          "public",
+          "\"public\".\"usuarioUnidade\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.perfilPermissao.perfilPermissao_perfilId_idx_18f1fe5e",
+    "label": "Create index \"perfilPermissao_perfilId_idx_18f1fe5e\" on \"perfilPermissao\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "perfilPermissao_perfilId_idx_18f1fe5e",
+        "table": "perfilPermissao"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"perfilPermissao_perfilId_idx_18f1fe5e\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"perfilPermissao_perfilId_idx_18f1fe5e\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"perfilPermissao_perfilId_idx_18f1fe5e\"",
+        "sql": "CREATE INDEX \"perfilPermissao_perfilId_idx_18f1fe5e\" ON \"public\".\"perfilPermissao\" (\"perfilId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"perfilPermissao_perfilId_idx_18f1fe5e\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"perfilPermissao_perfilId_idx_18f1fe5e\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.perfilPermissao.perfilPermissao_permissaoId_idx_32efd59e",
+    "label": "Create index \"perfilPermissao_permissaoId_idx_32efd59e\" on \"perfilPermissao\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "perfilPermissao_permissaoId_idx_32efd59e",
+        "table": "perfilPermissao"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"perfilPermissao_permissaoId_idx_32efd59e\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"perfilPermissao_permissaoId_idx_32efd59e\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"perfilPermissao_permissaoId_idx_32efd59e\"",
+        "sql": "CREATE INDEX \"perfilPermissao_permissaoId_idx_32efd59e\" ON \"public\".\"perfilPermissao\" (\"permissaoId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"perfilPermissao_permissaoId_idx_32efd59e\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"perfilPermissao_permissaoId_idx_32efd59e\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.usuarioSetor.usuarioSetor_perfilId_idx_18f1fe5e",
+    "label": "Create index \"usuarioSetor_perfilId_idx_18f1fe5e\" on \"usuarioSetor\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "usuarioSetor_perfilId_idx_18f1fe5e",
+        "table": "usuarioSetor"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"usuarioSetor_perfilId_idx_18f1fe5e\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"usuarioSetor_perfilId_idx_18f1fe5e\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"usuarioSetor_perfilId_idx_18f1fe5e\"",
+        "sql": "CREATE INDEX \"usuarioSetor_perfilId_idx_18f1fe5e\" ON \"public\".\"usuarioSetor\" (\"perfilId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"usuarioSetor_perfilId_idx_18f1fe5e\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"usuarioSetor_perfilId_idx_18f1fe5e\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.usuarioSetor.usuarioSetor_setorId_idx_e3349e5c",
+    "label": "Create index \"usuarioSetor_setorId_idx_e3349e5c\" on \"usuarioSetor\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "usuarioSetor_setorId_idx_e3349e5c",
+        "table": "usuarioSetor"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"usuarioSetor_setorId_idx_e3349e5c\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"usuarioSetor_setorId_idx_e3349e5c\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"usuarioSetor_setorId_idx_e3349e5c\"",
+        "sql": "CREATE INDEX \"usuarioSetor_setorId_idx_e3349e5c\" ON \"public\".\"usuarioSetor\" (\"setorId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"usuarioSetor_setorId_idx_e3349e5c\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"usuarioSetor_setorId_idx_e3349e5c\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.usuarioSetor.usuarioSetor_usuarioId_idx_5f01c7d6",
+    "label": "Create index \"usuarioSetor_usuarioId_idx_5f01c7d6\" on \"usuarioSetor\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "usuarioSetor_usuarioId_idx_5f01c7d6",
+        "table": "usuarioSetor"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"usuarioSetor_usuarioId_idx_5f01c7d6\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"usuarioSetor_usuarioId_idx_5f01c7d6\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"usuarioSetor_usuarioId_idx_5f01c7d6\"",
+        "sql": "CREATE INDEX \"usuarioSetor_usuarioId_idx_5f01c7d6\" ON \"public\".\"usuarioSetor\" (\"usuarioId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"usuarioSetor_usuarioId_idx_5f01c7d6\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"usuarioSetor_usuarioId_idx_5f01c7d6\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.usuarioUnidade.usuarioUnidade_unidadeId_idx_af675c1c",
+    "label": "Create index \"usuarioUnidade_unidadeId_idx_af675c1c\" on \"usuarioUnidade\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "usuarioUnidade_unidadeId_idx_af675c1c",
+        "table": "usuarioUnidade"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"usuarioUnidade_unidadeId_idx_af675c1c\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"usuarioUnidade_unidadeId_idx_af675c1c\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"usuarioUnidade_unidadeId_idx_af675c1c\"",
+        "sql": "CREATE INDEX \"usuarioUnidade_unidadeId_idx_af675c1c\" ON \"public\".\"usuarioUnidade\" (\"unidadeId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"usuarioUnidade_unidadeId_idx_af675c1c\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"usuarioUnidade_unidadeId_idx_af675c1c\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.usuarioUnidade.usuarioUnidade_usuarioId_idx_5f01c7d6",
+    "label": "Create index \"usuarioUnidade_usuarioId_idx_5f01c7d6\" on \"usuarioUnidade\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "usuarioUnidade_usuarioId_idx_5f01c7d6",
+        "table": "usuarioUnidade"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"usuarioUnidade_usuarioId_idx_5f01c7d6\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"usuarioUnidade_usuarioId_idx_5f01c7d6\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"usuarioUnidade_usuarioId_idx_5f01c7d6\"",
+        "sql": "CREATE INDEX \"usuarioUnidade_usuarioId_idx_5f01c7d6\" ON \"public\".\"usuarioUnidade\" (\"usuarioId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"usuarioUnidade_usuarioId_idx_5f01c7d6\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"usuarioUnidade_usuarioId_idx_5f01c7d6\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.perfilPermissao.perfilPermissao_perfilId_fkey",
+    "label": "Add foreign key \"perfilPermissao_perfilId_fkey\" on \"perfilPermissao\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "perfilPermissao_perfilId_fkey",
+        "table": "perfilPermissao"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"perfilPermissao_perfilId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "perfilPermissao_perfilId_fkey",
+          "public",
+          "\"public\".\"perfilPermissao\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"perfilPermissao_perfilId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"perfilPermissao\"\nADD CONSTRAINT \"perfilPermissao_perfilId_fkey\"\nFOREIGN KEY (\"perfilId\")\nREFERENCES \"public\".\"perfil\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"perfilPermissao_perfilId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "perfilPermissao_perfilId_fkey",
+          "public",
+          "\"public\".\"perfilPermissao\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.perfilPermissao.perfilPermissao_permissaoId_fkey",
+    "label": "Add foreign key \"perfilPermissao_permissaoId_fkey\" on \"perfilPermissao\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "perfilPermissao_permissaoId_fkey",
+        "table": "perfilPermissao"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"perfilPermissao_permissaoId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "perfilPermissao_permissaoId_fkey",
+          "public",
+          "\"public\".\"perfilPermissao\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"perfilPermissao_permissaoId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"perfilPermissao\"\nADD CONSTRAINT \"perfilPermissao_permissaoId_fkey\"\nFOREIGN KEY (\"permissaoId\")\nREFERENCES \"public\".\"permissao\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"perfilPermissao_permissaoId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "perfilPermissao_permissaoId_fkey",
+          "public",
+          "\"public\".\"perfilPermissao\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.usuarioSetor.usuarioSetor_usuarioId_fkey",
+    "label": "Add foreign key \"usuarioSetor_usuarioId_fkey\" on \"usuarioSetor\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "usuarioSetor_usuarioId_fkey",
+        "table": "usuarioSetor"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"usuarioSetor_usuarioId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "usuarioSetor_usuarioId_fkey",
+          "public",
+          "\"public\".\"usuarioSetor\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"usuarioSetor_usuarioId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"usuarioSetor\"\nADD CONSTRAINT \"usuarioSetor_usuarioId_fkey\"\nFOREIGN KEY (\"usuarioId\")\nREFERENCES \"public\".\"usuario\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"usuarioSetor_usuarioId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "usuarioSetor_usuarioId_fkey",
+          "public",
+          "\"public\".\"usuarioSetor\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.usuarioSetor.usuarioSetor_setorId_fkey",
+    "label": "Add foreign key \"usuarioSetor_setorId_fkey\" on \"usuarioSetor\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "usuarioSetor_setorId_fkey",
+        "table": "usuarioSetor"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"usuarioSetor_setorId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "usuarioSetor_setorId_fkey",
+          "public",
+          "\"public\".\"usuarioSetor\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"usuarioSetor_setorId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"usuarioSetor\"\nADD CONSTRAINT \"usuarioSetor_setorId_fkey\"\nFOREIGN KEY (\"setorId\")\nREFERENCES \"public\".\"setor\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"usuarioSetor_setorId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "usuarioSetor_setorId_fkey",
+          "public",
+          "\"public\".\"usuarioSetor\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.usuarioSetor.usuarioSetor_perfilId_fkey",
+    "label": "Add foreign key \"usuarioSetor_perfilId_fkey\" on \"usuarioSetor\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "usuarioSetor_perfilId_fkey",
+        "table": "usuarioSetor"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"usuarioSetor_perfilId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "usuarioSetor_perfilId_fkey",
+          "public",
+          "\"public\".\"usuarioSetor\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"usuarioSetor_perfilId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"usuarioSetor\"\nADD CONSTRAINT \"usuarioSetor_perfilId_fkey\"\nFOREIGN KEY (\"perfilId\")\nREFERENCES \"public\".\"perfil\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"usuarioSetor_perfilId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "usuarioSetor_perfilId_fkey",
+          "public",
+          "\"public\".\"usuarioSetor\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.usuarioUnidade.usuarioUnidade_usuarioId_fkey",
+    "label": "Add foreign key \"usuarioUnidade_usuarioId_fkey\" on \"usuarioUnidade\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "usuarioUnidade_usuarioId_fkey",
+        "table": "usuarioUnidade"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"usuarioUnidade_usuarioId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "usuarioUnidade_usuarioId_fkey",
+          "public",
+          "\"public\".\"usuarioUnidade\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"usuarioUnidade_usuarioId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"usuarioUnidade\"\nADD CONSTRAINT \"usuarioUnidade_usuarioId_fkey\"\nFOREIGN KEY (\"usuarioId\")\nREFERENCES \"public\".\"usuario\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"usuarioUnidade_usuarioId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "usuarioUnidade_usuarioId_fkey",
+          "public",
+          "\"public\".\"usuarioUnidade\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.usuarioUnidade.usuarioUnidade_unidadeId_fkey",
+    "label": "Add foreign key \"usuarioUnidade_unidadeId_fkey\" on \"usuarioUnidade\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "usuarioUnidade_unidadeId_fkey",
+        "table": "usuarioUnidade"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"usuarioUnidade_unidadeId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "usuarioUnidade_unidadeId_fkey",
+          "public",
+          "\"public\".\"usuarioUnidade\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"usuarioUnidade_unidadeId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"usuarioUnidade\"\nADD CONSTRAINT \"usuarioUnidade_unidadeId_fkey\"\nFOREIGN KEY (\"unidadeId\")\nREFERENCES \"public\".\"unidade\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"usuarioUnidade_unidadeId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "usuarioUnidade_unidadeId_fkey",
+          "public",
+          "\"public\".\"usuarioUnidade\""
+        ]
+      }
+    ]
+  }
+]
