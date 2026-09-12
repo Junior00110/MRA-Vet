@@ -1,0 +1,72 @@
+// use prisma-next
+
+model Cliente {
+  id              Int      @id @default(autoincrement())
+
+  // Referência do sistema antigo
+  codigoAntigo    Int?     @unique
+
+  // Único campo obrigatório
+  nome            String
+
+  // Dados opcionais
+  cpf             String?
+  telefone        String?
+  whatsapp        String?
+  email           String?
+
+  // Endereço
+  cep             String?
+  endereco        String?
+  numero          String?
+  complemento     String?
+  bairro          String?
+  cidade          String?
+  estado          String?
+
+  // Informações adicionais
+  observacoes     String?
+
+  // Controle do cadastro
+  ativo           Boolean  @default(true)
+
+  // Pacientes deste cliente
+  pacientes       Paciente[]
+
+  // Controle do sistema
+  createdAt       TimestamptzString @default(now())
+  updatedAt       temporal.updatedAtString()
+}
+
+
+model Paciente {
+  id                Int      @id @default(autoincrement())
+
+  // Referência do sistema antigo
+  codigoAntigo      Int?     @unique
+
+  // Único campo obrigatório
+  nome              String
+
+  // Dados opcionais
+  especie           String?
+  sexo              String?
+  raca              String?
+  dataNascimento    DateString?
+  corPelagem        String?
+  peso              Float?
+  microchip         String?
+  observacoes       String?
+
+  // Informações do paciente
+  castrado          Boolean  @default(false)
+  ativo             Boolean  @default(true)
+
+  // Tutor
+  clienteId         Int?
+  cliente           Cliente? @relation(fields: [clienteId], references: [id])
+
+  // Controle do sistema
+  createdAt         TimestamptzString @default(now())
+  updatedAt         temporal.updatedAtString()
+}
