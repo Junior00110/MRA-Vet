@@ -1,0 +1,242 @@
+[
+  {
+    "id": "table.pacienteAnotacao",
+    "label": "Create table \"pacienteAnotacao\"",
+    "summary": "Creates table \"pacienteAnotacao\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "pacienteAnotacao"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"pacienteAnotacao\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"pacienteAnotacao\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"pacienteAnotacao\"",
+        "sql": "CREATE TABLE \"public\".\"pacienteAnotacao\" (\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"criadoPorNome\" text,\n  \"criadoPorUsuarioId\" int4,\n  \"id\" SERIAL NOT NULL,\n  \"pacienteId\" int4 NOT NULL,\n  \"texto\" text NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"pacienteAnotacao\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"pacienteAnotacao\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.pacientePlano",
+    "label": "Create table \"pacientePlano\"",
+    "summary": "Creates table \"pacientePlano\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "pacientePlano"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"pacientePlano\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"pacientePlano\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"pacientePlano\"",
+        "sql": "CREATE TABLE \"public\".\"pacientePlano\" (\n  \"ativo\" bool DEFAULT true NOT NULL,\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"id\" SERIAL NOT NULL,\n  \"nome\" text NOT NULL,\n  \"numeroCarteirinha\" text,\n  \"observacoes\" text,\n  \"pacienteId\" int4 NOT NULL,\n  \"updatedAt\" timestamptz NOT NULL,\n  \"validade\" date,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"pacientePlano\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"pacientePlano\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.pacienteAnotacao.pacienteAnotacao_pacienteId_idx_8734dc3f",
+    "label": "Create index \"pacienteAnotacao_pacienteId_idx_8734dc3f\" on \"pacienteAnotacao\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "pacienteAnotacao_pacienteId_idx_8734dc3f",
+        "table": "pacienteAnotacao"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"pacienteAnotacao_pacienteId_idx_8734dc3f\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"pacienteAnotacao_pacienteId_idx_8734dc3f\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"pacienteAnotacao_pacienteId_idx_8734dc3f\"",
+        "sql": "CREATE INDEX \"pacienteAnotacao_pacienteId_idx_8734dc3f\" ON \"public\".\"pacienteAnotacao\" (\"pacienteId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"pacienteAnotacao_pacienteId_idx_8734dc3f\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"pacienteAnotacao_pacienteId_idx_8734dc3f\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.pacientePlano.pacientePlano_pacienteId_idx_8734dc3f",
+    "label": "Create index \"pacientePlano_pacienteId_idx_8734dc3f\" on \"pacientePlano\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "pacientePlano_pacienteId_idx_8734dc3f",
+        "table": "pacientePlano"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"pacientePlano_pacienteId_idx_8734dc3f\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"pacientePlano_pacienteId_idx_8734dc3f\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"pacientePlano_pacienteId_idx_8734dc3f\"",
+        "sql": "CREATE INDEX \"pacientePlano_pacienteId_idx_8734dc3f\" ON \"public\".\"pacientePlano\" (\"pacienteId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"pacientePlano_pacienteId_idx_8734dc3f\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"pacientePlano_pacienteId_idx_8734dc3f\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.pacienteAnotacao.pacienteAnotacao_pacienteId_fkey",
+    "label": "Add foreign key \"pacienteAnotacao_pacienteId_fkey\" on \"pacienteAnotacao\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "pacienteAnotacao_pacienteId_fkey",
+        "table": "pacienteAnotacao"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"pacienteAnotacao_pacienteId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "pacienteAnotacao_pacienteId_fkey",
+          "public",
+          "\"public\".\"pacienteAnotacao\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"pacienteAnotacao_pacienteId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"pacienteAnotacao\"\nADD CONSTRAINT \"pacienteAnotacao_pacienteId_fkey\"\nFOREIGN KEY (\"pacienteId\")\nREFERENCES \"public\".\"paciente\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"pacienteAnotacao_pacienteId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "pacienteAnotacao_pacienteId_fkey",
+          "public",
+          "\"public\".\"pacienteAnotacao\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.pacientePlano.pacientePlano_pacienteId_fkey",
+    "label": "Add foreign key \"pacientePlano_pacienteId_fkey\" on \"pacientePlano\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "pacientePlano_pacienteId_fkey",
+        "table": "pacientePlano"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"pacientePlano_pacienteId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "pacientePlano_pacienteId_fkey",
+          "public",
+          "\"public\".\"pacientePlano\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"pacientePlano_pacienteId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"pacientePlano\"\nADD CONSTRAINT \"pacientePlano_pacienteId_fkey\"\nFOREIGN KEY (\"pacienteId\")\nREFERENCES \"public\".\"paciente\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"pacientePlano_pacienteId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "pacientePlano_pacienteId_fkey",
+          "public",
+          "\"public\".\"pacientePlano\""
+        ]
+      }
+    ]
+  }
+]

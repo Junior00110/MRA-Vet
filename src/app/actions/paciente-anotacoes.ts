@@ -1,0 +1,275 @@
+"use server";
+
+import { revalidatePath } from "next/cache";
+
+import { db } from "@/prisma/db";
+import { exigirPermissao } from "@/lib/auth/authorization";
+
+export type EstadoAnotacao = {
+  ok: boolean;
+  mensagem: string;
+};
+
+export async function adicionarAnotacaoPaciente(
+  _estadoAnterior: EstadoAnotacao,
+  formData: FormData,
+): Promise<EstadoAnotacao> {
+  const acesso = await exigirPermissao(
+    "paciente.editar",
+  );
+
+  const pacienteId = Number(
+    formData.get("pacienteId"),
+  );
+
+  const clienteId = Number(
+    formData.get("clienteId"),
+  );
+
+  const texto = String(
+    formData.get("texto") ?? "",
+  ).trim();
+
+  if (
+    !Number.isInteger(pacienteId) ||
+    pacienteId <= 0
+  ) {
+    return {
+      ok: false,
+      mensagem: "Paciente inválido.",
+    };
+  }
+
+  if (
+    !Number.isInteger(clienteId) ||
+    clienteId <= 0
+  ) {
+    return {
+      ok: false,
+      mensagem: "Cliente inválido.",
+    };
+  }
+
+  if (!texto) {
+    return {
+      ok: false,
+      mensagem: "Digite uma anotação.",
+    };
+  }
+
+  if (texto.length > 2000) {
+    return {
+      ok: false,
+      mensagem:
+        "A anotação pode ter no máximo 2000 caracteres.",
+    };
+  }
+
+  const runtime = db.runtime();
+
+  const planoPaciente =
+    db.sql.public.paciente
+      .select(
+        "id",
+        "clienteId",
+      )
+      .where((f, fns) =>
+        fns.eq(
+          f.id,
+          pacienteId,
+        ),
+      )
+      .limit(1)
+      .build();
+
+  const resultadoPaciente =
+    await runtime.query(
+      planoPaciente,
+    );
+
+  const paciente =
+    resultadoPaciente[0];
+
+  if (!paciente) {
+    return {
+      ok: false,
+      mensagem:
+        "Paciente não encontrado.",
+    };
+  }
+
+  if (
+    paciente.clienteId !==
+    clienteId
+  ) {
+    return {
+      ok: false,
+      mensagem:
+        "Este paciente não pertence a este tutor.",
+    };
+  }
+
+  const planoInsert =
+    db.sql.public.pacienteAnotacao
+      .insert([
+        {
+          texto,
+          pacienteId,
+          criadoPorUsuarioId:
+            acesso.usuario.id,
+          criadoPorNome:
+            acesso.usuario.nome,
+        },
+      ])
+      .build();
+
+  await runtime.execute(
+    planoInsert,
+  );
+
+  revalidatePath(
+    `/clientes/${clienteId}`,
+  );
+
+  return {
+    ok: true,
+    mensagem:
+      "Anotação salva com sucesso.",
+  };
+}
+
+/*
+ * Remove uma anotação.
+ *
+ * Nesta primeira versão a anotação é
+ * realmente excluída da tabela.
+ *
+ * Mais adiante podemos evoluir isso
+ * para remoção lógica/auditoria.
+ */
+export async function removerAnotacaoPaciente(
+  formData: FormData,
+) {
+  await exigirPermissao(
+    "paciente.editar",
+  );
+
+  const anotacaoId = Number(
+    formData.get("anotacaoId"),
+  );
+
+  const pacienteId = Number(
+    formData.get("pacienteId"),
+  );
+
+  const clienteId = Number(
+    formData.get("clienteId"),
+  );
+
+  if (
+    !Number.isInteger(anotacaoId) ||
+    anotacaoId <= 0 ||
+    !Number.isInteger(pacienteId) ||
+    pacienteId <= 0 ||
+    !Number.isInteger(clienteId) ||
+    clienteId <= 0
+  ) {
+    throw new Error(
+      "Dados inválidos para remover anotação.",
+    );
+  }
+
+  const runtime = db.runtime();
+
+  /*
+   * Confere a anotação.
+   */
+  const planoAnotacao =
+    db.sql.public.pacienteAnotacao
+      .select(
+        "id",
+        "pacienteId",
+      )
+      .where((f, fns) =>
+        fns.eq(
+          f.id,
+          anotacaoId,
+        ),
+      )
+      .limit(1)
+      .build();
+
+  const resultadoAnotacao =
+    await runtime.query(
+      planoAnotacao,
+    );
+
+  const anotacao =
+    resultadoAnotacao[0];
+
+  if (
+    !anotacao ||
+    anotacao.pacienteId !==
+      pacienteId
+  ) {
+    throw new Error(
+      "Anotação não encontrada.",
+    );
+  }
+
+  /*
+   * Confere se o paciente pertence
+   * realmente ao cliente aberto.
+   */
+  const planoPaciente =
+    db.sql.public.paciente
+      .select(
+        "id",
+        "clienteId",
+      )
+      .where((f, fns) =>
+        fns.eq(
+          f.id,
+          pacienteId,
+        ),
+      )
+      .limit(1)
+      .build();
+
+  const resultadoPaciente =
+    await runtime.query(
+      planoPaciente,
+    );
+
+  const paciente =
+    resultadoPaciente[0];
+
+  if (
+    !paciente ||
+    paciente.clienteId !==
+      clienteId
+  ) {
+    throw new Error(
+      "Paciente inválido.",
+    );
+  }
+
+  const planoDelete =
+    db.sql.public.pacienteAnotacao
+      .delete()
+      .where((f, fns) =>
+        fns.eq(
+          f.id,
+          anotacaoId,
+        ),
+      )
+      .build();
+
+  await runtime.execute(
+    planoDelete,
+  );
+
+  revalidatePath(
+    `/clientes/${clienteId}`,
+  );
+}

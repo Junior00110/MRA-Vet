@@ -33,9 +33,9 @@ import type {
 } from '@prisma/orm-postgres/contract/types';
 
 export type StorageHash =
-  StorageHashBase<'db373f13f9f0d94bd8f7a75c60aa5c5b994141e9d680c96c96a5033afe58674a'>;
+  StorageHashBase<'b4db17572e0da1520ddc16661a2a520fcda1e19f3c25649c4605a302e3aafe6f'>;
 export type ExecutionHash =
-  ExecutionHashBase<'2efc0a01796c4f69c6beb10477c1a3ed349140ff219e7ae66b50a1ee1090c61f'>;
+  ExecutionHashBase<'e1b11aed7ff8bac5a1815c34ab90ee497bb4b63e5c711ab69877382c2bb49e19'>;
 export type ProfileHash =
   ProfileHashBase<'3916f444a8a17ad749191acf9e08dad97d1a327b88c2f1d45d12f240296aa8b2'>;
 
@@ -282,37 +282,8 @@ export type FieldOutputTypes = {
     readonly PacienteAnotacao: {
       readonly id: CodecTypes['pg/int4@1']['output'];
       readonly texto: CodecTypes['pg/text@1']['output'];
-      readonly ativo: CodecTypes['pg/bool@1']['output'];
       readonly pacienteId: CodecTypes['pg/int4@1']['output'];
       readonly criadoPorUsuarioId: CodecTypes['pg/int4@1']['output'] | null;
-      readonly criadoPorNome: CodecTypes['pg/text@1']['output'] | null;
-      readonly createdAt: CodecTypes['pg/timestamptz-string@1']['output'];
-    };
-    readonly PacienteAtendimento: {
-      readonly id: CodecTypes['pg/int4@1']['output'];
-      readonly motivoConsulta: CodecTypes['pg/text@1']['output'] | null;
-      readonly anamnese: CodecTypes['pg/text@1']['output'] | null;
-      readonly exameClinico: CodecTypes['pg/text@1']['output'] | null;
-      readonly diagnosticoSuspeita: CodecTypes['pg/text@1']['output'] | null;
-      readonly conduta: CodecTypes['pg/text@1']['output'] | null;
-      readonly observacoes: CodecTypes['pg/text@1']['output'] | null;
-      readonly dataAtendimento: CodecTypes['pg/timestamptz-string@1']['output'];
-      readonly profissionalUsuarioId: CodecTypes['pg/int4@1']['output'] | null;
-      readonly profissionalNome: CodecTypes['pg/text@1']['output'] | null;
-      readonly ativo: CodecTypes['pg/bool@1']['output'];
-      readonly pacienteId: CodecTypes['pg/int4@1']['output'];
-      readonly createdAt: CodecTypes['pg/timestamptz-string@1']['output'];
-      readonly updatedAt: CodecTypes['pg/timestamptz-string@1']['output'];
-    };
-    readonly PacientePeso: {
-      readonly id: CodecTypes['pg/int4@1']['output'];
-      readonly peso: CodecTypes['pg/float8@1']['output'];
-      readonly observacoes: CodecTypes['pg/text@1']['output'] | null;
-      readonly dataPesagem: CodecTypes['pg/timestamptz-string@1']['output'];
-      readonly profissionalUsuarioId: CodecTypes['pg/int4@1']['output'] | null;
-      readonly profissionalNome: CodecTypes['pg/text@1']['output'] | null;
-      readonly ativo: CodecTypes['pg/bool@1']['output'];
-      readonly pacienteId: CodecTypes['pg/int4@1']['output'];
       readonly createdAt: CodecTypes['pg/timestamptz-string@1']['output'];
       readonly updatedAt: CodecTypes['pg/timestamptz-string@1']['output'];
     };
@@ -437,37 +408,8 @@ export type FieldInputTypes = {
     readonly PacienteAnotacao: {
       readonly id: CodecTypes['pg/int4@1']['input'];
       readonly texto: CodecTypes['pg/text@1']['input'];
-      readonly ativo: CodecTypes['pg/bool@1']['input'];
       readonly pacienteId: CodecTypes['pg/int4@1']['input'];
       readonly criadoPorUsuarioId: CodecTypes['pg/int4@1']['input'] | null;
-      readonly criadoPorNome: CodecTypes['pg/text@1']['input'] | null;
-      readonly createdAt: CodecTypes['pg/timestamptz-string@1']['input'];
-    };
-    readonly PacienteAtendimento: {
-      readonly id: CodecTypes['pg/int4@1']['input'];
-      readonly motivoConsulta: CodecTypes['pg/text@1']['input'] | null;
-      readonly anamnese: CodecTypes['pg/text@1']['input'] | null;
-      readonly exameClinico: CodecTypes['pg/text@1']['input'] | null;
-      readonly diagnosticoSuspeita: CodecTypes['pg/text@1']['input'] | null;
-      readonly conduta: CodecTypes['pg/text@1']['input'] | null;
-      readonly observacoes: CodecTypes['pg/text@1']['input'] | null;
-      readonly dataAtendimento: CodecTypes['pg/timestamptz-string@1']['input'];
-      readonly profissionalUsuarioId: CodecTypes['pg/int4@1']['input'] | null;
-      readonly profissionalNome: CodecTypes['pg/text@1']['input'] | null;
-      readonly ativo: CodecTypes['pg/bool@1']['input'];
-      readonly pacienteId: CodecTypes['pg/int4@1']['input'];
-      readonly createdAt: CodecTypes['pg/timestamptz-string@1']['input'];
-      readonly updatedAt: CodecTypes['pg/timestamptz-string@1']['input'];
-    };
-    readonly PacientePeso: {
-      readonly id: CodecTypes['pg/int4@1']['input'];
-      readonly peso: CodecTypes['pg/float8@1']['input'];
-      readonly observacoes: CodecTypes['pg/text@1']['input'] | null;
-      readonly dataPesagem: CodecTypes['pg/timestamptz-string@1']['input'];
-      readonly profissionalUsuarioId: CodecTypes['pg/int4@1']['input'] | null;
-      readonly profissionalNome: CodecTypes['pg/text@1']['input'] | null;
-      readonly ativo: CodecTypes['pg/bool@1']['input'];
-      readonly pacienteId: CodecTypes['pg/int4@1']['input'];
       readonly createdAt: CodecTypes['pg/timestamptz-string@1']['input'];
       readonly updatedAt: CodecTypes['pg/timestamptz-string@1']['input'];
     };
@@ -590,40 +532,11 @@ export type StorageColumnTypes = {
       readonly updatedAt: CodecTypes['pg/timestamptz-string@1']['output'];
     };
     readonly pacienteAnotacao: {
-      readonly ativo: CodecTypes['pg/bool@1']['output'];
       readonly createdAt: CodecTypes['pg/timestamptz-string@1']['output'];
-      readonly criadoPorNome: CodecTypes['pg/text@1']['output'] | null;
       readonly criadoPorUsuarioId: CodecTypes['pg/int4@1']['output'] | null;
       readonly id: CodecTypes['pg/int4@1']['output'];
       readonly pacienteId: CodecTypes['pg/int4@1']['output'];
       readonly texto: CodecTypes['pg/text@1']['output'];
-    };
-    readonly pacienteAtendimento: {
-      readonly anamnese: CodecTypes['pg/text@1']['output'] | null;
-      readonly ativo: CodecTypes['pg/bool@1']['output'];
-      readonly conduta: CodecTypes['pg/text@1']['output'] | null;
-      readonly createdAt: CodecTypes['pg/timestamptz-string@1']['output'];
-      readonly dataAtendimento: CodecTypes['pg/timestamptz-string@1']['output'];
-      readonly diagnosticoSuspeita: CodecTypes['pg/text@1']['output'] | null;
-      readonly exameClinico: CodecTypes['pg/text@1']['output'] | null;
-      readonly id: CodecTypes['pg/int4@1']['output'];
-      readonly motivoConsulta: CodecTypes['pg/text@1']['output'] | null;
-      readonly observacoes: CodecTypes['pg/text@1']['output'] | null;
-      readonly pacienteId: CodecTypes['pg/int4@1']['output'];
-      readonly profissionalNome: CodecTypes['pg/text@1']['output'] | null;
-      readonly profissionalUsuarioId: CodecTypes['pg/int4@1']['output'] | null;
-      readonly updatedAt: CodecTypes['pg/timestamptz-string@1']['output'];
-    };
-    readonly pacientePeso: {
-      readonly ativo: CodecTypes['pg/bool@1']['output'];
-      readonly createdAt: CodecTypes['pg/timestamptz-string@1']['output'];
-      readonly dataPesagem: CodecTypes['pg/timestamptz-string@1']['output'];
-      readonly id: CodecTypes['pg/int4@1']['output'];
-      readonly observacoes: CodecTypes['pg/text@1']['output'] | null;
-      readonly pacienteId: CodecTypes['pg/int4@1']['output'];
-      readonly peso: CodecTypes['pg/float8@1']['output'];
-      readonly profissionalNome: CodecTypes['pg/text@1']['output'] | null;
-      readonly profissionalUsuarioId: CodecTypes['pg/int4@1']['output'] | null;
       readonly updatedAt: CodecTypes['pg/timestamptz-string@1']['output'];
     };
     readonly pacientePlano: {
@@ -745,40 +658,11 @@ export type StorageColumnInputTypes = {
       readonly updatedAt: CodecTypes['pg/timestamptz-string@1']['input'];
     };
     readonly pacienteAnotacao: {
-      readonly ativo: CodecTypes['pg/bool@1']['input'];
       readonly createdAt: CodecTypes['pg/timestamptz-string@1']['input'];
-      readonly criadoPorNome: CodecTypes['pg/text@1']['input'] | null;
       readonly criadoPorUsuarioId: CodecTypes['pg/int4@1']['input'] | null;
       readonly id: CodecTypes['pg/int4@1']['input'];
       readonly pacienteId: CodecTypes['pg/int4@1']['input'];
       readonly texto: CodecTypes['pg/text@1']['input'];
-    };
-    readonly pacienteAtendimento: {
-      readonly anamnese: CodecTypes['pg/text@1']['input'] | null;
-      readonly ativo: CodecTypes['pg/bool@1']['input'];
-      readonly conduta: CodecTypes['pg/text@1']['input'] | null;
-      readonly createdAt: CodecTypes['pg/timestamptz-string@1']['input'];
-      readonly dataAtendimento: CodecTypes['pg/timestamptz-string@1']['input'];
-      readonly diagnosticoSuspeita: CodecTypes['pg/text@1']['input'] | null;
-      readonly exameClinico: CodecTypes['pg/text@1']['input'] | null;
-      readonly id: CodecTypes['pg/int4@1']['input'];
-      readonly motivoConsulta: CodecTypes['pg/text@1']['input'] | null;
-      readonly observacoes: CodecTypes['pg/text@1']['input'] | null;
-      readonly pacienteId: CodecTypes['pg/int4@1']['input'];
-      readonly profissionalNome: CodecTypes['pg/text@1']['input'] | null;
-      readonly profissionalUsuarioId: CodecTypes['pg/int4@1']['input'] | null;
-      readonly updatedAt: CodecTypes['pg/timestamptz-string@1']['input'];
-    };
-    readonly pacientePeso: {
-      readonly ativo: CodecTypes['pg/bool@1']['input'];
-      readonly createdAt: CodecTypes['pg/timestamptz-string@1']['input'];
-      readonly dataPesagem: CodecTypes['pg/timestamptz-string@1']['input'];
-      readonly id: CodecTypes['pg/int4@1']['input'];
-      readonly observacoes: CodecTypes['pg/text@1']['input'] | null;
-      readonly pacienteId: CodecTypes['pg/int4@1']['input'];
-      readonly peso: CodecTypes['pg/float8@1']['input'];
-      readonly profissionalNome: CodecTypes['pg/text@1']['input'] | null;
-      readonly profissionalUsuarioId: CodecTypes['pg/int4@1']['input'] | null;
       readonly updatedAt: CodecTypes['pg/timestamptz-string@1']['input'];
     };
     readonly pacientePlano: {
@@ -1121,15 +1005,6 @@ type ContractBase = Omit<
                   readonly codecId: 'pg/text@1';
                   readonly nullable: false;
                 };
-                readonly ativo: {
-                  readonly nativeType: 'bool';
-                  readonly codecId: 'pg/bool@1';
-                  readonly nullable: false;
-                  readonly default: {
-                    readonly kind: 'literal';
-                    readonly value: DefaultLiteralValue<'pg/bool@1', true>;
-                  };
-                };
                 readonly pacienteId: {
                   readonly nativeType: 'int4';
                   readonly codecId: 'pg/int4@1';
@@ -1140,16 +1015,16 @@ type ContractBase = Omit<
                   readonly codecId: 'pg/int4@1';
                   readonly nullable: true;
                 };
-                readonly criadoPorNome: {
-                  readonly nativeType: 'text';
-                  readonly codecId: 'pg/text@1';
-                  readonly nullable: true;
-                };
                 readonly createdAt: {
                   readonly nativeType: 'timestamptz';
                   readonly codecId: 'pg/timestamptz-string@1';
                   readonly nullable: false;
                   readonly default: { readonly kind: 'function'; readonly expression: 'now()' };
+                };
+                readonly updatedAt: {
+                  readonly nativeType: 'timestamptz';
+                  readonly codecId: 'pg/timestamptz-string@1';
+                  readonly nullable: false;
                 };
               };
               primaryKey: { readonly columns: readonly ['id'] };
@@ -1167,202 +1042,6 @@ type ContractBase = Omit<
                   readonly source: {
                     readonly namespaceId: 'public' & NamespaceId;
                     readonly tableName: 'pacienteAnotacao';
-                    readonly columns: readonly ['pacienteId'];
-                  };
-                  readonly target: {
-                    readonly namespaceId: 'public' & NamespaceId;
-                    readonly tableName: 'paciente';
-                    readonly columns: readonly ['id'];
-                  };
-                },
-              ];
-            };
-            readonly pacienteAtendimento: {
-              columns: {
-                readonly id: {
-                  readonly nativeType: 'int4';
-                  readonly codecId: 'pg/int4@1';
-                  readonly nullable: false;
-                  readonly default: {
-                    readonly kind: 'function';
-                    readonly expression: 'autoincrement()';
-                  };
-                };
-                readonly motivoConsulta: {
-                  readonly nativeType: 'text';
-                  readonly codecId: 'pg/text@1';
-                  readonly nullable: true;
-                };
-                readonly anamnese: {
-                  readonly nativeType: 'text';
-                  readonly codecId: 'pg/text@1';
-                  readonly nullable: true;
-                };
-                readonly exameClinico: {
-                  readonly nativeType: 'text';
-                  readonly codecId: 'pg/text@1';
-                  readonly nullable: true;
-                };
-                readonly diagnosticoSuspeita: {
-                  readonly nativeType: 'text';
-                  readonly codecId: 'pg/text@1';
-                  readonly nullable: true;
-                };
-                readonly conduta: {
-                  readonly nativeType: 'text';
-                  readonly codecId: 'pg/text@1';
-                  readonly nullable: true;
-                };
-                readonly observacoes: {
-                  readonly nativeType: 'text';
-                  readonly codecId: 'pg/text@1';
-                  readonly nullable: true;
-                };
-                readonly dataAtendimento: {
-                  readonly nativeType: 'timestamptz';
-                  readonly codecId: 'pg/timestamptz-string@1';
-                  readonly nullable: false;
-                  readonly default: { readonly kind: 'function'; readonly expression: 'now()' };
-                };
-                readonly profissionalUsuarioId: {
-                  readonly nativeType: 'int4';
-                  readonly codecId: 'pg/int4@1';
-                  readonly nullable: true;
-                };
-                readonly profissionalNome: {
-                  readonly nativeType: 'text';
-                  readonly codecId: 'pg/text@1';
-                  readonly nullable: true;
-                };
-                readonly ativo: {
-                  readonly nativeType: 'bool';
-                  readonly codecId: 'pg/bool@1';
-                  readonly nullable: false;
-                  readonly default: {
-                    readonly kind: 'literal';
-                    readonly value: DefaultLiteralValue<'pg/bool@1', true>;
-                  };
-                };
-                readonly pacienteId: {
-                  readonly nativeType: 'int4';
-                  readonly codecId: 'pg/int4@1';
-                  readonly nullable: false;
-                };
-                readonly createdAt: {
-                  readonly nativeType: 'timestamptz';
-                  readonly codecId: 'pg/timestamptz-string@1';
-                  readonly nullable: false;
-                  readonly default: { readonly kind: 'function'; readonly expression: 'now()' };
-                };
-                readonly updatedAt: {
-                  readonly nativeType: 'timestamptz';
-                  readonly codecId: 'pg/timestamptz-string@1';
-                  readonly nullable: false;
-                };
-              };
-              primaryKey: { readonly columns: readonly ['id'] };
-              uniques: readonly [];
-              indexes: readonly [
-                {
-                  readonly name: 'pacienteAtendimento_pacienteId_idx_8734dc3f';
-                  readonly prefix: 'pacienteAtendimento_pacienteId_idx';
-                  readonly columns: readonly ['pacienteId'];
-                  readonly unique: false;
-                },
-              ];
-              foreignKeys: readonly [
-                {
-                  readonly source: {
-                    readonly namespaceId: 'public' & NamespaceId;
-                    readonly tableName: 'pacienteAtendimento';
-                    readonly columns: readonly ['pacienteId'];
-                  };
-                  readonly target: {
-                    readonly namespaceId: 'public' & NamespaceId;
-                    readonly tableName: 'paciente';
-                    readonly columns: readonly ['id'];
-                  };
-                },
-              ];
-            };
-            readonly pacientePeso: {
-              columns: {
-                readonly id: {
-                  readonly nativeType: 'int4';
-                  readonly codecId: 'pg/int4@1';
-                  readonly nullable: false;
-                  readonly default: {
-                    readonly kind: 'function';
-                    readonly expression: 'autoincrement()';
-                  };
-                };
-                readonly peso: {
-                  readonly nativeType: 'float8';
-                  readonly codecId: 'pg/float8@1';
-                  readonly nullable: false;
-                };
-                readonly observacoes: {
-                  readonly nativeType: 'text';
-                  readonly codecId: 'pg/text@1';
-                  readonly nullable: true;
-                };
-                readonly dataPesagem: {
-                  readonly nativeType: 'timestamptz';
-                  readonly codecId: 'pg/timestamptz-string@1';
-                  readonly nullable: false;
-                  readonly default: { readonly kind: 'function'; readonly expression: 'now()' };
-                };
-                readonly profissionalUsuarioId: {
-                  readonly nativeType: 'int4';
-                  readonly codecId: 'pg/int4@1';
-                  readonly nullable: true;
-                };
-                readonly profissionalNome: {
-                  readonly nativeType: 'text';
-                  readonly codecId: 'pg/text@1';
-                  readonly nullable: true;
-                };
-                readonly ativo: {
-                  readonly nativeType: 'bool';
-                  readonly codecId: 'pg/bool@1';
-                  readonly nullable: false;
-                  readonly default: {
-                    readonly kind: 'literal';
-                    readonly value: DefaultLiteralValue<'pg/bool@1', true>;
-                  };
-                };
-                readonly pacienteId: {
-                  readonly nativeType: 'int4';
-                  readonly codecId: 'pg/int4@1';
-                  readonly nullable: false;
-                };
-                readonly createdAt: {
-                  readonly nativeType: 'timestamptz';
-                  readonly codecId: 'pg/timestamptz-string@1';
-                  readonly nullable: false;
-                  readonly default: { readonly kind: 'function'; readonly expression: 'now()' };
-                };
-                readonly updatedAt: {
-                  readonly nativeType: 'timestamptz';
-                  readonly codecId: 'pg/timestamptz-string@1';
-                  readonly nullable: false;
-                };
-              };
-              primaryKey: { readonly columns: readonly ['id'] };
-              uniques: readonly [];
-              indexes: readonly [
-                {
-                  readonly name: 'pacientePeso_pacienteId_idx_8734dc3f';
-                  readonly prefix: 'pacientePeso_pacienteId_idx';
-                  readonly columns: readonly ['pacienteId'];
-                  readonly unique: false;
-                },
-              ];
-              foreignKeys: readonly [
-                {
-                  readonly source: {
-                    readonly namespaceId: 'public' & NamespaceId;
-                    readonly tableName: 'pacientePeso';
                     readonly columns: readonly ['pacienteId'];
                   };
                   readonly target: {
@@ -2016,14 +1695,6 @@ type ContractBase = Omit<
       readonly namespace: 'public' & NamespaceId;
       readonly model: 'PacientePlano';
     };
-    readonly pacienteAtendimento: {
-      readonly namespace: 'public' & NamespaceId;
-      readonly model: 'PacienteAtendimento';
-    };
-    readonly pacientePeso: {
-      readonly namespace: 'public' & NamespaceId;
-      readonly model: 'PacientePeso';
-    };
   };
   readonly domain: {
     readonly namespaces: {
@@ -2233,17 +1904,6 @@ type ContractBase = Omit<
                   readonly targetFields: readonly ['pacienteId'];
                 };
               };
-              readonly atendimentos: {
-                readonly to: {
-                  readonly namespace: 'public' & NamespaceId;
-                  readonly model: 'PacienteAtendimento';
-                };
-                readonly cardinality: '1:N';
-                readonly on: {
-                  readonly localFields: readonly ['id'];
-                  readonly targetFields: readonly ['pacienteId'];
-                };
-              };
               readonly cliente: {
                 readonly to: {
                   readonly namespace: 'public' & NamespaceId;
@@ -2253,17 +1913,6 @@ type ContractBase = Omit<
                 readonly on: {
                   readonly localFields: readonly ['clienteId'];
                   readonly targetFields: readonly ['id'];
-                };
-              };
-              readonly pesagens: {
-                readonly to: {
-                  readonly namespace: 'public' & NamespaceId;
-                  readonly model: 'PacientePeso';
-                };
-                readonly cardinality: '1:N';
-                readonly on: {
-                  readonly localFields: readonly ['id'];
-                  readonly targetFields: readonly ['pacienteId'];
                 };
               };
               readonly planos: {
@@ -2311,10 +1960,6 @@ type ContractBase = Omit<
                 readonly nullable: false;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
               };
-              readonly ativo: {
-                readonly nullable: false;
-                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/bool@1' };
-              };
               readonly pacienteId: {
                 readonly nullable: false;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int4@1' };
@@ -2323,11 +1968,14 @@ type ContractBase = Omit<
                 readonly nullable: true;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int4@1' };
               };
-              readonly criadoPorNome: {
-                readonly nullable: true;
-                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
-              };
               readonly createdAt: {
+                readonly nullable: false;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-string@1';
+                };
+              };
+              readonly updatedAt: {
                 readonly nullable: false;
                 readonly type: {
                   readonly kind: 'scalar';
@@ -2354,193 +2002,8 @@ type ContractBase = Omit<
               readonly fields: {
                 readonly id: { readonly column: 'id' };
                 readonly texto: { readonly column: 'texto' };
-                readonly ativo: { readonly column: 'ativo' };
                 readonly pacienteId: { readonly column: 'pacienteId' };
                 readonly criadoPorUsuarioId: { readonly column: 'criadoPorUsuarioId' };
-                readonly criadoPorNome: { readonly column: 'criadoPorNome' };
-                readonly createdAt: { readonly column: 'createdAt' };
-              };
-            };
-          };
-          readonly PacienteAtendimento: {
-            readonly fields: {
-              readonly id: {
-                readonly nullable: false;
-                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int4@1' };
-              };
-              readonly motivoConsulta: {
-                readonly nullable: true;
-                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
-              };
-              readonly anamnese: {
-                readonly nullable: true;
-                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
-              };
-              readonly exameClinico: {
-                readonly nullable: true;
-                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
-              };
-              readonly diagnosticoSuspeita: {
-                readonly nullable: true;
-                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
-              };
-              readonly conduta: {
-                readonly nullable: true;
-                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
-              };
-              readonly observacoes: {
-                readonly nullable: true;
-                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
-              };
-              readonly dataAtendimento: {
-                readonly nullable: false;
-                readonly type: {
-                  readonly kind: 'scalar';
-                  readonly codecId: 'pg/timestamptz-string@1';
-                };
-              };
-              readonly profissionalUsuarioId: {
-                readonly nullable: true;
-                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int4@1' };
-              };
-              readonly profissionalNome: {
-                readonly nullable: true;
-                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
-              };
-              readonly ativo: {
-                readonly nullable: false;
-                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/bool@1' };
-              };
-              readonly pacienteId: {
-                readonly nullable: false;
-                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int4@1' };
-              };
-              readonly createdAt: {
-                readonly nullable: false;
-                readonly type: {
-                  readonly kind: 'scalar';
-                  readonly codecId: 'pg/timestamptz-string@1';
-                };
-              };
-              readonly updatedAt: {
-                readonly nullable: false;
-                readonly type: {
-                  readonly kind: 'scalar';
-                  readonly codecId: 'pg/timestamptz-string@1';
-                };
-              };
-            };
-            readonly relations: {
-              readonly paciente: {
-                readonly to: {
-                  readonly namespace: 'public' & NamespaceId;
-                  readonly model: 'Paciente';
-                };
-                readonly cardinality: 'N:1';
-                readonly on: {
-                  readonly localFields: readonly ['pacienteId'];
-                  readonly targetFields: readonly ['id'];
-                };
-              };
-            };
-            readonly storage: {
-              readonly table: 'pacienteAtendimento';
-              readonly namespaceId: 'public';
-              readonly fields: {
-                readonly id: { readonly column: 'id' };
-                readonly motivoConsulta: { readonly column: 'motivoConsulta' };
-                readonly anamnese: { readonly column: 'anamnese' };
-                readonly exameClinico: { readonly column: 'exameClinico' };
-                readonly diagnosticoSuspeita: { readonly column: 'diagnosticoSuspeita' };
-                readonly conduta: { readonly column: 'conduta' };
-                readonly observacoes: { readonly column: 'observacoes' };
-                readonly dataAtendimento: { readonly column: 'dataAtendimento' };
-                readonly profissionalUsuarioId: { readonly column: 'profissionalUsuarioId' };
-                readonly profissionalNome: { readonly column: 'profissionalNome' };
-                readonly ativo: { readonly column: 'ativo' };
-                readonly pacienteId: { readonly column: 'pacienteId' };
-                readonly createdAt: { readonly column: 'createdAt' };
-                readonly updatedAt: { readonly column: 'updatedAt' };
-              };
-            };
-          };
-          readonly PacientePeso: {
-            readonly fields: {
-              readonly id: {
-                readonly nullable: false;
-                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int4@1' };
-              };
-              readonly peso: {
-                readonly nullable: false;
-                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/float8@1' };
-              };
-              readonly observacoes: {
-                readonly nullable: true;
-                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
-              };
-              readonly dataPesagem: {
-                readonly nullable: false;
-                readonly type: {
-                  readonly kind: 'scalar';
-                  readonly codecId: 'pg/timestamptz-string@1';
-                };
-              };
-              readonly profissionalUsuarioId: {
-                readonly nullable: true;
-                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int4@1' };
-              };
-              readonly profissionalNome: {
-                readonly nullable: true;
-                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
-              };
-              readonly ativo: {
-                readonly nullable: false;
-                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/bool@1' };
-              };
-              readonly pacienteId: {
-                readonly nullable: false;
-                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int4@1' };
-              };
-              readonly createdAt: {
-                readonly nullable: false;
-                readonly type: {
-                  readonly kind: 'scalar';
-                  readonly codecId: 'pg/timestamptz-string@1';
-                };
-              };
-              readonly updatedAt: {
-                readonly nullable: false;
-                readonly type: {
-                  readonly kind: 'scalar';
-                  readonly codecId: 'pg/timestamptz-string@1';
-                };
-              };
-            };
-            readonly relations: {
-              readonly paciente: {
-                readonly to: {
-                  readonly namespace: 'public' & NamespaceId;
-                  readonly model: 'Paciente';
-                };
-                readonly cardinality: 'N:1';
-                readonly on: {
-                  readonly localFields: readonly ['pacienteId'];
-                  readonly targetFields: readonly ['id'];
-                };
-              };
-            };
-            readonly storage: {
-              readonly table: 'pacientePeso';
-              readonly namespaceId: 'public';
-              readonly fields: {
-                readonly id: { readonly column: 'id' };
-                readonly peso: { readonly column: 'peso' };
-                readonly observacoes: { readonly column: 'observacoes' };
-                readonly dataPesagem: { readonly column: 'dataPesagem' };
-                readonly profissionalUsuarioId: { readonly column: 'profissionalUsuarioId' };
-                readonly profissionalNome: { readonly column: 'profissionalNome' };
-                readonly ativo: { readonly column: 'ativo' };
-                readonly pacienteId: { readonly column: 'pacienteId' };
                 readonly createdAt: { readonly column: 'createdAt' };
                 readonly updatedAt: { readonly column: 'updatedAt' };
               };
@@ -3235,16 +2698,7 @@ type ContractBase = Omit<
         {
           readonly ref: {
             readonly namespace: 'public';
-            readonly table: 'pacienteAtendimento';
-            readonly column: 'updatedAt';
-          };
-          readonly onCreate: { readonly kind: 'generator'; readonly id: 'timestampNow' };
-          readonly onUpdate: { readonly kind: 'generator'; readonly id: 'timestampNow' };
-        },
-        {
-          readonly ref: {
-            readonly namespace: 'public';
-            readonly table: 'pacientePeso';
+            readonly table: 'pacienteAnotacao';
             readonly column: 'updatedAt';
           };
           readonly onCreate: { readonly kind: 'generator'; readonly id: 'timestampNow' };

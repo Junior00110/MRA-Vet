@@ -1,0 +1,122 @@
+[
+  {
+    "id": "table.pacientePeso",
+    "label": "Create table \"pacientePeso\"",
+    "summary": "Creates table \"pacientePeso\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "pacientePeso"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"pacientePeso\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"pacientePeso\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"pacientePeso\"",
+        "sql": "CREATE TABLE \"public\".\"pacientePeso\" (\n  \"ativo\" bool DEFAULT true NOT NULL,\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"dataPesagem\" timestamptz DEFAULT (now()) NOT NULL,\n  \"id\" SERIAL NOT NULL,\n  \"observacoes\" text,\n  \"pacienteId\" int4 NOT NULL,\n  \"peso\" float8 NOT NULL,\n  \"profissionalNome\" text,\n  \"profissionalUsuarioId\" int4,\n  \"updatedAt\" timestamptz NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"pacientePeso\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"pacientePeso\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.pacientePeso.pacientePeso_pacienteId_idx_8734dc3f",
+    "label": "Create index \"pacientePeso_pacienteId_idx_8734dc3f\" on \"pacientePeso\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "pacientePeso_pacienteId_idx_8734dc3f",
+        "table": "pacientePeso"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"pacientePeso_pacienteId_idx_8734dc3f\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"pacientePeso_pacienteId_idx_8734dc3f\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"pacientePeso_pacienteId_idx_8734dc3f\"",
+        "sql": "CREATE INDEX \"pacientePeso_pacienteId_idx_8734dc3f\" ON \"public\".\"pacientePeso\" (\"pacienteId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"pacientePeso_pacienteId_idx_8734dc3f\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"pacientePeso_pacienteId_idx_8734dc3f\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.pacientePeso.pacientePeso_pacienteId_fkey",
+    "label": "Add foreign key \"pacientePeso_pacienteId_fkey\" on \"pacientePeso\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "pacientePeso_pacienteId_fkey",
+        "table": "pacientePeso"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"pacientePeso_pacienteId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "pacientePeso_pacienteId_fkey",
+          "public",
+          "\"public\".\"pacientePeso\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"pacientePeso_pacienteId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"pacientePeso\"\nADD CONSTRAINT \"pacientePeso_pacienteId_fkey\"\nFOREIGN KEY (\"pacienteId\")\nREFERENCES \"public\".\"paciente\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"pacientePeso_pacienteId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "pacientePeso_pacienteId_fkey",
+          "public",
+          "\"public\".\"pacientePeso\""
+        ]
+      }
+    ]
+  }
+]

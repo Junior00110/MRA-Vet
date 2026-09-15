@@ -1,0 +1,122 @@
+[
+  {
+    "id": "table.pacienteAtendimento",
+    "label": "Create table \"pacienteAtendimento\"",
+    "summary": "Creates table \"pacienteAtendimento\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "pacienteAtendimento"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"pacienteAtendimento\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"pacienteAtendimento\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"pacienteAtendimento\"",
+        "sql": "CREATE TABLE \"public\".\"pacienteAtendimento\" (\n  \"anamnese\" text,\n  \"ativo\" bool DEFAULT true NOT NULL,\n  \"conduta\" text,\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"dataAtendimento\" timestamptz DEFAULT (now()) NOT NULL,\n  \"diagnosticoSuspeita\" text,\n  \"exameClinico\" text,\n  \"id\" SERIAL NOT NULL,\n  \"motivoConsulta\" text,\n  \"observacoes\" text,\n  \"pacienteId\" int4 NOT NULL,\n  \"profissionalNome\" text,\n  \"profissionalUsuarioId\" int4,\n  \"updatedAt\" timestamptz NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"pacienteAtendimento\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"pacienteAtendimento\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.pacienteAtendimento.pacienteAtendimento_pacienteId_idx_8734dc3f",
+    "label": "Create index \"pacienteAtendimento_pacienteId_idx_8734dc3f\" on \"pacienteAtendimento\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "pacienteAtendimento_pacienteId_idx_8734dc3f",
+        "table": "pacienteAtendimento"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"pacienteAtendimento_pacienteId_idx_8734dc3f\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"pacienteAtendimento_pacienteId_idx_8734dc3f\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"pacienteAtendimento_pacienteId_idx_8734dc3f\"",
+        "sql": "CREATE INDEX \"pacienteAtendimento_pacienteId_idx_8734dc3f\" ON \"public\".\"pacienteAtendimento\" (\"pacienteId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"pacienteAtendimento_pacienteId_idx_8734dc3f\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"pacienteAtendimento_pacienteId_idx_8734dc3f\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.pacienteAtendimento.pacienteAtendimento_pacienteId_fkey",
+    "label": "Add foreign key \"pacienteAtendimento_pacienteId_fkey\" on \"pacienteAtendimento\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "pacienteAtendimento_pacienteId_fkey",
+        "table": "pacienteAtendimento"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"pacienteAtendimento_pacienteId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "pacienteAtendimento_pacienteId_fkey",
+          "public",
+          "\"public\".\"pacienteAtendimento\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"pacienteAtendimento_pacienteId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"pacienteAtendimento\"\nADD CONSTRAINT \"pacienteAtendimento_pacienteId_fkey\"\nFOREIGN KEY (\"pacienteId\")\nREFERENCES \"public\".\"paciente\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"pacienteAtendimento_pacienteId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "pacienteAtendimento_pacienteId_fkey",
+          "public",
+          "\"public\".\"pacienteAtendimento\""
+        ]
+      }
+    ]
+  }
+]
