@@ -19,13 +19,6 @@ enum TipoPerfil {
   VETERINARIO
 }
 
-enum StatusExame {
-  SOLICITADO
-  REALIZADO
-  RESULTADO_DISPONIVEL
-  CANCELADO
-}
-
 model Cliente {
   id              Int      @id @default(autoincrement())
   codigoAntigo    Int?     @unique
@@ -71,7 +64,6 @@ model Paciente {
   atendimentos      PacienteAtendimento[]
   pesagens          PacientePeso[]
   vacinas           PacienteVacina[]
-  exames            PacienteExame[]
 
   createdAt         TimestamptzString @default(now())
   updatedAt         temporal.updatedAtString()
@@ -229,8 +221,6 @@ model PacienteAtendimento {
   pacienteId Int
   paciente   Paciente @relation(fields: [pacienteId], references: [id])
 
-  exames PacienteExame[]
-
   createdAt TimestamptzString @default(now())
   updatedAt temporal.updatedAtString()
 }
@@ -275,37 +265,6 @@ model PacienteVacina {
 
   pacienteId Int
   paciente   Paciente @relation(fields: [pacienteId], references: [id])
-
-  createdAt TimestamptzString @default(now())
-  updatedAt temporal.updatedAtString()
-}
-
-model PacienteExame {
-  id Int @id @default(autoincrement())
-
-  nome String
-  tipo String?
-
-  status StatusExame @default(SOLICITADO)
-
-  dataSolicitacao TimestamptzString @default(now())
-  dataRealizacao  TimestamptzString?
-  dataResultado   TimestamptzString?
-
-  laboratorio String?
-  resultado   String?
-  observacoes String?
-
-  profissionalUsuarioId Int?
-  profissionalNome      String?
-
-  ativo Boolean @default(true)
-
-  pacienteId Int
-  paciente   Paciente @relation(fields: [pacienteId], references: [id])
-
-  atendimentoId Int?
-  atendimento   PacienteAtendimento? @relation(fields: [atendimentoId], references: [id])
 
   createdAt TimestamptzString @default(now())
   updatedAt temporal.updatedAtString()

@@ -42,10 +42,6 @@ type PacientePageProps = {
   params: Promise<{
     id: string;
   }>;
-  searchParams?: Promise<{
-    historico?: string;
-    busca?: string;
-  }>;
 };
 
 type TipoAnimal =
@@ -543,32 +539,12 @@ function AnimalAvatar({
 
 export default async function PacientePage({
   params,
-  searchParams,
 }: PacientePageProps) {
   await exigirPermissao(
     "cliente.visualizar",
   );
 
   const { id } = await params;
-
-  const filtrosHistorico =
-    searchParams
-      ? await searchParams
-      : {};
-
-  const tipoHistorico =
-    String(
-      filtrosHistorico.historico ??
-        "todos",
-    )
-      .trim()
-      .toLowerCase();
-
-  const buscaHistorico =
-    String(
-      filtrosHistorico.busca ??
-        "",
-    ).trim();
 
   const pacienteId =
     Number(id);
@@ -911,150 +887,6 @@ export default async function PacientePage({
     return dataB - dataA;
   });
 
-  const tiposHistoricoValidos =
-    new Set([
-      "todos",
-      "atendimento",
-      "vacina",
-      "peso",
-      "anotacao",
-    ]);
-
-  const tipoHistoricoAtivo =
-    tiposHistoricoValidos.has(
-      tipoHistorico,
-    )
-      ? tipoHistorico
-      : "todos";
-
-  const buscaNormalizada =
-    buscaHistorico
-      .toLocaleLowerCase(
-        "pt-BR",
-      );
-
-  const historicoFiltrado =
-    historico.filter(
-      (registro) => {
-        if (
-          tipoHistoricoAtivo !==
-            "todos" &&
-          registro.tipo !==
-            tipoHistoricoAtivo
-        ) {
-          return false;
-        }
-
-        if (!buscaNormalizada) {
-          return true;
-        }
-
-        let texto = "";
-
-        if (
-          registro.tipo ===
-          "atendimento"
-        ) {
-          const item =
-            registro.atendimento;
-
-          texto = [
-            item.motivoConsulta,
-            item.anamnese,
-            item.exameClinico,
-            item.diagnosticoSuspeita,
-            item.conduta,
-            item.observacoes,
-            item.profissionalNome,
-          ]
-            .filter(Boolean)
-            .join(" ");
-        } else if (
-          registro.tipo === "peso"
-        ) {
-          const item =
-            registro.pesagem;
-
-          texto = [
-            item.peso,
-            item.observacoes,
-            item.profissionalNome,
-          ]
-            .filter(
-              (valor) =>
-                valor !== null &&
-                valor !== undefined &&
-                valor !== "",
-            )
-            .join(" ");
-        } else if (
-          registro.tipo === "vacina"
-        ) {
-          const item =
-            registro.vacina;
-
-          texto = [
-            item.nome,
-            item.dose,
-            item.fabricante,
-            item.lote,
-            item.observacoes,
-            item.profissionalNome,
-          ]
-            .filter(Boolean)
-            .join(" ");
-        } else {
-          const item =
-            registro.anotacao;
-
-          texto = [
-            item.texto,
-            item.criadoPorNome,
-          ]
-            .filter(Boolean)
-            .join(" ");
-        }
-
-        return texto
-          .toLocaleLowerCase(
-            "pt-BR",
-          )
-          .includes(
-            buscaNormalizada,
-          );
-      },
-    );
-
-  function hrefHistorico(
-    tipoSelecionado: string,
-  ) {
-    const params =
-      new URLSearchParams();
-
-    if (
-      tipoSelecionado !== "todos"
-    ) {
-      params.set(
-        "historico",
-        tipoSelecionado,
-      );
-    }
-
-    if (buscaHistorico) {
-      params.set(
-        "busca",
-        buscaHistorico,
-      );
-    }
-
-    const query =
-      params.toString();
-
-    return query
-      ? `/pacientes/${paciente.id}?${query}`
-      : `/pacientes/${paciente.id}`;
-  }
-
   const tipo =
     tipoAnimal(
       paciente.especie,
@@ -1387,136 +1219,39 @@ export default async function PacientePage({
 
             {/* CONTEÚDO CENTRAL */}
             <section className="overflow-hidden rounded-[24px] border border-[#D9E1DE] bg-white shadow-sm">
-              <div className="border-b border-[#E2E8E5] px-5 py-4">
-                <div className="flex flex-wrap items-center gap-2">
-                  {[
-                    {
-                      valor: "todos",
-                      label: "Todos",
-                    },
-                    {
-                      valor:
-                        "atendimento",
-                      label:
-                        "Atendimentos",
-                    },
-                    {
-                      valor: "vacina",
-                      label: "Vacinas",
-                    },
-                    {
-                      valor: "peso",
-                      label: "Peso",
-                    },
-                    {
-                      valor:
-                        "anotacao",
-                      label:
-                        "Observações",
-                    },
-                  ].map(
-                    (filtro) => {
-                      const ativo =
-                        tipoHistoricoAtivo ===
-                        filtro.valor;
+              <div className="flex flex-wrap items-center gap-3 border-b border-[#E2E8E5] px-5 py-4">
+                <button
+                  type="button"
+                  disabled
+                  className="flex cursor-not-allowed items-center gap-2 rounded-xl border border-[#DCE4E1] bg-[#F8FAF9] px-3 py-2 text-xs font-semibold text-[#657572]"
+                >
+                  <CalendarDays
+                    size={15}
+                  />
 
-                      return (
-                        <Link
-                          key={
-                            filtro.valor
-                          }
-                          href={hrefHistorico(
-                            filtro.valor,
-                          )}
-                          scroll={false}
-                          className={`rounded-xl border px-3 py-2 text-xs font-bold transition ${
-                            ativo
-                              ? "border-[#174A5B] bg-[#174A5B] text-white shadow-sm"
-                              : "border-[#DCE4E1] bg-[#F8FAF9] text-[#657572] hover:border-[#B8CBC5] hover:bg-white"
-                          }`}
-                        >
-                          {filtro.label}
-                        </Link>
-                      );
-                    },
-                  )}
+                  Período
 
-                  <button
-                    type="button"
+                  <ChevronDown
+                    size={14}
+                  />
+                </button>
+
+                <div className="flex flex-1 items-center gap-2 rounded-xl border border-[#DCE4E1] bg-[#F8FAF9] px-3 py-2">
+                  <Search
+                    size={15}
+                    className="text-[#92A09D]"
+                  />
+
+                  <input
                     disabled
-                    title="Filtro por período será ativado em uma próxima etapa"
-                    className="ml-auto flex cursor-not-allowed items-center gap-2 rounded-xl border border-[#DCE4E1] bg-[#F8FAF9] px-3 py-2 text-xs font-semibold text-[#9AA6A3]"
-                  >
-                    <CalendarDays
-                      size={15}
-                    />
-
-                    Período
-
-                    <ChevronDown
-                      size={14}
-                    />
-                  </button>
+                    placeholder="Buscar no histórico..."
+                    className="w-full bg-transparent text-xs outline-none placeholder:text-[#A1ACA9]"
+                  />
                 </div>
 
-                <div className="mt-3 flex flex-wrap items-center gap-2">
-                  <form
-                    method="get"
-                    action={`/pacientes/${paciente.id}`}
-                    className="flex min-w-[260px] flex-1 items-center gap-2"
-                  >
-                    {tipoHistoricoAtivo !==
-                      "todos" && (
-                      <input
-                        type="hidden"
-                        name="historico"
-                        value={
-                          tipoHistoricoAtivo
-                        }
-                      />
-                    )}
-
-                    <div className="flex min-w-0 flex-1 items-center gap-2 rounded-xl border border-[#DCE4E1] bg-[#F8FAF9] px-3 py-2">
-                      <Search
-                        size={15}
-                        className="shrink-0 text-[#92A09D]"
-                      />
-
-                      <input
-                        name="busca"
-                        defaultValue={
-                          buscaHistorico
-                        }
-                        placeholder="Buscar no histórico..."
-                        className="w-full bg-transparent text-xs font-semibold text-[#53625F] outline-none placeholder:font-medium placeholder:text-[#A1ACA9]"
-                      />
-                    </div>
-
-                    <button
-                      type="submit"
-                      className="rounded-xl bg-[#174A5B] px-4 py-2 text-xs font-bold text-white transition hover:bg-[#123D4B]"
-                    >
-                      Buscar
-                    </button>
-                  </form>
-
-                  {(tipoHistoricoAtivo !==
-                    "todos" ||
-                    buscaHistorico) && (
-                    <Link
-                      href={`/pacientes/${paciente.id}`}
-                      scroll={false}
-                      className="rounded-xl border border-[#DCE4E1] bg-white px-3 py-2 text-xs font-bold text-[#657572] transition hover:border-[#B8CBC5]"
-                    >
-                      Limpar filtros
-                    </Link>
-                  )}
-
-                  <span className="rounded-full bg-[#EEF3F1] px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.1em] text-[#6F807C]">
-                    {historicoFiltrado.length} de{" "}
-                    {historico.length}
-                  </span>
-                </div>
+                <span className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#94A19E]">
+                  todos
+                </span>
               </div>
 
               {/* BOTÕES COLORIDOS */}
@@ -1652,7 +1387,7 @@ export default async function PacientePage({
 
               {/* HISTÓRICO */}
               <div className="p-5">
-                <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+                <div className="mb-5 flex items-center justify-between">
                   <div>
                     <p className="text-[9px] font-semibold uppercase tracking-[0.15em] text-[#7FA89A]">
                       Linha do tempo
@@ -1661,26 +1396,22 @@ export default async function PacientePage({
                     <h2 className="mt-1 text-xl font-black">
                       Histórico
                     </h2>
-
-                    <p className="mt-1 text-xs font-semibold text-[#8A9794]">
-                      Tudo que já foi registrado para este paciente, em ordem cronológica.
-                    </p>
                   </div>
 
                   <span className="rounded-full bg-[#174A5B] px-3 py-1 text-[10px] font-semibold text-white">
-                    {historicoFiltrado.length}{" "}
-                    {historicoFiltrado.length ===
+                    {historico.length}{" "}
+                    {historico.length ===
                     1
                       ? "registro"
                       : "registros"}
                   </span>
                 </div>
 
-                {historicoFiltrado.length ===
+                {historico.length ===
                 0 ? (
-                  <div className="rounded-[18px] border border-dashed border-[#CCD8D4] bg-[#F8FAF9] px-5 py-10 text-center">
+                  <div className="rounded-[22px] border border-dashed border-[#CCD8D4] bg-[#F8FAF9] px-5 py-12 text-center">
                     <Stethoscope
-                      size={30}
+                      size={32}
                       className="mx-auto text-[#9BB0AA]"
                     />
 
@@ -1689,553 +1420,395 @@ export default async function PacientePage({
                     </h3>
 
                     <p className="mx-auto mt-1 max-w-[420px] text-sm font-medium text-[#899693]">
-                      {historico.length === 0
-                        ? "Ainda não existem registros clínicos deste paciente."
-                        : "Nenhum registro corresponde aos filtros selecionados."}
+                      Ainda não existem registros clínicos deste paciente.
                     </p>
                   </div>
                 ) : (
-                  <div className="overflow-hidden rounded-[20px] border border-[#DCE5E2] bg-white">
-                    {historicoFiltrado.map(
-                      (
-                        registro,
-                        indice,
-                      ) => {
-                        const dataRegistro =
-                          new Date(
-                            registro.data,
-                          );
+                  <div className="relative">
+                    <div className="absolute bottom-5 left-[19px] top-5 w-px bg-[#D9E4E0]" />
 
-                        const anoAtual =
-                          Number.isNaN(
-                            dataRegistro.getTime(),
-                          )
-                            ? ""
-                            : String(
-                                dataRegistro.getFullYear(),
-                              );
+                    <div className="space-y-4">
+                      {historico.map(
+                        (registro) => {
+                          if (
+                            registro.tipo ===
+                            "atendimento"
+                          ) {
+                            const atendimento =
+                              registro.atendimento;
 
-                        const registroAnterior =
-                          indice > 0
-                            ? historicoFiltrado[
-                                indice - 1
-                              ]
-                            : null;
-
-                        const dataAnterior =
-                          registroAnterior
-                            ? new Date(
-                                registroAnterior.data,
-                              )
-                            : null;
-
-                        const anoAnterior =
-                          dataAnterior &&
-                          !Number.isNaN(
-                            dataAnterior.getTime(),
-                          )
-                            ? String(
-                                dataAnterior.getFullYear(),
-                              )
-                            : "";
-
-                        const mostrarAno =
-                          indice === 0 ||
-                          anoAtual !==
-                            anoAnterior;
-
-                        return (
-                          <div
-                            key={`${registro.tipo}-${registro.id}`}
-                          >
-                            {mostrarAno &&
-                              anoAtual && (
-                                <div className="border-b border-[#E4EBE8] bg-[#F5F7F6] px-4 py-2.5">
-                                  <span className="text-sm font-black text-[#52615E]">
-                                    {anoAtual}
-                                  </span>
+                            return (
+                              <div
+                                key={`atendimento-${atendimento.id}`}
+                                className="relative flex gap-4"
+                              >
+                                <div className="relative z-10 mt-1 flex h-10 w-10 shrink-0 items-center justify-center rounded-full border-4 border-white bg-[#3A8DDA] text-white shadow-sm">
+                                  <Stethoscope
+                                    size={15}
+                                  />
                                 </div>
-                              )}
 
-                            {registro.tipo ===
-                              "atendimento" && (
-                              <details className="group border-b border-[#E7ECEA] last:border-b-0">
-                                <summary className="flex cursor-pointer list-none items-start gap-3 border-l-4 border-l-[#3A8DDA] px-4 py-4 transition hover:bg-[#F8FBFD] [&::-webkit-details-marker]:hidden">
-                                  <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#E6F1FB] text-[#3A8DDA]">
-                                    <Stethoscope
-                                      size={15}
-                                    />
-                                  </div>
+                                <div className="min-w-0 flex-1 rounded-[20px] border border-[#D9E5EC] bg-[#FBFDFE] p-4">
+                                  <div className="flex flex-wrap items-start justify-between gap-3">
+                                    <div>
+                                      <p className="text-[9px] font-semibold uppercase tracking-[0.14em] text-[#3A8DDA]">
+                                        Atendimento
+                                      </p>
 
-                                  <div className="min-w-0 flex-1">
-                                    <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-                                      <span className="text-sm font-black text-[#3A8DDA]">
+                                      <h3 className="mt-1 font-black">
+                                        {atendimento.motivoConsulta ||
+                                          "Atendimento clínico"}
+                                      </h3>
+                                    </div>
+
+                                    <div className="flex flex-wrap items-center justify-end gap-2">
+                                      <span className="text-[10px] font-semibold text-[#8E9A97]">
                                         {formatarDataHora(
                                           String(
-                                            registro.atendimento
-                                              .dataAtendimento,
+                                            atendimento.dataAtendimento,
                                           ),
                                         )}
                                       </span>
 
-                                      <span className="text-xs font-bold uppercase tracking-[0.10em] text-[#6F7E7A]">
-                                        Atendimento
-                                      </span>
+                                      <ExcluirAtendimentoButton
+                                        atendimentoId={
+                                          atendimento.id
+                                        }
+                                        pacienteId={
+                                          paciente.id
+                                        }
+                                      />
                                     </div>
-
-                                    <p className="mt-1 truncate text-lg font-black text-[#2F3A37]">
-                                      {registro
-                                        .atendimento
-                                        .motivoConsulta ||
-                                        "Atendimento clínico"}
-                                    </p>
-
-                                    <p className="mt-1 text-sm font-semibold text-[#778480]">
-                                      {registro
-                                        .atendimento
-                                        .profissionalNome ||
-                                        "Profissional do sistema"}
-                                    </p>
                                   </div>
 
-                                  <div className="flex shrink-0 items-center gap-2">
-                                    <span className="hidden text-xs font-bold text-[#7D8986] sm:inline">
-                                      Ver detalhes
-                                    </span>
-
-                                    <ChevronDown
-                                      size={16}
-                                      className="text-[#8C9995] transition group-open:rotate-180"
-                                    />
-                                  </div>
-                                </summary>
-
-                                <div className="border-l-4 border-l-[#3A8DDA] bg-[#FBFDFE] px-4 pb-4 pl-[60px]">
-                                  <div className="grid gap-3">
-                                    {registro
-                                      .atendimento
-                                      .anamnese && (
+                                  <div className="mt-4 grid gap-4">
+                                    {atendimento.anamnese && (
                                       <BlocoAtendimento
                                         titulo="Anamnese"
                                         texto={
-                                          registro
-                                            .atendimento
-                                            .anamnese
+                                          atendimento.anamnese
                                         }
                                       />
                                     )}
 
-                                    {registro
-                                      .atendimento
-                                      .exameClinico && (
+                                    {atendimento.exameClinico && (
                                       <BlocoAtendimento
                                         titulo="Exame clínico"
                                         texto={
-                                          registro
-                                            .atendimento
-                                            .exameClinico
+                                          atendimento.exameClinico
                                         }
                                       />
                                     )}
 
-                                    {registro
-                                      .atendimento
-                                      .diagnosticoSuspeita && (
+                                    {atendimento.diagnosticoSuspeita && (
                                       <BlocoAtendimento
                                         titulo="Diagnóstico / suspeita"
                                         texto={
-                                          registro
-                                            .atendimento
-                                            .diagnosticoSuspeita
+                                          atendimento.diagnosticoSuspeita
                                         }
                                       />
                                     )}
 
-                                    {registro
-                                      .atendimento
-                                      .conduta && (
+                                    {atendimento.conduta && (
                                       <BlocoAtendimento
                                         titulo="Conduta"
                                         texto={
-                                          registro
-                                            .atendimento
-                                            .conduta
+                                          atendimento.conduta
                                         }
                                       />
                                     )}
 
-                                    {registro
-                                      .atendimento
-                                      .observacoes && (
+                                    {atendimento.observacoes && (
                                       <BlocoAtendimento
                                         titulo="Observações"
                                         texto={
-                                          registro
-                                            .atendimento
-                                            .observacoes
+                                          atendimento.observacoes
                                         }
                                       />
                                     )}
                                   </div>
 
-                                  <div className="mt-4 flex justify-end">
-                                    <ExcluirAtendimentoButton
-                                      atendimentoId={
-                                        registro
-                                          .atendimento
-                                          .id
-                                      }
-                                      pacienteId={
-                                        paciente.id
-                                      }
+                                  <div className="mt-4 flex items-center gap-2 border-t border-[#E8ECEA] pt-3 text-[10px] font-semibold text-[#8A9693]">
+                                    <UserRound
+                                      size={13}
                                     />
+
+                                    {atendimento.profissionalNome ||
+                                      "Profissional do sistema"}
                                   </div>
                                 </div>
-                              </details>
-                            )}
+                              </div>
+                            );
+                          }
 
-                            {registro.tipo ===
-                              "peso" && (
-                              <details className="group border-b border-[#E7ECEA] last:border-b-0">
-                                <summary className="flex cursor-pointer list-none items-start gap-3 border-l-4 border-l-[#D38A2B] px-4 py-4 transition hover:bg-[#FFFCF7] [&::-webkit-details-marker]:hidden">
-                                  <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#FFF0DA] text-[#C27A21]">
-                                    <Scale
-                                      size={15}
-                                    />
-                                  </div>
+                          if (
+                            registro.tipo ===
+                            "peso"
+                          ) {
+                            const pesagem =
+                              registro.pesagem;
 
-                                  <div className="min-w-0 flex-1">
-                                    <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-                                      <span className="text-sm font-black text-[#B97828]">
+                            return (
+                              <div
+                                key={`peso-${pesagem.id}`}
+                                className="relative flex gap-4"
+                              >
+                                <div className="relative z-10 mt-1 flex h-10 w-10 shrink-0 items-center justify-center rounded-full border-4 border-white bg-[#D38A2B] text-white shadow-sm">
+                                  <Scale
+                                    size={15}
+                                  />
+                                </div>
+
+                                <div className="min-w-0 flex-1 rounded-[20px] border border-[#E8D8BD] bg-[#FFFCF7] p-4">
+                                  <div className="flex flex-wrap items-start justify-between gap-3">
+                                    <div>
+                                      <p className="text-[9px] font-semibold uppercase tracking-[0.14em] text-[#B97828]">
+                                        Peso
+                                      </p>
+
+                                      <h3 className="mt-1 text-lg font-black text-[#3B4542]">
+                                        {formatarPeso(
+                                          pesagem.peso,
+                                        )}
+                                      </h3>
+                                    </div>
+
+                                    <div className="flex flex-wrap items-center justify-end gap-2">
+                                      <span className="text-[10px] font-semibold text-[#8E9A97]">
                                         {formatarDataHora(
                                           String(
-                                            registro
-                                              .pesagem
-                                              .dataPesagem,
+                                            pesagem.dataPesagem,
                                           ),
                                         )}
                                       </span>
 
-                                      <span className="text-xs font-bold uppercase tracking-[0.10em] text-[#6F7E7A]">
-                                        Peso
-                                      </span>
+                                      <ExcluirPesoButton
+                                        pesoId={
+                                          pesagem.id
+                                        }
+                                        pacienteId={
+                                          paciente.id
+                                        }
+                                        peso={
+                                          pesagem.peso
+                                        }
+                                      />
                                     </div>
-
-                                    <p className="mt-1 text-lg font-black text-[#2F3A37]">
-                                      {formatarPeso(
-                                        registro
-                                          .pesagem
-                                          .peso,
-                                      )}
-                                    </p>
-
-                                    <p className="mt-1 text-sm font-semibold text-[#778480]">
-                                      {registro
-                                        .pesagem
-                                        .profissionalNome ||
-                                        "Profissional do sistema"}
-                                    </p>
                                   </div>
 
-                                  <ChevronDown
-                                    size={16}
-                                    className="mt-2 shrink-0 text-[#8C9995] transition group-open:rotate-180"
-                                  />
-                                </summary>
-
-                                <div className="border-l-4 border-l-[#D38A2B] bg-[#FFFCF7] px-4 pb-4 pl-[60px]">
-                                  {registro
-                                    .pesagem
-                                    .observacoes ? (
-                                    <div className="rounded-xl border border-[#EFE3CF] bg-white px-4 py-3">
+                                  {pesagem.observacoes && (
+                                    <div className="mt-3 rounded-xl border border-[#EFE3CF] bg-white px-4 py-3">
                                       <p className="text-[9px] font-bold uppercase tracking-[0.12em] text-[#A7834F]">
                                         Observações
                                       </p>
 
                                       <p className="mt-1 whitespace-pre-wrap text-sm font-medium leading-6 text-[#5E625D]">
                                         {
-                                          registro
-                                            .pesagem
-                                            .observacoes
+                                          pesagem.observacoes
                                         }
                                       </p>
                                     </div>
-                                  ) : (
-                                    <p className="text-xs font-semibold text-[#929D99]">
-                                      Nenhuma observação adicionada.
-                                    </p>
                                   )}
 
-                                  <div className="mt-4 flex justify-end">
-                                    <ExcluirPesoButton
-                                      pesoId={
-                                        registro
-                                          .pesagem.id
-                                      }
-                                      pacienteId={
-                                        paciente.id
-                                      }
-                                      peso={
-                                        registro
-                                          .pesagem
-                                          .peso
-                                      }
+                                  <div className="mt-4 flex items-center gap-2 border-t border-[#EEE6D9] pt-3 text-[10px] font-semibold text-[#8A9693]">
+                                    <UserRound
+                                      size={13}
                                     />
+
+                                    {pesagem.profissionalNome ||
+                                      "Profissional do sistema"}
                                   </div>
                                 </div>
-                              </details>
-                            )}
+                              </div>
+                            );
+                          }
 
-                            {registro.tipo ===
-                              "vacina" && (
-                              <details className="group border-b border-[#E7ECEA] last:border-b-0">
-                                <summary className="flex cursor-pointer list-none items-start gap-3 border-l-4 border-l-[#ECAF2E] px-4 py-4 transition hover:bg-[#FFFCF4] [&::-webkit-details-marker]:hidden">
-                                  <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#FFF3CF] text-[#C48A12]">
-                                    <Syringe
-                                      size={15}
-                                    />
-                                  </div>
+                          if (
+                            registro.tipo ===
+                            "vacina"
+                          ) {
+                            const vacina =
+                              registro.vacina;
 
-                                  <div className="min-w-0 flex-1">
-                                    <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-                                      <span className="text-sm font-black text-[#B17D18]">
+                            return (
+                              <div
+                                key={`vacina-${vacina.id}`}
+                                className="relative flex gap-4"
+                              >
+                                <div className="relative z-10 mt-1 flex h-10 w-10 shrink-0 items-center justify-center rounded-full border-4 border-white bg-[#6F9A89] text-white shadow-sm">
+                                  <Syringe
+                                    size={15}
+                                  />
+                                </div>
+
+                                <div className="min-w-0 flex-1 rounded-[20px] border border-[#D8E6E0] bg-[#FAFCFB] p-4">
+                                  <div className="flex flex-wrap items-start justify-between gap-3">
+                                    <div>
+                                      <p className="text-[9px] font-semibold uppercase tracking-[0.14em] text-[#5F8B79]">
+                                        Vacinação
+                                      </p>
+
+                                      <h3 className="mt-1 text-lg font-black text-[#34433F]">
+                                        {vacina.nome}
+                                      </h3>
+                                    </div>
+
+                                    <div className="flex flex-wrap items-center justify-end gap-2">
+                                      <span className="text-[10px] font-semibold text-[#8E9A97]">
                                         {formatarDataHora(
                                           String(
-                                            registro
-                                              .vacina
-                                              .dataAplicacao,
+                                            vacina.dataAplicacao,
                                           ),
                                         )}
                                       </span>
 
-                                      <span className="text-xs font-bold uppercase tracking-[0.10em] text-[#6F7E7A]">
-                                        Vacina
-                                      </span>
+                                      <ExcluirVacinaButton
+                                        vacinaId={
+                                          vacina.id
+                                        }
+                                        pacienteId={
+                                          paciente.id
+                                        }
+                                        vacinaNome={
+                                          vacina.nome
+                                        }
+                                      />
                                     </div>
-
-                                    <p className="mt-1 truncate text-lg font-black text-[#2F3A37]">
-                                      {
-                                        registro
-                                          .vacina
-                                          .nome
-                                      }
-                                    </p>
-
-                                    <p className="mt-1 truncate text-sm font-semibold text-[#778480]">
-                                      {[
-                                        registro
-                                          .vacina
-                                          .dose,
-                                        registro
-                                          .vacina
-                                          .fabricante,
-                                        registro
-                                          .vacina
-                                          .lote
-                                          ? `Lote ${registro.vacina.lote}`
-                                          : null,
-                                      ]
-                                        .filter(
-                                          Boolean,
-                                        )
-                                        .join(
-                                          " • ",
-                                        ) ||
-                                        "Aplicação registrada"}
-                                    </p>
                                   </div>
 
-                                  <ChevronDown
-                                    size={16}
-                                    className="mt-2 shrink-0 text-[#8C9995] transition group-open:rotate-180"
-                                  />
-                                </summary>
-
-                                <div className="border-l-4 border-l-[#ECAF2E] bg-[#FFFCF4] px-4 pb-4 pl-[60px]">
-                                  <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                                    {registro
-                                      .vacina
-                                      .dose && (
+                                  <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                                    {vacina.dose && (
                                       <DadoVacina
                                         label="Dose"
                                         value={
-                                          registro
-                                            .vacina
-                                            .dose
+                                          vacina.dose
                                         }
                                       />
                                     )}
 
-                                    {registro
-                                      .vacina
-                                      .fabricante && (
+                                    {vacina.fabricante && (
                                       <DadoVacina
                                         label="Fabricante"
                                         value={
-                                          registro
-                                            .vacina
-                                            .fabricante
+                                          vacina.fabricante
                                         }
                                       />
                                     )}
 
-                                    {registro
-                                      .vacina
-                                      .lote && (
+                                    {vacina.lote && (
                                       <DadoVacina
                                         label="Lote"
                                         value={
-                                          registro
-                                            .vacina
-                                            .lote
+                                          vacina.lote
                                         }
                                       />
                                     )}
 
-                                    {registro
-                                      .vacina
-                                      .validade && (
+                                    {vacina.validade && (
                                       <DadoVacina
                                         label="Validade"
                                         value={formatarData(
                                           String(
-                                            registro
-                                              .vacina
-                                              .validade,
+                                            vacina.validade,
                                           ),
                                         )}
                                       />
                                     )}
 
-                                    {registro
-                                      .vacina
-                                      .proximaDose && (
+                                    {vacina.proximaDose && (
                                       <DadoVacina
                                         label="Próxima dose"
                                         value={formatarData(
                                           String(
-                                            registro
-                                              .vacina
-                                              .proximaDose,
+                                            vacina.proximaDose,
                                           ),
                                         )}
                                       />
                                     )}
                                   </div>
 
-                                  {registro
-                                    .vacina
-                                    .observacoes && (
-                                    <div className="mt-3 rounded-xl border border-[#EEE4C8] bg-white px-4 py-3">
-                                      <p className="text-[9px] font-bold uppercase tracking-[0.12em] text-[#9C823F]">
+                                  {vacina.observacoes && (
+                                    <div className="mt-3 rounded-xl border border-[#E1EBE7] bg-white px-4 py-3">
+                                      <p className="text-[9px] font-bold uppercase tracking-[0.12em] text-[#6D8F82]">
                                         Observações
                                       </p>
 
                                       <p className="mt-1 whitespace-pre-wrap text-sm font-medium leading-6 text-[#56625F]">
                                         {
-                                          registro
-                                            .vacina
-                                            .observacoes
+                                          vacina.observacoes
                                         }
                                       </p>
                                     </div>
                                   )}
 
-                                  <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-[#EEE8D8] pt-3">
-                                    <span className="flex items-center gap-2 text-[10px] font-semibold text-[#8A9693]">
-                                      <UserRound
-                                        size={13}
-                                      />
-
-                                      {registro
-                                        .vacina
-                                        .profissionalNome ||
-                                        "Profissional do sistema"}
-                                    </span>
-
-                                    <ExcluirVacinaButton
-                                      vacinaId={
-                                        registro
-                                          .vacina.id
-                                      }
-                                      pacienteId={
-                                        paciente.id
-                                      }
-                                      vacinaNome={
-                                        registro
-                                          .vacina
-                                          .nome
-                                      }
+                                  <div className="mt-4 flex items-center gap-2 border-t border-[#E5ECE9] pt-3 text-[10px] font-semibold text-[#8A9693]">
+                                    <UserRound
+                                      size={13}
                                     />
+
+                                    {vacina.profissionalNome ||
+                                      "Profissional do sistema"}
                                   </div>
                                 </div>
-                              </details>
-                            )}
+                              </div>
+                            );
+                          }
 
-                            {registro.tipo ===
-                              "anotacao" && (
-                              <details className="group border-b border-[#E7ECEA] last:border-b-0">
-                                <summary className="flex cursor-pointer list-none items-start gap-3 border-l-4 border-l-[#586367] px-4 py-4 transition hover:bg-[#F8F9F9] [&::-webkit-details-marker]:hidden">
-                                  <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#EBEEEE] text-[#586367]">
-                                    <MessageSquareText
-                                      size={15}
-                                    />
-                                  </div>
+                          const anotacao =
+                            registro.anotacao;
 
-                                  <div className="min-w-0 flex-1">
-                                    <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-                                      <span className="text-sm font-black text-[#667175]">
-                                        {formatarDataHora(
-                                          String(
-                                            registro
-                                              .anotacao
-                                              .createdAt,
-                                          ),
-                                        )}
-                                      </span>
+                          return (
+                            <div
+                              key={`anotacao-${anotacao.id}`}
+                              className="relative flex gap-4"
+                            >
+                              <div className="relative z-10 mt-1 flex h-10 w-10 shrink-0 items-center justify-center rounded-full border-4 border-white bg-[#D9A85F] text-white shadow-sm">
+                                <MessageSquareText
+                                  size={15}
+                                />
+                              </div>
 
-                                      <span className="text-xs font-bold uppercase tracking-[0.10em] text-[#6F7E7A]">
-                                        Observação
-                                      </span>
-                                    </div>
-
-                                    <p className="mt-1 truncate text-lg font-black text-[#2F3A37]">
-                                      {
-                                        registro
-                                          .anotacao
-                                          .texto
-                                      }
+                              <div className="min-w-0 flex-1 rounded-[20px] border border-[#E3E8E6] bg-[#FBFCFB] p-4">
+                                <div className="flex flex-wrap items-start justify-between gap-2">
+                                  <div>
+                                    <p className="text-[9px] font-semibold uppercase tracking-[0.14em] text-[#A58351]">
+                                      Observação
                                     </p>
 
-                                    <p className="mt-1 text-sm font-semibold text-[#778480]">
-                                      {registro
-                                        .anotacao
-                                        .criadoPorNome ||
-                                        "Usuário do sistema"}
-                                    </p>
+                                    <h3 className="mt-1 font-black">
+                                      Registro do paciente
+                                    </h3>
                                   </div>
 
-                                  <ChevronDown
-                                    size={16}
-                                    className="mt-2 shrink-0 text-[#8C9995] transition group-open:rotate-180"
+                                  <span className="text-[10px] font-semibold text-[#8E9A97]">
+                                    {formatarDataHora(
+                                      String(
+                                        anotacao.createdAt,
+                                      ),
+                                    )}
+                                  </span>
+                                </div>
+
+                                <p className="mt-3 whitespace-pre-wrap text-sm font-medium leading-6 text-[#54605D]">
+                                  {
+                                    anotacao.texto
+                                  }
+                                </p>
+
+                                <div className="mt-4 flex items-center gap-2 border-t border-[#E8ECEA] pt-3 text-[10px] font-semibold text-[#8A9693]">
+                                  <UserRound
+                                    size={13}
                                   />
-                                </summary>
 
-                                <div className="border-l-4 border-l-[#586367] bg-[#FAFBFB] px-4 pb-4 pl-[60px]">
-                                  <p className="whitespace-pre-wrap text-sm font-medium leading-6 text-[#54605D]">
-                                    {
-                                      registro
-                                        .anotacao
-                                        .texto
-                                    }
-                                  </p>
+                                  {anotacao.criadoPorNome ||
+                                    "Usuário do sistema"}
                                 </div>
-                              </details>
-                            )}
-                          </div>
-                        );
-                      },
-                    )}
+                              </div>
+                            </div>
+                          );
+                        },
+                      )}
+                    </div>
                   </div>
                 )}
               </div>
@@ -2299,194 +1872,15 @@ function BlocoAtendimento({
   titulo: string;
   texto: string;
 }) {
-  if (titulo === "Anamnese") {
-    return (
-      <ConteudoClinicoEstruturado
-        texto={texto}
-      />
-    );
-  }
-
   return (
-    <div className="rounded-2xl border border-[#E3EAE7] bg-white p-4">
-      <p className="text-[10px] font-black uppercase tracking-[0.12em] text-[#6F8782]">
+    <div>
+      <p className="text-[9px] font-bold uppercase tracking-[0.12em] text-[#78908D]">
         {titulo}
       </p>
 
-      <p className="mt-2 whitespace-pre-wrap text-sm font-medium leading-6 text-[#4F5D59]">
+      <p className="mt-1 whitespace-pre-wrap text-sm font-medium leading-6 text-[#54605D]">
         {texto}
       </p>
-    </div>
-  );
-}
-
-function ConteudoClinicoEstruturado({
-  texto,
-}: {
-  texto: string;
-}) {
-  const secoes: {
-    titulo: string;
-    itens: {
-      label: string;
-      valor: string;
-    }[];
-  }[] = [];
-
-  let secaoAtual = {
-    titulo: "Anamnese geral",
-    itens: [] as {
-      label: string;
-      valor: string;
-    }[],
-  };
-
-  const linhas = texto
-    .split("\n")
-    .map((linha) =>
-      linha.trim(),
-    )
-    .filter(Boolean);
-
-  function salvarSecaoAtual() {
-    if (
-      secaoAtual.itens.length >
-      0
-    ) {
-      secoes.push(
-        secaoAtual,
-      );
-    }
-  }
-
-  for (const linha of linhas) {
-    if (
-      /^\d+\.\s*ANAMNESE$/i.test(
-        linha,
-      )
-    ) {
-      continue;
-    }
-
-    const temDoisPontos =
-      linha.includes(":");
-
-    const pareceTitulo =
-      !temDoisPontos &&
-      linha ===
-        linha.toUpperCase() &&
-      linha.length <= 60;
-
-    if (pareceTitulo) {
-      salvarSecaoAtual();
-
-      secaoAtual = {
-        titulo: linha,
-        itens: [],
-      };
-
-      continue;
-    }
-
-    if (temDoisPontos) {
-      const indice =
-        linha.indexOf(":");
-
-      const label =
-        linha
-          .slice(0, indice)
-          .trim();
-
-      const valor =
-        linha
-          .slice(indice + 1)
-          .trim();
-
-      if (valor) {
-        secaoAtual.itens.push({
-          label,
-          valor,
-        });
-      }
-
-      continue;
-    }
-
-    secaoAtual.itens.push({
-      label: "Informação",
-      valor: linha,
-    });
-  }
-
-  salvarSecaoAtual();
-
-  if (secoes.length === 0) {
-    return (
-      <div className="rounded-2xl border border-[#E3EAE7] bg-white p-4">
-        <p className="text-[10px] font-black uppercase tracking-[0.12em] text-[#6F8782]">
-          Anamnese
-        </p>
-
-        <p className="mt-2 whitespace-pre-wrap text-sm font-medium leading-6 text-[#4F5D59]">
-          {texto}
-        </p>
-      </div>
-    );
-  }
-
-  return (
-    <div className="space-y-3">
-      <div className="flex items-center justify-between gap-3">
-        <p className="text-[10px] font-black uppercase tracking-[0.12em] text-[#6F8782]">
-          Anamnese
-        </p>
-
-        <span className="rounded-full bg-[#EDF4F1] px-2.5 py-1 text-[9px] font-bold uppercase tracking-[0.1em] text-[#648176]">
-          {secoes.length}{" "}
-          {secoes.length === 1
-            ? "grupo"
-            : "grupos"}
-        </span>
-      </div>
-
-      <div className="grid gap-3 lg:grid-cols-2">
-        {secoes.map(
-          (secao, indice) => (
-            <section
-              key={`${secao.titulo}-${indice}`}
-              className="overflow-hidden rounded-2xl border border-[#DFE8E4] bg-white"
-            >
-              <div className="border-b border-[#E7EEEB] bg-[#F5F8F7] px-4 py-3">
-                <h4 className="text-xs font-black uppercase tracking-[0.08em] text-[#35554C]">
-                  {secao.titulo}
-                </h4>
-              </div>
-
-              <div className="divide-y divide-[#EEF2F0]">
-                {secao.itens.map(
-                  (
-                    item,
-                    itemIndice,
-                  ) => (
-                    <div
-                      key={`${item.label}-${itemIndice}`}
-                      className="grid gap-1 px-4 py-3 sm:grid-cols-[180px_minmax(0,1fr)] sm:gap-4"
-                    >
-                      <span className="text-[11px] font-black uppercase tracking-[0.06em] text-[#72847F]">
-                        {item.label}
-                      </span>
-
-                      <span className="text-sm font-semibold leading-6 text-[#3F4D49]">
-                        {item.valor}
-                      </span>
-                    </div>
-                  ),
-                )}
-              </div>
-            </section>
-          ),
-        )}
-      </div>
     </div>
   );
 }

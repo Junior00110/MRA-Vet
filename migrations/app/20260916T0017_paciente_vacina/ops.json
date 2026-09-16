@@ -1,0 +1,122 @@
+[
+  {
+    "id": "table.pacienteVacina",
+    "label": "Create table \"pacienteVacina\"",
+    "summary": "Creates table \"pacienteVacina\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "pacienteVacina"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"pacienteVacina\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"pacienteVacina\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"pacienteVacina\"",
+        "sql": "CREATE TABLE \"public\".\"pacienteVacina\" (\n  \"ativo\" bool DEFAULT true NOT NULL,\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"dataAplicacao\" timestamptz DEFAULT (now()) NOT NULL,\n  \"dose\" text,\n  \"fabricante\" text,\n  \"id\" SERIAL NOT NULL,\n  \"lote\" text,\n  \"nome\" text NOT NULL,\n  \"observacoes\" text,\n  \"pacienteId\" int4 NOT NULL,\n  \"profissionalNome\" text,\n  \"profissionalUsuarioId\" int4,\n  \"proximaDose\" date,\n  \"updatedAt\" timestamptz NOT NULL,\n  \"validade\" date,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"pacienteVacina\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"pacienteVacina\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.pacienteVacina.pacienteVacina_pacienteId_idx_8734dc3f",
+    "label": "Create index \"pacienteVacina_pacienteId_idx_8734dc3f\" on \"pacienteVacina\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "pacienteVacina_pacienteId_idx_8734dc3f",
+        "table": "pacienteVacina"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"pacienteVacina_pacienteId_idx_8734dc3f\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"pacienteVacina_pacienteId_idx_8734dc3f\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"pacienteVacina_pacienteId_idx_8734dc3f\"",
+        "sql": "CREATE INDEX \"pacienteVacina_pacienteId_idx_8734dc3f\" ON \"public\".\"pacienteVacina\" (\"pacienteId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"pacienteVacina_pacienteId_idx_8734dc3f\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"pacienteVacina_pacienteId_idx_8734dc3f\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.pacienteVacina.pacienteVacina_pacienteId_fkey",
+    "label": "Add foreign key \"pacienteVacina_pacienteId_fkey\" on \"pacienteVacina\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "pacienteVacina_pacienteId_fkey",
+        "table": "pacienteVacina"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"pacienteVacina_pacienteId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "pacienteVacina_pacienteId_fkey",
+          "public",
+          "\"public\".\"pacienteVacina\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"pacienteVacina_pacienteId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"pacienteVacina\"\nADD CONSTRAINT \"pacienteVacina_pacienteId_fkey\"\nFOREIGN KEY (\"pacienteId\")\nREFERENCES \"public\".\"paciente\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"pacienteVacina_pacienteId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "pacienteVacina_pacienteId_fkey",
+          "public",
+          "\"public\".\"pacienteVacina\""
+        ]
+      }
+    ]
+  }
+]

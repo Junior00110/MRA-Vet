@@ -256,6 +256,8 @@ export default function PacienteAtendimentoForm({
       setExame(
         exameInicial,
       );
+
+      setAberto(false);
     }
   }, [estado.ok]);
 
@@ -1666,6 +1668,18 @@ function CampoTextoLivre({
 function montarTextoAnamnese(
   dados: DadosAnamnese,
 ) {
+  const temConteudo = Object.values(
+    dados,
+  ).some((valor) =>
+    Array.isArray(valor)
+      ? valor.length > 0
+      : valor.trim().length > 0,
+  );
+
+  if (!temConteudo) {
+    return "";
+  }
+
   const linhas: string[] = [
     "1. ANAMNESE",
   ];
@@ -1753,30 +1767,36 @@ function montarTextoAnamnese(
     );
   }
 
-  linhas.push(
-    "",
-    "VACINAÇÃO",
-  );
+  if (
+    vacinasSelecionadas.length > 0 ||
+    dados.vacinacaoStatus.trim() ||
+    dados.vacinacaoDetalhe.trim()
+  ) {
+    linhas.push(
+      "",
+      "VACINAÇÃO",
+    );
 
-  adicionarLinha(
-    linhas,
-    "VACINAS / PRODUTOS",
-    vacinasSelecionadas.join(
-      ", ",
-    ),
-  );
+    adicionarLinha(
+      linhas,
+      "VACINAS / PRODUTOS",
+      vacinasSelecionadas.join(
+        ", ",
+      ),
+    );
 
-  adicionarLinha(
-    linhas,
-    "SITUAÇÃO DA VACINAÇÃO",
-    dados.vacinacaoStatus,
-  );
+    adicionarLinha(
+      linhas,
+      "SITUAÇÃO DA VACINAÇÃO",
+      dados.vacinacaoStatus,
+    );
 
-  adicionarLinha(
-    linhas,
-    "DETALHE DA VACINAÇÃO",
-    dados.vacinacaoDetalhe,
-  );
+    adicionarLinha(
+      linhas,
+      "DETALHE DA VACINAÇÃO",
+      dados.vacinacaoDetalhe,
+    );
+  }
 
   adicionarLinha(
     linhas,
@@ -1852,10 +1872,20 @@ function montarTextoAnamnese(
     dados.comportamentoDetalhe,
   );
 
-  linhas.push(
-    "",
-    "SISTEMA GÊNITO-URINÁRIO",
-  );
+  if (
+    dados.miccao.trim() ||
+    dados.coloracaoUrina.trim() ||
+    dados.coloracaoUrinaDetalhe.trim() ||
+    dados.castracao.trim() ||
+    dados.castracaoDetalhe.trim() ||
+    dados.secrecaoGenital.trim() ||
+    dados.secrecaoGenitalDetalhe.trim()
+  ) {
+    linhas.push(
+      "",
+      "SISTEMA GÊNITO-URINÁRIO",
+    );
+  }
 
   adicionarLinha(
     linhas,
@@ -1899,10 +1929,15 @@ function montarTextoAnamnese(
     dados.secrecaoGenitalDetalhe,
   );
 
-  linhas.push(
-    "",
-    "SISTEMA TEGUMENTAR",
-  );
+  if (
+    dados.pele.trim() ||
+    dados.ouvidos.trim()
+  ) {
+    linhas.push(
+      "",
+      "SISTEMA TEGUMENTAR",
+    );
+  }
 
   adicionarLinha(
     linhas,
@@ -1916,10 +1951,15 @@ function montarTextoAnamnese(
     dados.ouvidos,
   );
 
-  linhas.push(
-    "",
-    "SISTEMA NEUROLÓGICO",
-  );
+  if (
+    dados.neurologico.trim() ||
+    dados.neurologicoDetalhe.trim()
+  ) {
+    linhas.push(
+      "",
+      "SISTEMA NEUROLÓGICO",
+    );
+  }
 
   adicionarLinha(
     linhas,
@@ -1933,10 +1973,15 @@ function montarTextoAnamnese(
     dados.neurologicoDetalhe,
   );
 
-  linhas.push(
-    "",
-    "SISTEMA MÚSCULO-ESQUELÉTICO",
-  );
+  if (
+    dados.musculoEsqueletico.trim() ||
+    dados.musculoEsqueleticoDetalhe.trim()
+  ) {
+    linhas.push(
+      "",
+      "SISTEMA MÚSCULO-ESQUELÉTICO",
+    );
+  }
 
   adicionarLinha(
     linhas,
@@ -1950,10 +1995,15 @@ function montarTextoAnamnese(
     dados.musculoEsqueleticoDetalhe,
   );
 
-  linhas.push(
-    "",
-    "SISTEMA OFTÁLMICO",
-  );
+  if (
+    dados.oftalmico.trim() ||
+    dados.oftalmicoDetalhe.trim()
+  ) {
+    linhas.push(
+      "",
+      "SISTEMA OFTÁLMICO",
+    );
+  }
 
   adicionarLinha(
     linhas,
@@ -1975,6 +2025,17 @@ function montarTextoAnamnese(
 function montarTextoExame(
   dados: DadosExame,
 ) {
+  const temConteudo = Object.values(
+    dados,
+  ).some(
+    (valor) =>
+      valor.trim().length > 0,
+  );
+
+  if (!temConteudo) {
+    return "";
+  }
+
   const linhas: string[] = [
     "2. EXAME FÍSICO",
   ];
