@@ -58,6 +58,7 @@ export default function PacientePesoForm({
   useEffect(() => {
     if (estado.ok) {
       formRef.current?.reset();
+      setAberto(false);
     }
   }, [estado.ok]);
 

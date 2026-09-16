@@ -256,6 +256,8 @@ export default function PacienteAtendimentoForm({
       setExame(
         exameInicial,
       );
+
+      setAberto(false);
     }
   }, [estado.ok]);
 

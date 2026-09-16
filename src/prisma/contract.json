@@ -20,12 +20,20 @@
       "model": "PacienteAtendimento",
       "namespace": "public"
     },
+    "pacienteExame": {
+      "model": "PacienteExame",
+      "namespace": "public"
+    },
     "pacientePeso": {
       "model": "PacientePeso",
       "namespace": "public"
     },
     "pacientePlano": {
       "model": "PacientePlano",
+      "namespace": "public"
+    },
+    "pacienteVacina": {
+      "model": "PacienteVacina",
       "namespace": "public"
     },
     "perfil": {
@@ -96,6 +104,27 @@
               {
                 "name": "ALL",
                 "value": "ALL"
+              }
+            ]
+          },
+          "StatusExame": {
+            "codecId": "pg/text@1",
+            "members": [
+              {
+                "name": "SOLICITADO",
+                "value": "SOLICITADO"
+              },
+              {
+                "name": "REALIZADO",
+                "value": "REALIZADO"
+              },
+              {
+                "name": "RESULTADO_DISPONIVEL",
+                "value": "RESULTADO_DISPONIVEL"
+              },
+              {
+                "name": "CANCELADO",
+                "value": "CANCELADO"
               }
             ]
           },
@@ -490,6 +519,21 @@
                   "namespace": "public"
                 }
               },
+              "exames": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "pacienteId"
+                  ]
+                },
+                "to": {
+                  "model": "PacienteExame",
+                  "namespace": "public"
+                }
+              },
               "pesagens": {
                 "cardinality": "1:N",
                 "on": {
@@ -517,6 +561,21 @@
                 },
                 "to": {
                   "model": "PacientePlano",
+                  "namespace": "public"
+                }
+              },
+              "vacinas": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "pacienteId"
+                  ]
+                },
+                "to": {
+                  "model": "PacienteVacina",
                   "namespace": "public"
                 }
               }
@@ -775,6 +834,21 @@
               }
             },
             "relations": {
+              "exames": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "atendimentoId"
+                  ]
+                },
+                "to": {
+                  "model": "PacienteExame",
+                  "namespace": "public"
+                }
+              },
               "paciente": {
                 "cardinality": "N:1",
                 "on": {
@@ -838,6 +912,224 @@
               },
               "namespaceId": "public",
               "table": "pacienteAtendimento"
+            }
+          },
+          "PacienteExame": {
+            "fields": {
+              "atendimentoId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "ativo": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/bool@1",
+                  "kind": "scalar"
+                }
+              },
+              "createdAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "kind": "scalar"
+                }
+              },
+              "dataRealizacao": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "kind": "scalar"
+                }
+              },
+              "dataResultado": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "kind": "scalar"
+                }
+              },
+              "dataSolicitacao": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "laboratorio": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "nome": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "observacoes": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "pacienteId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "profissionalNome": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "profissionalUsuarioId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "resultado": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "status": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                },
+                "valueSet": {
+                  "entityKind": "enum",
+                  "entityName": "StatusExame",
+                  "namespaceId": "public",
+                  "plane": "domain"
+                }
+              },
+              "tipo": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "updatedAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "atendimento": {
+                "cardinality": "N:1",
+                "on": {
+                  "localFields": [
+                    "atendimentoId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "PacienteAtendimento",
+                  "namespace": "public"
+                }
+              },
+              "paciente": {
+                "cardinality": "N:1",
+                "on": {
+                  "localFields": [
+                    "pacienteId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Paciente",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "atendimentoId": {
+                  "column": "atendimentoId"
+                },
+                "ativo": {
+                  "column": "ativo"
+                },
+                "createdAt": {
+                  "column": "createdAt"
+                },
+                "dataRealizacao": {
+                  "column": "dataRealizacao"
+                },
+                "dataResultado": {
+                  "column": "dataResultado"
+                },
+                "dataSolicitacao": {
+                  "column": "dataSolicitacao"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "laboratorio": {
+                  "column": "laboratorio"
+                },
+                "nome": {
+                  "column": "nome"
+                },
+                "observacoes": {
+                  "column": "observacoes"
+                },
+                "pacienteId": {
+                  "column": "pacienteId"
+                },
+                "profissionalNome": {
+                  "column": "profissionalNome"
+                },
+                "profissionalUsuarioId": {
+                  "column": "profissionalUsuarioId"
+                },
+                "resultado": {
+                  "column": "resultado"
+                },
+                "status": {
+                  "column": "status"
+                },
+                "tipo": {
+                  "column": "tipo"
+                },
+                "updatedAt": {
+                  "column": "updatedAt"
+                }
+              },
+              "namespaceId": "public",
+              "table": "pacienteExame"
             }
           },
           "PacientePeso": {
@@ -1082,6 +1374,183 @@
               },
               "namespaceId": "public",
               "table": "pacientePlano"
+            }
+          },
+          "PacienteVacina": {
+            "fields": {
+              "ativo": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/bool@1",
+                  "kind": "scalar"
+                }
+              },
+              "createdAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "kind": "scalar"
+                }
+              },
+              "dataAplicacao": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "kind": "scalar"
+                }
+              },
+              "dose": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "fabricante": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "lote": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "nome": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "observacoes": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "pacienteId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "profissionalNome": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "profissionalUsuarioId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "proximaDose": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/date-string@1",
+                  "kind": "scalar"
+                }
+              },
+              "updatedAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "kind": "scalar"
+                }
+              },
+              "validade": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/date-string@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "paciente": {
+                "cardinality": "N:1",
+                "on": {
+                  "localFields": [
+                    "pacienteId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Paciente",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "ativo": {
+                  "column": "ativo"
+                },
+                "createdAt": {
+                  "column": "createdAt"
+                },
+                "dataAplicacao": {
+                  "column": "dataAplicacao"
+                },
+                "dose": {
+                  "column": "dose"
+                },
+                "fabricante": {
+                  "column": "fabricante"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "lote": {
+                  "column": "lote"
+                },
+                "nome": {
+                  "column": "nome"
+                },
+                "observacoes": {
+                  "column": "observacoes"
+                },
+                "pacienteId": {
+                  "column": "pacienteId"
+                },
+                "profissionalNome": {
+                  "column": "profissionalNome"
+                },
+                "profissionalUsuarioId": {
+                  "column": "profissionalUsuarioId"
+                },
+                "proximaDose": {
+                  "column": "proximaDose"
+                },
+                "updatedAt": {
+                  "column": "updatedAt"
+                },
+                "validade": {
+                  "column": "validade"
+                }
+              },
+              "namespaceId": "public",
+              "table": "pacienteVacina"
             }
           },
           "Perfil": {
@@ -2376,6 +2845,186 @@
               },
               "uniques": []
             },
+            "pacienteExame": {
+              "checks": [
+                {
+                  "expression": "\"status\" IN ('SOLICITADO', 'REALIZADO', 'RESULTADO_DISPONIVEL', 'CANCELADO')",
+                  "name": "pacienteExame_status_check_a75c9294",
+                  "prefix": "pacienteExame_status_check"
+                }
+              ],
+              "columns": {
+                "atendimentoId": {
+                  "codecId": "pg/int4@1",
+                  "nativeType": "int4",
+                  "nullable": true
+                },
+                "ativo": {
+                  "codecId": "pg/bool@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": true
+                  },
+                  "nativeType": "bool",
+                  "nullable": false
+                },
+                "createdAt": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "dataRealizacao": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "nativeType": "timestamptz",
+                  "nullable": true
+                },
+                "dataResultado": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "nativeType": "timestamptz",
+                  "nullable": true
+                },
+                "dataSolicitacao": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "id": {
+                  "codecId": "pg/int4@1",
+                  "default": {
+                    "expression": "autoincrement()",
+                    "kind": "function"
+                  },
+                  "nativeType": "int4",
+                  "nullable": false
+                },
+                "laboratorio": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "nome": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "observacoes": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "pacienteId": {
+                  "codecId": "pg/int4@1",
+                  "nativeType": "int4",
+                  "nullable": false
+                },
+                "profissionalNome": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "profissionalUsuarioId": {
+                  "codecId": "pg/int4@1",
+                  "nativeType": "int4",
+                  "nullable": true
+                },
+                "resultado": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "status": {
+                  "codecId": "pg/text@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": "SOLICITADO"
+                  },
+                  "nativeType": "text",
+                  "nullable": false,
+                  "valueSet": {
+                    "entityKind": "valueSet",
+                    "entityName": "StatusExame",
+                    "namespaceId": "public",
+                    "plane": "storage"
+                  }
+                },
+                "tipo": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "updatedAt": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [
+                {
+                  "source": {
+                    "columns": [
+                      "pacienteId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "pacienteExame"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "paciente"
+                  }
+                },
+                {
+                  "source": {
+                    "columns": [
+                      "atendimentoId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "pacienteExame"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "pacienteAtendimento"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "atendimentoId"
+                  ],
+                  "name": "pacienteExame_atendimentoId_idx_b14914dc",
+                  "prefix": "pacienteExame_atendimentoId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "pacienteId"
+                  ],
+                  "name": "pacienteExame_pacienteId_idx_8734dc3f",
+                  "prefix": "pacienteExame_pacienteId_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": []
+            },
             "pacientePeso": {
               "columns": {
                 "ativo": {
@@ -2565,6 +3214,135 @@
                   ],
                   "name": "pacientePlano_pacienteId_idx_8734dc3f",
                   "prefix": "pacientePlano_pacienteId_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": []
+            },
+            "pacienteVacina": {
+              "columns": {
+                "ativo": {
+                  "codecId": "pg/bool@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": true
+                  },
+                  "nativeType": "bool",
+                  "nullable": false
+                },
+                "createdAt": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "dataAplicacao": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "dose": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "fabricante": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "id": {
+                  "codecId": "pg/int4@1",
+                  "default": {
+                    "expression": "autoincrement()",
+                    "kind": "function"
+                  },
+                  "nativeType": "int4",
+                  "nullable": false
+                },
+                "lote": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "nome": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "observacoes": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "pacienteId": {
+                  "codecId": "pg/int4@1",
+                  "nativeType": "int4",
+                  "nullable": false
+                },
+                "profissionalNome": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "profissionalUsuarioId": {
+                  "codecId": "pg/int4@1",
+                  "nativeType": "int4",
+                  "nullable": true
+                },
+                "proximaDose": {
+                  "codecId": "pg/date-string@1",
+                  "nativeType": "date",
+                  "nullable": true
+                },
+                "updatedAt": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "validade": {
+                  "codecId": "pg/date-string@1",
+                  "nativeType": "date",
+                  "nullable": true
+                }
+              },
+              "foreignKeys": [
+                {
+                  "source": {
+                    "columns": [
+                      "pacienteId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "pacienteVacina"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "paciente"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "pacienteId"
+                  ],
+                  "name": "pacienteVacina_pacienteId_idx_8734dc3f",
+                  "prefix": "pacienteVacina_pacienteId_idx",
                   "unique": false
                 }
               ],
@@ -3291,6 +4069,15 @@
                 "ALL"
               ]
             },
+            "StatusExame": {
+              "kind": "valueSet",
+              "values": [
+                "SOLICITADO",
+                "REALIZADO",
+                "RESULTADO_DISPONIVEL",
+                "CANCELADO"
+              ]
+            },
             "TipoPerfil": {
               "kind": "valueSet",
               "values": [
@@ -3306,10 +4093,10 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "db373f13f9f0d94bd8f7a75c60aa5c5b994141e9d680c96c96a5033afe58674a"
+    "storageHash": "5401d2a2cd2fac5c999ed4ac140c27c62e0e0e65d933ee506afec81e20ddc148"
   },
   "execution": {
-    "executionHash": "2efc0a01796c4f69c6beb10477c1a3ed349140ff219e7ae66b50a1ee1090c61f",
+    "executionHash": "270395ab00b6290ac5ba57cf0b97381eb22c6a608b73b069ce4341ff1b911de0",
     "mutations": {
       "defaults": [
         {
@@ -3369,6 +4156,21 @@
           "ref": {
             "column": "updatedAt",
             "namespace": "public",
+            "table": "pacienteExame"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "timestampNow",
+            "kind": "generator"
+          },
+          "onUpdate": {
+            "id": "timestampNow",
+            "kind": "generator"
+          },
+          "ref": {
+            "column": "updatedAt",
+            "namespace": "public",
             "table": "pacientePeso"
           }
         },
@@ -3385,6 +4187,21 @@
             "column": "updatedAt",
             "namespace": "public",
             "table": "pacientePlano"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "timestampNow",
+            "kind": "generator"
+          },
+          "onUpdate": {
+            "id": "timestampNow",
+            "kind": "generator"
+          },
+          "ref": {
+            "column": "updatedAt",
+            "namespace": "public",
+            "table": "pacienteVacina"
           }
         },
         {
