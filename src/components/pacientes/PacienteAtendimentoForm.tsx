@@ -218,6 +218,11 @@ export default function PacienteAtendimentoForm({
       null,
     );
 
+  const botaoAbrirRef =
+    useRef<HTMLButtonElement>(
+      null,
+    );
+
   const [
     estado,
     formAction,
@@ -260,6 +265,20 @@ export default function PacienteAtendimentoForm({
       setAberto(false);
     }
   }, [estado.ok]);
+
+  useEffect(() => {
+    if (!aberto) return;
+
+    function fecharComEscape(evento: KeyboardEvent) {
+      if (evento.key === "Escape" && !pending) {
+        setAberto(false);
+        requestAnimationFrame(() => botaoAbrirRef.current?.focus());
+      }
+    }
+
+    window.addEventListener("keydown", fecharComEscape);
+    return () => window.removeEventListener("keydown", fecharComEscape);
+  }, [aberto, pending]);
 
   function atualizarAnamnese<
     K extends keyof DadosAnamnese,
@@ -335,14 +354,17 @@ export default function PacienteAtendimentoForm({
   return (
     <>
       <button
+        ref={botaoAbrirRef}
         type="button"
+        aria-expanded={aberto}
+        aria-controls="painel-novo-atendimento"
         onClick={
           aberto
             ? () =>
                 setAberto(false)
             : abrirAtendimento
         }
-        className="group relative flex min-h-[96px] flex-col items-center justify-center overflow-hidden rounded-2xl border border-[#3A8DDA] bg-[#3A8DDA] px-3 py-4 text-center text-white shadow-sm transition hover:bg-[#2F7FC8]"
+        className="group relative flex min-h-[96px] flex-col items-center justify-center overflow-hidden rounded-2xl border border-[#3A8DDA] bg-[#3A8DDA] px-3 py-4 text-center text-white shadow-sm transition hover:bg-[#2F7FC8] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#3A8DDA]/30 focus-visible:ring-offset-2"
       >
         <div className="absolute -right-7 -top-7 h-20 w-20 rounded-full bg-white/10" />
 
@@ -367,7 +389,10 @@ export default function PacienteAtendimentoForm({
 
       {aberto && (
         <div
+          id="painel-novo-atendimento"
           ref={painelRef}
+          role="region"
+          aria-labelledby="titulo-novo-atendimento"
           className="order-last col-span-full mt-2 scroll-mt-24 overflow-hidden rounded-[24px] border border-[#C9DCE5] bg-white shadow-sm"
         >
           <div className="flex flex-wrap items-center justify-between gap-4 border-b border-[#DFE8E5] bg-gradient-to-r from-[#F1F7FA] to-white px-6 py-5">
@@ -383,7 +408,7 @@ export default function PacienteAtendimentoForm({
                   Prontuário
                 </p>
 
-                <h2 className="text-xl font-black text-[#24343A]">
+                <h2 id="titulo-novo-atendimento" className="text-xl font-black text-[#24343A]">
                   Novo atendimento
                 </h2>
 
@@ -411,7 +436,7 @@ export default function PacienteAtendimentoForm({
           <form
             ref={formRef}
             action={formAction}
-            className="p-6"
+            className="p-4 sm:p-6"
           >
             <input
               type="hidden"
@@ -1374,6 +1399,9 @@ export default function PacienteAtendimentoForm({
 
             {estado.mensagem && (
               <div
+                role={estado.ok ? "status" : "alert"}
+                aria-live={estado.ok ? "polite" : "assertive"}
+                aria-atomic="true"
                 className={`mt-6 rounded-2xl border px-4 py-3 text-sm font-semibold ${
                   estado.ok
                     ? "border-[#B9DDCA] bg-[#EFF8F3] text-[#347158]"
@@ -1384,19 +1412,19 @@ export default function PacienteAtendimentoForm({
               </div>
             )}
 
-            <div className="mt-7 flex flex-wrap items-center justify-between gap-3 border-t border-[#E4EAE8] pt-5">
+            <div className="mt-7 flex flex-col gap-4 border-t border-[#E4EAE8] pt-5 sm:flex-row sm:items-center sm:justify-between">
               <p className="max-w-[520px] text-xs font-medium text-[#8A9794]">
                 As informações da anamnese e do exame físico serão registradas no histórico clínico do paciente.
               </p>
 
-              <div className="flex gap-3">
+              <div className="flex w-full flex-col-reverse gap-3 sm:w-auto sm:flex-row">
                 <button
                   type="button"
                   onClick={() =>
                     setAberto(false)
                   }
                   disabled={pending}
-                  className="rounded-xl border border-[#D6DFDC] bg-white px-5 py-3 text-sm font-semibold text-[#63716E] transition hover:bg-[#F5F7F6] disabled:opacity-60"
+                  className="w-full rounded-xl border border-[#D6DFDC] bg-white px-5 py-3 text-sm font-semibold text-[#52615E] transition hover:bg-[#F5F7F6] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#3A8DDA]/20 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
                 >
                   Cancelar
                 </button>
@@ -1404,7 +1432,8 @@ export default function PacienteAtendimentoForm({
                 <button
                   type="submit"
                   disabled={pending}
-                  className="flex items-center gap-2 rounded-xl bg-[#174A5B] px-5 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-[#123D4B] disabled:cursor-wait disabled:opacity-60"
+                  aria-busy={pending}
+                  className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#174A5B] px-5 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-[#123D4B] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#174A5B]/25 focus-visible:ring-offset-2 disabled:cursor-wait disabled:opacity-60 sm:w-auto"
                 >
                   <Save
                     size={17}
@@ -1484,7 +1513,7 @@ function GrupoOpcao({
         {titulo}
       </p>
 
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap gap-2" role="group" aria-label={titulo}>
         {opcoes.map(
           (opcao) => {
             const ativo =
@@ -1494,6 +1523,7 @@ function GrupoOpcao({
               <button
                 key={opcao}
                 type="button"
+                aria-pressed={ativo}
                 onClick={() =>
                   onChange(
                     ativo
@@ -1501,7 +1531,7 @@ function GrupoOpcao({
                       : opcao,
                   )
                 }
-                className={`rounded-xl border px-3 py-2 text-xs font-bold transition ${
+                className={`rounded-xl border px-3 py-2 text-xs font-bold transition focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#174A5B]/20 focus-visible:ring-offset-2 ${
                   ativo
                     ? "border-[#174A5B] bg-[#174A5B] text-white shadow-sm"
                     : "border-[#D7E1DD] bg-white text-[#657572] hover:border-[#9BB8AE] hover:bg-[#F4F8F6]"
@@ -1536,7 +1566,7 @@ function GrupoMultiplo({
         {titulo}
       </p>
 
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap gap-2" role="group" aria-label={titulo}>
         {opcoes.map(
           (opcao) => {
             const ativo =
@@ -1548,10 +1578,11 @@ function GrupoMultiplo({
               <button
                 key={opcao}
                 type="button"
+                aria-pressed={ativo}
                 onClick={() =>
                   onChange(opcao)
                 }
-                className={`rounded-xl border px-3 py-2 text-xs font-bold transition ${
+                className={`rounded-xl border px-3 py-2 text-xs font-bold transition focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#3A8DDA]/20 focus-visible:ring-offset-2 ${
                   ativo
                     ? "border-[#3A8DDA] bg-[#E7F2FB] text-[#266B9F]"
                     : "border-[#D7E1DD] bg-white text-[#657572] hover:border-[#9BB8AE] hover:bg-[#F4F8F6]"
