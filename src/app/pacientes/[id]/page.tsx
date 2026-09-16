@@ -35,6 +35,7 @@ import ExcluirPesoButton from "@/components/pacientes/ExcluirPesoButton";
 import PacienteVacinaForm from "@/components/pacientes/PacienteVacinaForm";
 import ExcluirVacinaButton from "@/components/pacientes/ExcluirVacinaButton";
 import PacienteExameForm from "@/components/pacientes/PacienteExameForm";
+import ExcluirExameButton from "@/components/pacientes/ExcluirExameButton";
 
 import { db } from "@/prisma/db";
 import { exigirPermissao } from "@/lib/auth/authorization";
@@ -2430,15 +2431,33 @@ export default async function PacientePage({
                                     </div>
                                   )}
 
-                                  <div className="mt-4 flex items-center gap-2 border-t border-[#EEE5E6] pt-3 text-[10px] font-semibold text-[#8A9693]">
-                                    <UserRound
-                                      size={13}
-                                    />
+                                  <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-[#EEE5E6] pt-3">
+                                    <div className="flex items-center gap-2 text-[10px] font-semibold text-[#8A9693]">
+                                      <UserRound
+                                        size={13}
+                                      />
 
-                                    {registro
-                                      .exame
-                                      .profissionalNome ||
-                                      "Profissional do sistema"}
+                                      {registro
+                                        .exame
+                                        .profissionalNome ||
+                                        "Profissional do sistema"}
+                                    </div>
+
+                                    <ExcluirExameButton
+                                      exameId={
+                                        registro
+                                          .exame
+                                          .id
+                                      }
+                                      pacienteId={
+                                        paciente.id
+                                      }
+                                      exameNome={
+                                        registro
+                                          .exame
+                                          .nome
+                                      }
+                                    />
                                   </div>
                                 </div>
                               </details>
