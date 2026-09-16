@@ -1064,10 +1064,10 @@ export default async function PacientePage({
     <div className="min-h-screen bg-[#F2F1EC] font-[family-name:var(--font-dosis)] text-[#24343A]">
       <Sidebar />
 
-      <main className="ml-64 min-h-screen">
+      <main className="min-h-screen lg:ml-64">
         <Header />
 
-        <div className="p-6">
+        <div className="p-3 sm:p-4 md:p-6">
           {cliente ? (
             <Link
               href={`/clientes/${cliente.id}`}
@@ -1096,15 +1096,15 @@ export default async function PacientePage({
           <section className="relative overflow-hidden rounded-[28px] border border-[#D9E1DE] bg-white shadow-sm">
             <div className="absolute left-0 top-0 h-1.5 w-full bg-gradient-to-r from-[#174A5B] via-[#7FA89A] to-[#D7B78A]" />
 
-            <div className="flex flex-wrap items-center justify-between gap-6 p-6">
-              <div className="flex items-center gap-5">
+            <div className="flex flex-col items-stretch justify-between gap-5 p-4 sm:p-5 md:p-6 xl:flex-row xl:items-center">
+              <div className="flex min-w-0 flex-col items-start gap-4 sm:flex-row sm:items-center sm:gap-5">
                 <AnimalAvatar
                   tipo={tipo}
                 />
 
-                <div>
+                <div className="min-w-0 flex-1">
                   <div className="flex flex-wrap items-center gap-3">
-                    <h1 className="text-[32px] font-black leading-none text-[#24343A]">
+                    <h1 className="break-words text-[26px] font-black leading-tight text-[#24343A] sm:text-[32px]">
                       {paciente.nome}
                     </h1>
 
@@ -1115,7 +1115,7 @@ export default async function PacientePage({
                     </span>
                   </div>
 
-                  <p className="mt-2 text-sm font-semibold text-[#73817F]">
+                  <p className="mt-2 break-words text-sm font-semibold text-[#73817F]">
                     {valorOuTraco(
                       paciente.especie,
                     )}
@@ -1133,8 +1133,8 @@ export default async function PacientePage({
                     )}
                   </p>
 
-                  <div className="mt-4 flex flex-wrap gap-3">
-                    <div className="min-w-[200px] rounded-2xl border border-[#DCE4E1] bg-[#F8FAF9] px-4 py-3">
+                  <div className="mt-4 grid w-full grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                    <div className="min-w-0 rounded-2xl border border-[#DCE4E1] bg-[#F8FAF9] px-4 py-3">
                       <div className="flex items-center gap-2">
                         <CalendarDays
                           size={16}
@@ -1160,7 +1160,7 @@ export default async function PacientePage({
                       </p>
                     </div>
 
-                    <div className="min-w-[170px] rounded-2xl border border-[#E7D8BE] bg-[#FFF9F0] px-4 py-3">
+                    <div className="min-w-0 rounded-2xl border border-[#E7D8BE] bg-[#FFF9F0] px-4 py-3">
                       <div className="flex items-center gap-2">
                         <Scale
                           size={16}
@@ -1184,7 +1184,7 @@ export default async function PacientePage({
                     </div>
 
                     {planoAtivo && (
-                      <div className="flex min-w-[180px] items-center gap-3 rounded-2xl border border-[#DCE4E1] bg-[#F8FAF9] px-4 py-3">
+                      <div className="flex min-w-0 items-center gap-3 rounded-2xl border border-[#DCE4E1] bg-[#F8FAF9] px-4 py-3">
                         <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#E7F0ED] text-[#174A5B]">
                           <ShieldCheck
                             size={17}
@@ -1209,7 +1209,7 @@ export default async function PacientePage({
               {cliente && (
                 <Link
                   href={`/clientes/${cliente.id}`}
-                  className="flex min-w-[260px] items-center gap-3 rounded-2xl border border-[#DCE4E1] bg-[#F6F8F7] px-4 py-3 transition hover:border-[#BFD1CB]"
+                  className="flex w-full min-w-0 items-center gap-3 rounded-2xl border border-[#DCE4E1] bg-[#F6F8F7] px-4 py-3 transition hover:border-[#BFD1CB] xl:w-auto xl:min-w-[260px]"
                 >
                   <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#174A5B] text-white">
                     <UserRound
@@ -1270,7 +1270,7 @@ export default async function PacientePage({
               label="Vendas"
             />
 
-            <div className="ml-auto flex gap-2">
+            <div className="ml-0 flex gap-2 sm:ml-auto">
               <button
                 type="button"
                 disabled
@@ -1284,9 +1284,9 @@ export default async function PacientePage({
           </section>
 
           {/* ÁREA PRINCIPAL */}
-          <div className="mt-4 grid gap-4 xl:grid-cols-[270px_minmax(0,1fr)]">
+          <div className="mt-4 grid min-w-0 gap-4 xl:grid-cols-[270px_minmax(0,1fr)]">
             {/* ESQUERDA */}
-            <aside className="space-y-4">
+            <aside className="grid gap-4 md:grid-cols-2 xl:block xl:space-y-4">
               <section className="rounded-[24px] border border-[#D9E1DE] bg-white p-5 shadow-sm">
                 <div className="flex items-center gap-3">
                   <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#174A5B] text-white">
@@ -1386,7 +1386,7 @@ export default async function PacientePage({
             </aside>
 
             {/* CONTEÚDO CENTRAL */}
-            <section className="overflow-hidden rounded-[24px] border border-[#D9E1DE] bg-white shadow-sm">
+            <section className="min-w-0 overflow-hidden rounded-[24px] border border-[#D9E1DE] bg-white shadow-sm">
               <div className="border-b border-[#E2E8E5] px-5 py-4">
                 <div className="flex flex-wrap items-center gap-2">
                   {[
@@ -1445,7 +1445,7 @@ export default async function PacientePage({
                     type="button"
                     disabled
                     title="Filtro por período será ativado em uma próxima etapa"
-                    className="ml-auto flex cursor-not-allowed items-center gap-2 rounded-xl border border-[#DCE4E1] bg-[#F8FAF9] px-3 py-2 text-xs font-semibold text-[#9AA6A3]"
+                    className="ml-0 flex cursor-not-allowed items-center gap-2 rounded-xl border border-[#DCE4E1] bg-[#F8FAF9] px-3 py-2 text-xs font-semibold text-[#9AA6A3] sm:ml-auto"
                   >
                     <CalendarDays
                       size={15}
@@ -1463,7 +1463,7 @@ export default async function PacientePage({
                   <form
                     method="get"
                     action={`/pacientes/${paciente.id}`}
-                    className="flex min-w-[260px] flex-1 items-center gap-2"
+                    className="flex w-full min-w-0 flex-1 flex-col items-stretch gap-2 sm:flex-row sm:items-center"
                   >
                     {tipoHistoricoAtivo !==
                       "todos" && (
@@ -1494,7 +1494,7 @@ export default async function PacientePage({
 
                     <button
                       type="submit"
-                      className="rounded-xl bg-[#174A5B] px-4 py-2 text-xs font-bold text-white transition hover:bg-[#123D4B]"
+                      className="shrink-0 rounded-xl bg-[#174A5B] px-4 py-2 text-xs font-bold text-white transition hover:bg-[#123D4B]"
                     >
                       Buscar
                     </button>
@@ -1520,8 +1520,8 @@ export default async function PacientePage({
               </div>
 
               {/* BOTÕES COLORIDOS */}
-              <div className="border-b border-[#E2E8E5] bg-[#FAFBFA] p-5">
-                <div className="mb-4 flex items-center justify-between">
+              <div className="border-b border-[#E2E8E5] bg-[#FAFBFA] p-4 sm:p-5">
+                <div className="mb-4 flex flex-col items-start justify-between gap-3 sm:flex-row sm:items-center">
                   <div>
                     <p className="text-[9px] font-semibold uppercase tracking-[0.15em] text-[#7FA89A]">
                       Prontuário
@@ -1537,7 +1537,7 @@ export default async function PacientePage({
                   </span>
                 </div>
 
-                <div className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-5">
+                <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
                   <PacienteAtendimentoForm
                     pacienteId={
                       paciente.id
@@ -1651,8 +1651,8 @@ export default async function PacientePage({
               </div>
 
               {/* HISTÓRICO */}
-              <div className="p-5">
-                <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+              <div className="p-4 sm:p-5">
+                <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
                   <div>
                     <p className="text-[9px] font-semibold uppercase tracking-[0.15em] text-[#7FA89A]">
                       Linha do tempo

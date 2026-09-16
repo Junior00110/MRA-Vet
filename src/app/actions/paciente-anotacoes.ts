@@ -139,13 +139,11 @@ export async function adicionarAnotacaoPaciente(
 }
 
 /*
- * Remove uma anotação.
+ * EXCLUSÃO LÓGICA DA ANOTAÇÃO
  *
- * Nesta primeira versão a anotação é
- * realmente excluída da tabela.
- *
- * Mais adiante podemos evoluir isso
- * para remoção lógica/auditoria.
+ * A anotação não é apagada do banco.
+ * Ela apenas passa a ficar inativa,
+ * preservando o histórico do paciente.
  */
 export async function removerAnotacaoPaciente(
   formData: FormData,
@@ -182,13 +180,15 @@ export async function removerAnotacaoPaciente(
   const runtime = db.runtime();
 
   /*
-   * Confere a anotação.
+   * Confere se a anotação existe
+   * e pertence ao paciente informado.
    */
   const planoAnotacao =
     db.sql.public.pacienteAnotacao
       .select(
         "id",
         "pacienteId",
+        "ativo",
       )
       .where((f, fns) =>
         fns.eq(
@@ -254,22 +254,34 @@ export async function removerAnotacaoPaciente(
     );
   }
 
-  const planoDelete =
-    db.sql.public.pacienteAnotacao
-      .delete()
-      .where((f, fns) =>
-        fns.eq(
-          f.id,
-          anotacaoId,
-        ),
-      )
-      .build();
+  /*
+   * Não apaga a anotação.
+   * Apenas marca como inativa.
+   */
+  if (anotacao.ativo) {
+    const planoDesativar =
+      db.sql.public.pacienteAnotacao
+        .update({
+          ativo: false,
+        })
+        .where((f, fns) =>
+          fns.eq(
+            f.id,
+            anotacaoId,
+          ),
+        )
+        .build();
 
-  await runtime.execute(
-    planoDelete,
-  );
+    await runtime.execute(
+      planoDesativar,
+    );
+  }
 
   revalidatePath(
     `/clientes/${clienteId}`,
+  );
+
+  revalidatePath(
+    `/pacientes/${pacienteId}`,
   );
 }
