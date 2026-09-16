@@ -34,24 +34,24 @@ const estadoInicial: EstadoVacina = {
 };
 
 const VACINAS_CAES = [
-  "Múltipla – Cães",
-  "Antirrábica",
+  "MÃºltipla â€“ CÃ£es",
+  "AntirrÃ¡bica",
   "Gripe",
-  "Giárdia",
+  "GiÃ¡rdia",
   "ProHeart",
 ];
 
 const VACINAS_GATOS = [
-  "Múltipla – Gatos",
-  "Antirrábica",
+  "MÃºltipla â€“ Gatos",
+  "AntirrÃ¡bica",
 ];
 
 const VACINAS_GERAIS = [
-  "Múltipla – Cães",
-  "Múltipla – Gatos",
-  "Antirrábica",
+  "MÃºltipla â€“ CÃ£es",
+  "MÃºltipla â€“ Gatos",
+  "AntirrÃ¡bica",
   "Gripe",
-  "Giárdia",
+  "GiÃ¡rdia",
   "ProHeart",
 ];
 
@@ -96,6 +96,11 @@ export default function PacienteVacinaForm({
       null,
     );
 
+  const botaoAbrirRef =
+    useRef<HTMLButtonElement>(
+      null,
+    );
+
   const [
     estado,
     formAction,
@@ -116,7 +121,7 @@ export default function PacienteVacinaForm({
 
       if (
         especieNormalizada.includes(
-          "cão",
+          "cÃ£o",
         ) ||
         especieNormalizada.includes(
           "cao",
@@ -163,6 +168,20 @@ export default function PacienteVacinaForm({
     }
   }, [estado.ok]);
 
+  useEffect(() => {
+    if (!aberto) return;
+
+    function fecharComEscape(evento: KeyboardEvent) {
+      if (evento.key === "Escape" && !pending) {
+        setAberto(false);
+        requestAnimationFrame(() => botaoAbrirRef.current?.focus());
+      }
+    }
+
+    window.addEventListener("keydown", fecharComEscape);
+    return () => window.removeEventListener("keydown", fecharComEscape);
+  }, [aberto, pending]);
+
   function abrir() {
     setAberto(true);
 
@@ -179,14 +198,17 @@ export default function PacienteVacinaForm({
   return (
     <>
       <button
+        ref={botaoAbrirRef}
         type="button"
+        aria-expanded={aberto}
+        aria-controls="painel-registrar-vacina"
         onClick={
           aberto
             ? () =>
                 setAberto(false)
             : abrir
         }
-        className="group relative flex min-h-[96px] flex-col items-center justify-center overflow-hidden rounded-2xl border border-[#6F9A89] bg-[#6F9A89] px-3 py-4 text-center text-white shadow-sm transition hover:bg-[#5D8878]"
+        className="group relative flex min-h-[96px] flex-col items-center justify-center overflow-hidden rounded-2xl border border-[#6F9A89] bg-[#6F9A89] px-3 py-4 text-center text-white shadow-sm transition hover:bg-[#5D8878] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#6F9A89]/30 focus-visible:ring-offset-2"
       >
         <div className="absolute -right-7 -top-7 h-20 w-20 rounded-full bg-white/10" />
 
@@ -211,10 +233,13 @@ export default function PacienteVacinaForm({
 
       {aberto && (
         <div
+          id="painel-registrar-vacina"
           ref={painelRef}
+          role="region"
+          aria-labelledby="titulo-registrar-vacina"
           className="order-last col-span-full mt-2 scroll-mt-24 overflow-hidden rounded-[24px] border border-[#CFE0D9] bg-white shadow-sm"
         >
-          <div className="flex flex-wrap items-center justify-between gap-4 border-b border-[#DCE8E3] bg-gradient-to-r from-[#EFF7F4] to-white px-6 py-5">
+          <div className="flex flex-wrap items-center justify-between gap-4 border-b border-[#DCE8E3] bg-gradient-to-r from-[#EFF7F4] to-white px-4 py-5 sm:px-6">
             <div className="flex items-center gap-3">
               <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#6F9A89] text-white">
                 <Syringe
@@ -224,11 +249,14 @@ export default function PacienteVacinaForm({
 
               <div>
                 <p className="text-[9px] font-semibold uppercase tracking-[0.16em] text-[#608777]">
-                  Prontuário
+                  ProntuÃ¡rio
                 </p>
 
-                <h2 className="text-xl font-black text-[#24343A]">
-                  Registrar vacinação
+                <h2
+                  id="titulo-registrar-vacina"
+                  className="text-xl font-black text-[#24343A]"
+                >
+                  Registrar vacinaÃ§Ã£o
                 </h2>
 
                 <p className="text-xs font-semibold text-[#82908D]">
@@ -244,7 +272,8 @@ export default function PacienteVacinaForm({
                 setAberto(false)
               }
               disabled={pending}
-              className="flex h-10 items-center gap-2 rounded-xl border border-[#D7E0DD] bg-white px-3 text-xs font-bold text-[#657572]"
+              aria-label="Fechar formulário de vacinação"
+              className="flex h-10 items-center gap-2 rounded-xl border border-[#D7E0DD] bg-white px-3 text-xs font-bold text-[#52615E] transition hover:bg-[#F4F8F6] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#6F9A89]/20 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
             >
               <X size={16} />
 
@@ -255,7 +284,7 @@ export default function PacienteVacinaForm({
           <form
             ref={formRef}
             action={formAction}
-            className="p-6"
+            className="p-4 sm:p-6"
           >
             <input
               type="hidden"
@@ -289,7 +318,11 @@ export default function PacienteVacinaForm({
                   </div>
                 </div>
 
-                <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                <div
+                  className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3"
+                  role="group"
+                  aria-label="Vacina aplicada"
+                >
                   {opcoesVacina.map(
                     (vacina) => {
                       const selecionada =
@@ -300,6 +333,7 @@ export default function PacienteVacinaForm({
                         <button
                           key={vacina}
                           type="button"
+                          aria-pressed={selecionada}
                           onClick={() => {
                             setVacinaSelecionada(
                               vacina,
@@ -309,7 +343,7 @@ export default function PacienteVacinaForm({
                               "",
                             );
                           }}
-                          className={`rounded-2xl border px-4 py-3 text-left text-sm font-bold transition ${
+                          className={`rounded-2xl border px-4 py-3 text-left text-sm font-bold transition focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#6F9A89]/20 focus-visible:ring-offset-2 ${
                             selecionada
                               ? "border-[#6F9A89] bg-[#EAF3EF] text-[#315F4F] ring-2 ring-[#6F9A89]/15"
                               : "border-[#DDE5E2] bg-white text-[#53625F] hover:border-[#AFC9BF]"
@@ -323,12 +357,13 @@ export default function PacienteVacinaForm({
 
                   <button
                     type="button"
+                    aria-pressed={vacinaSelecionada === "Outra"}
                     onClick={() =>
                       setVacinaSelecionada(
                         "Outra",
                       )
                     }
-                    className={`rounded-2xl border px-4 py-3 text-left text-sm font-bold transition ${
+                    className={`rounded-2xl border px-4 py-3 text-left text-sm font-bold transition focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#6F9A89]/20 focus-visible:ring-offset-2 ${
                       vacinaSelecionada ===
                       "Outra"
                         ? "border-[#6F9A89] bg-[#EAF3EF] text-[#315F4F] ring-2 ring-[#6F9A89]/15"
@@ -376,11 +411,11 @@ export default function PacienteVacinaForm({
 
                   <div>
                     <h3 className="text-sm font-black text-[#354340]">
-                      Dados da aplicação
+                      Dados da aplicaÃ§Ã£o
                     </h3>
 
                     <p className="text-xs font-medium text-[#879592]">
-                      Informações do produto e da dose aplicada.
+                      InformaÃ§Ãµes do produto e da dose aplicada.
                     </p>
                   </div>
                 </div>
@@ -388,7 +423,7 @@ export default function PacienteVacinaForm({
                 <div className="grid gap-4 md:grid-cols-2">
                   <label className="block">
                     <span className="mb-2 block text-xs font-bold text-[#52615E]">
-                      Data da aplicação *
+                      Data da aplicaÃ§Ã£o *
                     </span>
 
                     <input
@@ -409,7 +444,7 @@ export default function PacienteVacinaForm({
 
                     <input
                       name="dose"
-                      placeholder="Ex.: 1ª dose, reforço, 1 mL"
+                      placeholder="Ex.: 1Âª dose, reforÃ§o, 1 mL"
                       maxLength={80}
                       className="w-full rounded-2xl border border-[#D7E0DD] bg-white px-4 py-3 text-sm font-semibold text-[#354340] outline-none focus:border-[#6F9A89] focus:ring-4 focus:ring-[#6F9A89]/10"
                     />
@@ -435,7 +470,7 @@ export default function PacienteVacinaForm({
 
                     <input
                       name="lote"
-                      placeholder="Número do lote"
+                      placeholder="NÃºmero do lote"
                       maxLength={100}
                       className="w-full rounded-2xl border border-[#D7E0DD] bg-white px-4 py-3 text-sm font-semibold text-[#354340] outline-none focus:border-[#6F9A89] focus:ring-4 focus:ring-[#6F9A89]/10"
                     />
@@ -455,7 +490,7 @@ export default function PacienteVacinaForm({
 
                   <label className="block">
                     <span className="mb-2 block text-xs font-bold text-[#52615E]">
-                      Próxima dose
+                      PrÃ³xima dose
                     </span>
 
                     <input
@@ -470,14 +505,14 @@ export default function PacienteVacinaForm({
               <section className="rounded-2xl border border-[#E2E8E5] bg-white p-5">
                 <label className="block">
                   <span className="mb-2 block text-xs font-bold text-[#52615E]">
-                    Observações
+                    ObservaÃ§Ãµes
                   </span>
 
                   <textarea
                     name="observacoes"
                     rows={4}
                     maxLength={1500}
-                    placeholder="Ex.: aplicação sem intercorrências, orientação ao tutor, reação anterior..."
+                    placeholder="Ex.: aplicaÃ§Ã£o sem intercorrÃªncias, orientaÃ§Ã£o ao tutor, reaÃ§Ã£o anterior..."
                     className="w-full resize-y rounded-2xl border border-[#D7E0DD] bg-white px-4 py-3 text-sm font-medium text-[#354340] outline-none focus:border-[#6F9A89] focus:ring-4 focus:ring-[#6F9A89]/10"
                   />
                 </label>
@@ -486,13 +521,21 @@ export default function PacienteVacinaForm({
               {!nomeFinal &&
                 vacinaSelecionada !==
                   "" && (
-                  <div className="rounded-2xl border border-[#E7C7C0] bg-[#FFF5F2] px-4 py-3 text-sm font-semibold text-[#A35A4B]">
+                  <div
+                    role="alert"
+                    aria-live="assertive"
+                    aria-atomic="true"
+                    className="rounded-2xl border border-[#E7C7C0] bg-[#FFF5F2] px-4 py-3 text-sm font-semibold text-[#A35A4B]"
+                  >
                     Informe o nome da vacina.
                   </div>
                 )}
 
               {estado.mensagem && (
                 <div
+                  role={estado.ok ? "status" : "alert"}
+                  aria-live={estado.ok ? "polite" : "assertive"}
+                  aria-atomic="true"
                   className={`rounded-2xl border px-4 py-3 text-sm font-semibold ${
                     estado.ok
                       ? "border-[#B9DDCA] bg-[#EFF8F3] text-[#347158]"
@@ -503,14 +546,14 @@ export default function PacienteVacinaForm({
                 </div>
               )}
 
-              <div className="flex flex-wrap justify-end gap-3 border-t border-[#E5E0D7] pt-5">
+              <div className="flex flex-col-reverse gap-3 border-t border-[#E5E0D7] pt-5 sm:flex-row sm:justify-end">
                 <button
                   type="button"
                   onClick={() =>
                     setAberto(false)
                   }
                   disabled={pending}
-                  className="rounded-xl border border-[#D6DFDC] bg-white px-5 py-3 text-sm font-semibold text-[#63716E]"
+                  className="w-full rounded-xl border border-[#D6DFDC] bg-white px-5 py-3 text-sm font-semibold text-[#52615E] transition hover:bg-[#F5F7F6] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#6F9A89]/20 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
                 >
                   Cancelar
                 </button>
@@ -521,7 +564,8 @@ export default function PacienteVacinaForm({
                     pending ||
                     !nomeFinal
                   }
-                  className="flex items-center gap-2 rounded-xl bg-[#6F9A89] px-5 py-3 text-sm font-bold text-white transition hover:bg-[#5D8878] disabled:cursor-not-allowed disabled:opacity-50"
+                  aria-busy={pending}
+                  className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#6F9A89] px-5 py-3 text-sm font-bold text-white transition hover:bg-[#5D8878] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#6F9A89]/25 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
                 >
                   <Save
                     size={17}
@@ -529,7 +573,7 @@ export default function PacienteVacinaForm({
 
                   {pending
                     ? "Salvando..."
-                    : "Salvar vacinação"}
+                    : "Salvar vacinaÃ§Ã£o"}
                 </button>
               </div>
             </div>
