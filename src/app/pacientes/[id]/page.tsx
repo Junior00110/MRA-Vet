@@ -34,6 +34,7 @@ import PacientePesoForm from "@/components/pacientes/PacientePesoForm";
 import ExcluirPesoButton from "@/components/pacientes/ExcluirPesoButton";
 import PacienteVacinaForm from "@/components/pacientes/PacienteVacinaForm";
 import ExcluirVacinaButton from "@/components/pacientes/ExcluirVacinaButton";
+import PacienteExameForm from "@/components/pacientes/PacienteExameForm";
 
 import { db } from "@/prisma/db";
 import { exigirPermissao } from "@/lib/auth/authorization";
@@ -822,6 +823,49 @@ export default async function PacientePage({
       consultaVacinas,
     );
 
+  const consultaExames =
+    db.sql.public.pacienteExame
+      .select(
+        "id",
+        "nome",
+        "tipo",
+        "status",
+        "dataSolicitacao",
+        "dataRealizacao",
+        "dataResultado",
+        "laboratorio",
+        "resultado",
+        "observacoes",
+        "profissionalNome",
+        "atendimentoId",
+        "ativo",
+        "createdAt",
+      )
+      .where((f, fns) =>
+        fns.and(
+          fns.eq(
+            f.pacienteId,
+            pacienteId,
+          ),
+          fns.eq(
+            f.ativo,
+            true,
+          ),
+        ),
+      )
+      .orderBy(
+        "dataSolicitacao",
+        {
+          direction: "desc",
+        },
+      )
+      .build();
+
+  const exames =
+    await runtime.query(
+      consultaExames,
+    );
+
   const consultaPlanos =
     db.sql.public.pacientePlano
       .select(
@@ -901,6 +945,17 @@ export default async function PacientePage({
         vacina,
       }),
     ),
+
+    ...exames.map(
+      (exame) => ({
+        tipo: "exame" as const,
+        id: exame.id,
+        data: String(
+          exame.dataSolicitacao,
+        ),
+        exame,
+      }),
+    ),
   ].sort((a, b) => {
     const dataA =
       new Date(a.data).getTime();
@@ -916,6 +971,7 @@ export default async function PacientePage({
       "todos",
       "atendimento",
       "vacina",
+      "exame",
       "peso",
       "anotacao",
     ]);
@@ -998,6 +1054,23 @@ export default async function PacientePage({
             item.dose,
             item.fabricante,
             item.lote,
+            item.observacoes,
+            item.profissionalNome,
+          ]
+            .filter(Boolean)
+            .join(" ");
+        } else if (
+          registro.tipo === "exame"
+        ) {
+          const item =
+            registro.exame;
+
+          texto = [
+            item.nome,
+            item.tipo,
+            item.status,
+            item.laboratorio,
+            item.resultado,
             item.observacoes,
             item.profissionalNome,
           ]
@@ -1405,6 +1478,10 @@ export default async function PacientePage({
                       label: "Vacinas",
                     },
                     {
+                      valor: "exame",
+                      label: "Exames",
+                    },
+                    {
                       valor: "peso",
                       label: "Peso",
                     },
@@ -1576,14 +1653,13 @@ export default async function PacientePage({
                     cor="verde"
                   />
 
-                  <AcaoCard
-                    icon={
-                      <FlaskConical
-                        size={24}
-                      />
+                  <PacienteExameForm
+                    pacienteId={
+                      paciente.id
                     }
-                    titulo="Exame"
-                    cor="coral"
+                    pacienteNome={
+                      paciente.nome
+                    }
                   />
 
                   <AcaoCard
@@ -2173,6 +2249,202 @@ export default async function PacientePage({
                             )}
 
                             {registro.tipo ===
+                              "exame" && (
+                              <details className="group border-b border-[#E7ECEA] last:border-b-0">
+                                <summary className="flex cursor-pointer list-none items-start gap-3 border-l-4 border-l-[#EB5965] px-4 py-4 transition hover:bg-[#FFF8F8] [&::-webkit-details-marker]:hidden">
+                                  <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#FCE8EA] text-[#C94D59]">
+                                    <FlaskConical
+                                      size={15}
+                                    />
+                                  </div>
+
+                                  <div className="min-w-0 flex-1">
+                                    <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+                                      <span className="text-sm font-black text-[#B54C57]">
+                                        {formatarDataHora(
+                                          String(
+                                            registro
+                                              .exame
+                                              .dataSolicitacao,
+                                          ),
+                                        )}
+                                      </span>
+
+                                      <span className="text-xs font-bold uppercase tracking-[0.10em] text-[#A85760]">
+                                        Exame
+                                      </span>
+
+                                      <span className="rounded-full bg-[#FBEAEC] px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.08em] text-[#A94651]">
+                                        {formatarStatusExame(
+                                          String(
+                                            registro
+                                              .exame
+                                              .status,
+                                          ),
+                                        )}
+                                      </span>
+                                    </div>
+
+                                    <p className="mt-1 truncate text-lg font-black text-[#2F3A37]">
+                                      {registro
+                                        .exame
+                                        .nome}
+                                    </p>
+
+                                    <p className="mt-1 text-sm font-semibold text-[#778480]">
+                                      {[
+                                        registro
+                                          .exame
+                                          .tipo,
+                                        registro
+                                          .exame
+                                          .laboratorio,
+                                        registro
+                                          .exame
+                                          .profissionalNome,
+                                      ]
+                                        .filter(
+                                          Boolean,
+                                        )
+                                        .join(
+                                          " • ",
+                                        ) ||
+                                        "Exame registrado"}
+                                    </p>
+                                  </div>
+
+                                  <ChevronDown
+                                    size={16}
+                                    className="mt-2 shrink-0 text-[#8C9995] transition group-open:rotate-180"
+                                  />
+                                </summary>
+
+                                <div className="border-l-4 border-l-[#EB5965] bg-[#FFF9F9] px-4 pb-4 pl-[60px]">
+                                  <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                                    {registro
+                                      .exame
+                                      .tipo && (
+                                      <DadoExame
+                                        label="Tipo"
+                                        value={
+                                          registro
+                                            .exame
+                                            .tipo
+                                        }
+                                      />
+                                    )}
+
+                                    <DadoExame
+                                      label="Status"
+                                      value={formatarStatusExame(
+                                        String(
+                                          registro
+                                            .exame
+                                            .status,
+                                        ),
+                                      )}
+                                    />
+
+                                    {registro
+                                      .exame
+                                      .laboratorio && (
+                                      <DadoExame
+                                        label="Laboratório"
+                                        value={
+                                          registro
+                                            .exame
+                                            .laboratorio
+                                        }
+                                      />
+                                    )}
+
+                                    {registro
+                                      .exame
+                                      .dataRealizacao && (
+                                      <DadoExame
+                                        label="Realização"
+                                        value={formatarData(
+                                          String(
+                                            registro
+                                              .exame
+                                              .dataRealizacao,
+                                          ),
+                                        )}
+                                      />
+                                    )}
+
+                                    {registro
+                                      .exame
+                                      .dataResultado && (
+                                      <DadoExame
+                                        label="Resultado em"
+                                        value={formatarData(
+                                          String(
+                                            registro
+                                              .exame
+                                              .dataResultado,
+                                          ),
+                                        )}
+                                      />
+                                    )}
+
+                                    {registro
+                                      .exame
+                                      .atendimentoId && (
+                                      <DadoExame
+                                        label="Atendimento"
+                                        value={`#${registro.exame.atendimentoId}`}
+                                      />
+                                    )}
+                                  </div>
+
+                                  {registro
+                                    .exame
+                                    .resultado && (
+                                    <div className="mt-3 rounded-xl border border-[#F0D9DC] bg-white px-4 py-3">
+                                      <p className="text-[9px] font-bold uppercase tracking-[0.12em] text-[#A85760]">
+                                        Resultado / laudo
+                                      </p>
+
+                                      <p className="mt-1 whitespace-pre-wrap text-sm font-medium leading-6 text-[#56625F]">
+                                        {registro
+                                          .exame
+                                          .resultado}
+                                      </p>
+                                    </div>
+                                  )}
+
+                                  {registro
+                                    .exame
+                                    .observacoes && (
+                                    <div className="mt-3 rounded-xl border border-[#EEE5E6] bg-white px-4 py-3">
+                                      <p className="text-[9px] font-bold uppercase tracking-[0.12em] text-[#8B7477]">
+                                        Observações
+                                      </p>
+
+                                      <p className="mt-1 whitespace-pre-wrap text-sm font-medium leading-6 text-[#56625F]">
+                                        {registro
+                                          .exame
+                                          .observacoes}
+                                      </p>
+                                    </div>
+                                  )}
+
+                                  <div className="mt-4 flex items-center gap-2 border-t border-[#EEE5E6] pt-3 text-[10px] font-semibold text-[#8A9693]">
+                                    <UserRound
+                                      size={13}
+                                    />
+
+                                    {registro
+                                      .exame
+                                      .profissionalNome ||
+                                      "Profissional do sistema"}
+                                  </div>
+                                </div>
+                              </details>
+                            )}
+
+                            {registro.tipo ===
                               "anotacao" && (
                               <details className="group border-b border-[#E7ECEA] last:border-b-0">
                                 <summary className="flex cursor-pointer list-none items-start gap-3 border-l-4 border-l-[#586367] px-4 py-4 transition hover:bg-[#F8F9F9] [&::-webkit-details-marker]:hidden">
@@ -2487,6 +2759,43 @@ function ConteudoClinicoEstruturado({
           ),
         )}
       </div>
+    </div>
+  );
+}
+
+function formatarStatusExame(
+  status: string,
+) {
+  switch (status) {
+    case "SOLICITADO":
+      return "Solicitado";
+    case "REALIZADO":
+      return "Realizado";
+    case "RESULTADO_DISPONIVEL":
+      return "Resultado disponível";
+    case "CANCELADO":
+      return "Cancelado";
+    default:
+      return status;
+  }
+}
+
+function DadoExame({
+  label,
+  value,
+}: {
+  label: string;
+  value: string;
+}) {
+  return (
+    <div className="rounded-xl border border-[#F0D9DC] bg-white px-3 py-3">
+      <p className="text-[9px] font-bold uppercase tracking-[0.12em] text-[#A85760]">
+        {label}
+      </p>
+
+      <p className="mt-1 break-words text-sm font-bold text-[#46534F]">
+        {value}
+      </p>
     </div>
   );
 }
