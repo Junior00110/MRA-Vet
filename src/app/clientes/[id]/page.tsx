@@ -47,7 +47,7 @@ function valorOuTraco(
     valor === undefined ||
     valor === ""
   ) {
-    return "Não informado";
+    return "NÃ£o informado";
   }
 
   return String(valor);
@@ -60,7 +60,7 @@ function formatarData(
     | undefined,
 ) {
   if (!data) {
-    return "Não informada";
+    return "NÃ£o informada";
   }
 
   const partes =
@@ -117,7 +117,7 @@ function tipoAnimal(
 
   if (
     valor.includes("cao") ||
-    valor.includes("cão") ||
+    valor.includes("cÃ£o") ||
     valor.includes("canino") ||
     valor.includes("cachorro")
   ) {
@@ -627,9 +627,15 @@ export default async function ClienteDetalhesPage({
               )
               .where(
                 (f, fns) =>
-                  fns.eq(
-                    f.pacienteId,
-                    paciente.id,
+                  fns.and(
+                    fns.eq(
+                      f.pacienteId,
+                      paciente.id,
+                    ),
+                    fns.eq(
+                      f.ativo,
+                      true,
+                    ),
                   ),
               )
               .orderBy(
@@ -753,7 +759,7 @@ export default async function ClienteDetalhesPage({
             Voltar para clientes
           </Link>
 
-          {/* CABEÇALHO CLIENTE */}
+          {/* CABEÃ‡ALHO CLIENTE */}
           <section className="relative overflow-hidden rounded-[30px] bg-[#174A5B] text-white shadow-[0_16px_40px_rgba(23,74,91,0.16)]">
             <div className="absolute -right-16 -top-24 h-72 w-72 rounded-full bg-[#7FA89A]/25" />
 
@@ -807,7 +813,7 @@ export default async function ClienteDetalhesPage({
                     {cliente.codigoAntigo !=
                       null && (
                       <span>
-                        Código antigo{" "}
+                        CÃ³digo antigo{" "}
                         {
                           cliente.codigoAntigo
                         }
@@ -840,14 +846,14 @@ export default async function ClienteDetalhesPage({
                     size={17}
                   />
 
-                  Informações completas
+                  InformaÃ§Ãµes completas
                 </Link>
 
                 {podeEditarCliente && (
                   <button
                     type="button"
                     disabled
-                    title="Edição do cliente será implementada depois"
+                    title="EdiÃ§Ã£o do cliente serÃ¡ implementada depois"
                     className="cursor-not-allowed rounded-2xl bg-[#7FA89A]/45 px-5 py-3.5 text-sm font-semibold text-white"
                   >
                     Editar cliente
@@ -857,15 +863,15 @@ export default async function ClienteDetalhesPage({
             </div>
           </section>
 
-          {/* ANOTAÇÕES */}
+          {/* ANOTAÃ‡Ã•ES */}
           <section className="mt-5">
             <div className="mb-3">
               <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#A88B5C]">
-                Histórico
+                HistÃ³rico
               </p>
 
               <h2 className="mt-1 text-2xl font-black">
-                Anotações importantes
+                AnotaÃ§Ãµes importantes
               </h2>
             </div>
 
@@ -900,7 +906,7 @@ export default async function ClienteDetalhesPage({
             </div>
           </section>
 
-          {/* VENDA RÁPIDA */}
+          {/* VENDA RÃPIDA */}
           {podeCriarVenda && (
             <section className="relative mt-5 overflow-hidden rounded-[26px] bg-gradient-to-br from-[#244C45] to-[#367364] px-7 py-6 text-white shadow-[0_12px_30px_rgba(36,76,69,0.14)]">
               <div className="absolute -right-12 -top-16 h-48 w-48 rounded-full bg-white/8" />
@@ -917,7 +923,7 @@ export default async function ClienteDetalhesPage({
 
                   <div>
                     <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#B8D8CF]">
-                      Venda rápida
+                      Venda rÃ¡pida
                     </p>
 
                     <h2 className="mt-1 text-2xl font-black">
@@ -926,7 +932,7 @@ export default async function ClienteDetalhesPage({
                     </h2>
 
                     <p className="mt-1 text-sm font-medium text-[#D5E8E2]">
-                      O cliente já será vinculado automaticamente à venda.
+                      O cliente jÃ¡ serÃ¡ vinculado automaticamente Ã  venda.
                     </p>
                   </div>
                 </div>
@@ -1061,7 +1067,7 @@ export default async function ClienteDetalhesPage({
                           <div className="mt-5 grid grid-cols-2 gap-3 md:grid-cols-4">
                             <div className="rounded-2xl bg-[#F5F7F5] p-3.5">
                               <p className="text-[9px] font-medium uppercase tracking-[0.1em] text-[#93A09E]">
-                                Espécie
+                                EspÃ©cie
                               </p>
 
                               <EspecieAnimal
@@ -1076,7 +1082,7 @@ export default async function ClienteDetalhesPage({
 
                             <div className="rounded-2xl bg-[#F5F7F5] p-3.5">
                               <p className="text-[9px] font-medium uppercase tracking-[0.1em] text-[#93A09E]">
-                                Raça
+                                RaÃ§a
                               </p>
 
                               <p className="mt-2 text-sm font-bold">
@@ -1167,7 +1173,7 @@ export default async function ClienteDetalhesPage({
           <section className="mt-5 pb-8">
             <div className="mb-3">
               <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#7FA89A]">
-                Comunicação
+                ComunicaÃ§Ã£o
               </p>
 
               <h2 className="mt-1 text-2xl font-black">
@@ -1175,7 +1181,7 @@ export default async function ClienteDetalhesPage({
               </h2>
 
               <p className="mt-1 text-sm font-medium text-[#81908D]">
-                Informações rápidas para comunicação com o cliente.
+                InformaÃ§Ãµes rÃ¡pidas para comunicaÃ§Ã£o com o cliente.
               </p>
             </div>
 
