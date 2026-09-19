@@ -24,6 +24,10 @@
       "model": "PacienteExame",
       "namespace": "public"
     },
+    "pacienteExameAnexo": {
+      "model": "PacienteExameAnexo",
+      "namespace": "public"
+    },
     "pacientePeso": {
       "model": "PacientePeso",
       "namespace": "public"
@@ -1043,6 +1047,21 @@
               }
             },
             "relations": {
+              "anexos": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "exameId"
+                  ]
+                },
+                "to": {
+                  "model": "PacienteExameAnexo",
+                  "namespace": "public"
+                }
+              },
               "atendimento": {
                 "cardinality": "N:1",
                 "on": {
@@ -1130,6 +1149,153 @@
               },
               "namespaceId": "public",
               "table": "pacienteExame"
+            }
+          },
+          "PacienteExameAnexo": {
+            "fields": {
+              "ativo": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/bool@1",
+                  "kind": "scalar"
+                }
+              },
+              "createdAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "kind": "scalar"
+                }
+              },
+              "exameId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "mimeType": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "nomeArmazenado": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "nomeOriginal": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "profissionalNome": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "profissionalUsuarioId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "storageKey": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "tamanhoBytes": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "updatedAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "exame": {
+                "cardinality": "N:1",
+                "on": {
+                  "localFields": [
+                    "exameId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "PacienteExame",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "ativo": {
+                  "column": "ativo"
+                },
+                "createdAt": {
+                  "column": "createdAt"
+                },
+                "exameId": {
+                  "column": "exameId"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "mimeType": {
+                  "column": "mimeType"
+                },
+                "nomeArmazenado": {
+                  "column": "nomeArmazenado"
+                },
+                "nomeOriginal": {
+                  "column": "nomeOriginal"
+                },
+                "profissionalNome": {
+                  "column": "profissionalNome"
+                },
+                "profissionalUsuarioId": {
+                  "column": "profissionalUsuarioId"
+                },
+                "storageKey": {
+                  "column": "storageKey"
+                },
+                "tamanhoBytes": {
+                  "column": "tamanhoBytes"
+                },
+                "updatedAt": {
+                  "column": "updatedAt"
+                }
+              },
+              "namespaceId": "public",
+              "table": "pacienteExameAnexo"
             }
           },
           "PacientePeso": {
@@ -3025,6 +3191,122 @@
               },
               "uniques": []
             },
+            "pacienteExameAnexo": {
+              "columns": {
+                "ativo": {
+                  "codecId": "pg/bool@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": true
+                  },
+                  "nativeType": "bool",
+                  "nullable": false
+                },
+                "createdAt": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "exameId": {
+                  "codecId": "pg/int4@1",
+                  "nativeType": "int4",
+                  "nullable": false
+                },
+                "id": {
+                  "codecId": "pg/int4@1",
+                  "default": {
+                    "expression": "autoincrement()",
+                    "kind": "function"
+                  },
+                  "nativeType": "int4",
+                  "nullable": false
+                },
+                "mimeType": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "nomeArmazenado": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "nomeOriginal": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "profissionalNome": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "profissionalUsuarioId": {
+                  "codecId": "pg/int4@1",
+                  "nativeType": "int4",
+                  "nullable": true
+                },
+                "storageKey": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "tamanhoBytes": {
+                  "codecId": "pg/int4@1",
+                  "nativeType": "int4",
+                  "nullable": false
+                },
+                "updatedAt": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [
+                {
+                  "source": {
+                    "columns": [
+                      "exameId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "pacienteExameAnexo"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "pacienteExame"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "exameId"
+                  ],
+                  "name": "pacienteExameAnexo_exameId_idx_5f86ea62",
+                  "prefix": "pacienteExameAnexo_exameId_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": [
+                {
+                  "columns": [
+                    "storageKey"
+                  ]
+                }
+              ]
+            },
             "pacientePeso": {
               "columns": {
                 "ativo": {
@@ -4093,10 +4375,10 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "5401d2a2cd2fac5c999ed4ac140c27c62e0e0e65d933ee506afec81e20ddc148"
+    "storageHash": "1d59fafc5d6331c250d2427de4ff70ae1f67ff50599d89258a680ea44d9f3d89"
   },
   "execution": {
-    "executionHash": "270395ab00b6290ac5ba57cf0b97381eb22c6a608b73b069ce4341ff1b911de0",
+    "executionHash": "96db797a991f2ca27f606529056f75ee16487e11b715d7d1a90741ff506bdce7",
     "mutations": {
       "defaults": [
         {
@@ -4157,6 +4439,21 @@
             "column": "updatedAt",
             "namespace": "public",
             "table": "pacienteExame"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "timestampNow",
+            "kind": "generator"
+          },
+          "onUpdate": {
+            "id": "timestampNow",
+            "kind": "generator"
+          },
+          "ref": {
+            "column": "updatedAt",
+            "namespace": "public",
+            "table": "pacienteExameAnexo"
           }
         },
         {

@@ -1,0 +1,164 @@
+[
+  {
+    "id": "table.pacienteExameAnexo",
+    "label": "Create table \"pacienteExameAnexo\"",
+    "summary": "Creates table \"pacienteExameAnexo\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "pacienteExameAnexo"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"pacienteExameAnexo\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"pacienteExameAnexo\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"pacienteExameAnexo\"",
+        "sql": "CREATE TABLE \"public\".\"pacienteExameAnexo\" (\n  \"ativo\" bool DEFAULT true NOT NULL,\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"exameId\" int4 NOT NULL,\n  \"id\" SERIAL NOT NULL,\n  \"mimeType\" text NOT NULL,\n  \"nomeArmazenado\" text NOT NULL,\n  \"nomeOriginal\" text NOT NULL,\n  \"profissionalNome\" text,\n  \"profissionalUsuarioId\" int4,\n  \"storageKey\" text NOT NULL,\n  \"tamanhoBytes\" int4 NOT NULL,\n  \"updatedAt\" timestamptz NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"pacienteExameAnexo\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"pacienteExameAnexo\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.pacienteExameAnexo.pacienteExameAnexo_storageKey_key",
+    "label": "Add unique constraint on \"pacienteExameAnexo\" (storageKey)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "pacienteExameAnexo_storageKey_key",
+        "table": "pacienteExameAnexo"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"pacienteExameAnexo_storageKey_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "pacienteExameAnexo_storageKey_key",
+          "public",
+          "\"public\".\"pacienteExameAnexo\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"pacienteExameAnexo_storageKey_key\"",
+        "sql": "ALTER TABLE \"public\".\"pacienteExameAnexo\" ADD CONSTRAINT \"pacienteExameAnexo_storageKey_key\" UNIQUE (\"storageKey\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"pacienteExameAnexo_storageKey_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "pacienteExameAnexo_storageKey_key",
+          "public",
+          "\"public\".\"pacienteExameAnexo\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.pacienteExameAnexo.pacienteExameAnexo_exameId_idx_5f86ea62",
+    "label": "Create index \"pacienteExameAnexo_exameId_idx_5f86ea62\" on \"pacienteExameAnexo\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "pacienteExameAnexo_exameId_idx_5f86ea62",
+        "table": "pacienteExameAnexo"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"pacienteExameAnexo_exameId_idx_5f86ea62\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"pacienteExameAnexo_exameId_idx_5f86ea62\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"pacienteExameAnexo_exameId_idx_5f86ea62\"",
+        "sql": "CREATE INDEX \"pacienteExameAnexo_exameId_idx_5f86ea62\" ON \"public\".\"pacienteExameAnexo\" (\"exameId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"pacienteExameAnexo_exameId_idx_5f86ea62\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"pacienteExameAnexo_exameId_idx_5f86ea62\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.pacienteExameAnexo.pacienteExameAnexo_exameId_fkey",
+    "label": "Add foreign key \"pacienteExameAnexo_exameId_fkey\" on \"pacienteExameAnexo\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "pacienteExameAnexo_exameId_fkey",
+        "table": "pacienteExameAnexo"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"pacienteExameAnexo_exameId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "pacienteExameAnexo_exameId_fkey",
+          "public",
+          "\"public\".\"pacienteExameAnexo\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"pacienteExameAnexo_exameId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"pacienteExameAnexo\"\nADD CONSTRAINT \"pacienteExameAnexo_exameId_fkey\"\nFOREIGN KEY (\"exameId\")\nREFERENCES \"public\".\"pacienteExame\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"pacienteExameAnexo_exameId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "pacienteExameAnexo_exameId_fkey",
+          "public",
+          "\"public\".\"pacienteExameAnexo\""
+        ]
+      }
+    ]
+  }
+]

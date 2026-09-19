@@ -307,6 +307,30 @@ model PacienteExame {
   atendimentoId Int?
   atendimento   PacienteAtendimento? @relation(fields: [atendimentoId], references: [id])
 
+  anexos PacienteExameAnexo[]
+
+  createdAt TimestamptzString @default(now())
+  updatedAt temporal.updatedAtString()
+}
+
+model PacienteExameAnexo {
+  id Int @id @default(autoincrement())
+
+  nomeOriginal   String
+  nomeArmazenado String
+  mimeType       String
+  tamanhoBytes   Int
+
+  storageKey String @unique
+
+  profissionalUsuarioId Int?
+  profissionalNome      String?
+
+  ativo Boolean @default(true)
+
+  exameId Int
+  exame   PacienteExame @relation(fields: [exameId], references: [id])
+
   createdAt TimestamptzString @default(now())
   updatedAt temporal.updatedAtString()
 }
