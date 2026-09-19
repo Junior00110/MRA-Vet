@@ -8,6 +8,7 @@ import { db } from "@/prisma/db";
 export type EstadoExame = {
   ok: boolean;
   mensagem: string;
+  exameId?: number;
 };
 
 type StatusExame =
@@ -470,11 +471,26 @@ export async function adicionarExamePaciente(
           updatedAt: agora,
         },
       ])
+      .returning(
+        "id",
+      )
       .build();
 
-  await runtime.execute(
-    inserirExame,
-  );
+  const examesCriados =
+    await runtime.query(
+      inserirExame,
+    );
+
+  const exameCriado =
+    examesCriados[0];
+
+  if (!exameCriado) {
+    return {
+      ok: false,
+      mensagem:
+        "O exame foi processado, mas não foi possível confirmar o identificador criado.",
+    };
+  }
 
   await revalidarPaciente(
     pacienteId,
@@ -485,6 +501,8 @@ export async function adicionarExamePaciente(
     ok: true,
     mensagem:
       "Exame registrado com sucesso.",
+    exameId:
+      exameCriado.id,
   };
 }
 

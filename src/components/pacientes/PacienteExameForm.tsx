@@ -1,6 +1,9 @@
 "use client";
 
 import {
+  type ChangeEvent,
+  type DragEvent,
+  type ReactNode,
   useActionState,
   useEffect,
   useMemo,
@@ -9,14 +12,25 @@ import {
 } from "react";
 
 import {
+  AlertCircle,
   CalendarDays,
+  CheckCircle2,
   ChevronDown,
   ChevronUp,
+  FileImage,
+  FileText,
   FlaskConical,
+  Loader2,
+  Paperclip,
   Search,
   Save,
+  Upload,
   X,
 } from "lucide-react";
+
+import {
+  useRouter,
+} from "next/navigation";
 
 import {
   adicionarExamePaciente,
@@ -28,493 +42,164 @@ type PacienteExameFormProps = {
   pacienteNome: string;
 };
 
-const estadoInicial: EstadoExame = {
-  ok: false,
-  mensagem: "",
-};
-
 type ExameOpcao = {
   nome: string;
   categoria: string;
 };
 
+type ArquivoNovoExame = {
+  id: string;
+  arquivo: File;
+  erro?: string;
+};
+
+const estadoInicial: EstadoExame = {
+  ok: false,
+  mensagem: "",
+};
+
+const TAMANHO_MAXIMO =
+  25 * 1024 * 1024;
+
+const TIPOS_PERMITIDOS = [
+  "application/pdf",
+  "image/jpeg",
+  "image/png",
+  "image/webp",
+];
+
 const EXAMES: ExameOpcao[] = [
-  {
-    nome: "Hemograma completo",
-    categoria: "Hematologia",
-  },
-  {
-    nome: "Hematócrito",
-    categoria: "Hematologia",
-  },
-  {
-    nome: "Contagem de plaquetas",
-    categoria: "Hematologia",
-  },
-  {
-    nome: "Reticulócitos",
-    categoria: "Hematologia",
-  },
-  {
-    nome: "Esfregaço sanguíneo",
-    categoria: "Hematologia",
-  },
+  { nome: "Hemograma completo", categoria: "Hematologia" },
+  { nome: "Hematócrito", categoria: "Hematologia" },
+  { nome: "Contagem de plaquetas", categoria: "Hematologia" },
+  { nome: "Reticulócitos", categoria: "Hematologia" },
+  { nome: "Esfregaço sanguíneo", categoria: "Hematologia" },
 
-  {
-    nome: "Perfil bioquímico completo",
-    categoria: "Bioquímica",
-  },
-  {
-    nome: "Glicemia",
-    categoria: "Bioquímica",
-  },
-  {
-    nome: "Ureia",
-    categoria: "Bioquímica",
-  },
-  {
-    nome: "Creatinina",
-    categoria: "Bioquímica",
-  },
-  {
-    nome: "ALT (TGP)",
-    categoria: "Bioquímica",
-  },
-  {
-    nome: "AST (TGO)",
-    categoria: "Bioquímica",
-  },
-  {
-    nome: "Fosfatase alcalina",
-    categoria: "Bioquímica",
-  },
-  {
-    nome: "GGT",
-    categoria: "Bioquímica",
-  },
-  {
-    nome: "Bilirrubina total",
-    categoria: "Bioquímica",
-  },
-  {
-    nome: "Bilirrubina direta e indireta",
-    categoria: "Bioquímica",
-  },
-  {
-    nome: "Proteínas totais",
-    categoria: "Bioquímica",
-  },
-  {
-    nome: "Albumina",
-    categoria: "Bioquímica",
-  },
-  {
-    nome: "Globulinas",
-    categoria: "Bioquímica",
-  },
-  {
-    nome: "Colesterol",
-    categoria: "Bioquímica",
-  },
-  {
-    nome: "Triglicerídeos",
-    categoria: "Bioquímica",
-  },
-  {
-    nome: "Amilase",
-    categoria: "Bioquímica",
-  },
-  {
-    nome: "Lipase",
-    categoria: "Bioquímica",
-  },
-  {
-    nome: "Fósforo",
-    categoria: "Bioquímica",
-  },
-  {
-    nome: "Cálcio total",
-    categoria: "Bioquímica",
-  },
-  {
-    nome: "Cálcio ionizado",
-    categoria: "Bioquímica",
-  },
-  {
-    nome: "Sódio",
-    categoria: "Bioquímica",
-  },
-  {
-    nome: "Potássio",
-    categoria: "Bioquímica",
-  },
-  {
-    nome: "Cloro",
-    categoria: "Bioquímica",
-  },
+  { nome: "Perfil bioquímico completo", categoria: "Bioquímica" },
+  { nome: "Glicemia", categoria: "Bioquímica" },
+  { nome: "Ureia", categoria: "Bioquímica" },
+  { nome: "Creatinina", categoria: "Bioquímica" },
+  { nome: "ALT (TGP)", categoria: "Bioquímica" },
+  { nome: "AST (TGO)", categoria: "Bioquímica" },
+  { nome: "Fosfatase alcalina", categoria: "Bioquímica" },
+  { nome: "GGT", categoria: "Bioquímica" },
+  { nome: "Bilirrubina total", categoria: "Bioquímica" },
+  { nome: "Bilirrubina direta e indireta", categoria: "Bioquímica" },
+  { nome: "Proteínas totais", categoria: "Bioquímica" },
+  { nome: "Albumina", categoria: "Bioquímica" },
+  { nome: "Globulinas", categoria: "Bioquímica" },
+  { nome: "Colesterol", categoria: "Bioquímica" },
+  { nome: "Triglicerídeos", categoria: "Bioquímica" },
+  { nome: "Amilase", categoria: "Bioquímica" },
+  { nome: "Lipase", categoria: "Bioquímica" },
+  { nome: "Fósforo", categoria: "Bioquímica" },
+  { nome: "Cálcio total", categoria: "Bioquímica" },
+  { nome: "Cálcio ionizado", categoria: "Bioquímica" },
+  { nome: "Sódio", categoria: "Bioquímica" },
+  { nome: "Potássio", categoria: "Bioquímica" },
+  { nome: "Cloro", categoria: "Bioquímica" },
 
-  {
-    nome: "Urinálise",
-    categoria: "Urinálise",
-  },
-  {
-    nome: "Urina tipo I",
-    categoria: "Urinálise",
-  },
-  {
-    nome: "Relação proteína/creatinina urinária (RPCU)",
-    categoria: "Urinálise",
-  },
-  {
-    nome: "Urocultura",
-    categoria: "Urinálise",
-  },
-  {
-    nome: "Antibiograma urinário",
-    categoria: "Urinálise",
-  },
+  { nome: "Urinálise", categoria: "Urinálise" },
+  { nome: "Urina tipo I", categoria: "Urinálise" },
+  { nome: "Relação proteína/creatinina urinária (RPCU)", categoria: "Urinálise" },
+  { nome: "Urocultura", categoria: "Urinálise" },
+  { nome: "Antibiograma urinário", categoria: "Urinálise" },
 
-  {
-    nome: "Exame parasitológico de fezes",
-    categoria: "Parasitologia",
-  },
-  {
-    nome: "Coproparasitológico",
-    categoria: "Parasitologia",
-  },
-  {
-    nome: "Pesquisa de Giardia",
-    categoria: "Parasitologia",
-  },
-  {
-    nome: "Pesquisa de hemoparasitas",
-    categoria: "Parasitologia",
-  },
+  { nome: "Exame parasitológico de fezes", categoria: "Parasitologia" },
+  { nome: "Coproparasitológico", categoria: "Parasitologia" },
+  { nome: "Pesquisa de Giardia", categoria: "Parasitologia" },
+  { nome: "Pesquisa de hemoparasitas", categoria: "Parasitologia" },
 
-  {
-    nome: "Teste rápido FIV/FeLV",
-    categoria: "Infectologia",
-  },
-  {
-    nome: "PCR para FIV",
-    categoria: "Infectologia",
-  },
-  {
-    nome: "PCR para FeLV",
-    categoria: "Infectologia",
-  },
-  {
-    nome: "Teste para cinomose",
-    categoria: "Infectologia",
-  },
-  {
-    nome: "PCR para cinomose",
-    categoria: "Infectologia",
-  },
-  {
-    nome: "Teste para parvovirose",
-    categoria: "Infectologia",
-  },
-  {
-    nome: "PCR para parvovirose",
-    categoria: "Infectologia",
-  },
-  {
-    nome: "Teste para erliquiose",
-    categoria: "Infectologia",
-  },
-  {
-    nome: "Teste para anaplasmose",
-    categoria: "Infectologia",
-  },
-  {
-    nome: "Teste para leishmaniose",
-    categoria: "Infectologia",
-  },
-  {
-    nome: "Sorologia para leishmaniose",
-    categoria: "Infectologia",
-  },
-  {
-    nome: "PCR para leishmaniose",
-    categoria: "Infectologia",
-  },
-  {
-    nome: "Teste para dirofilariose",
-    categoria: "Infectologia",
-  },
-  {
-    nome: "Teste para toxoplasmose",
-    categoria: "Infectologia",
-  },
+  { nome: "Teste rápido FIV/FeLV", categoria: "Infectologia" },
+  { nome: "PCR para FIV", categoria: "Infectologia" },
+  { nome: "PCR para FeLV", categoria: "Infectologia" },
+  { nome: "Teste para cinomose", categoria: "Infectologia" },
+  { nome: "PCR para cinomose", categoria: "Infectologia" },
+  { nome: "Teste para parvovirose", categoria: "Infectologia" },
+  { nome: "PCR para parvovirose", categoria: "Infectologia" },
+  { nome: "Teste para erliquiose", categoria: "Infectologia" },
+  { nome: "Teste para anaplasmose", categoria: "Infectologia" },
+  { nome: "Teste para leishmaniose", categoria: "Infectologia" },
+  { nome: "Sorologia para leishmaniose", categoria: "Infectologia" },
+  { nome: "PCR para leishmaniose", categoria: "Infectologia" },
+  { nome: "Teste para dirofilariose", categoria: "Infectologia" },
+  { nome: "Teste para toxoplasmose", categoria: "Infectologia" },
 
-  {
-    nome: "Ultrassonografia abdominal",
-    categoria: "Diagnóstico por imagem",
-  },
-  {
-    nome: "Ultrassonografia gestacional",
-    categoria: "Diagnóstico por imagem",
-  },
-  {
-    nome: "Ultrassonografia cervical",
-    categoria: "Diagnóstico por imagem",
-  },
-  {
-    nome: "Radiografia de tórax",
-    categoria: "Diagnóstico por imagem",
-  },
-  {
-    nome: "Radiografia abdominal",
-    categoria: "Diagnóstico por imagem",
-  },
-  {
-    nome: "Radiografia de coluna",
-    categoria: "Diagnóstico por imagem",
-  },
-  {
-    nome: "Radiografia de membro torácico",
-    categoria: "Diagnóstico por imagem",
-  },
-  {
-    nome: "Radiografia de membro pélvico",
-    categoria: "Diagnóstico por imagem",
-  },
-  {
-    nome: "Radiografia de pelve",
-    categoria: "Diagnóstico por imagem",
-  },
-  {
-    nome: "Radiografia de crânio",
-    categoria: "Diagnóstico por imagem",
-  },
-  {
-    nome: "Radiografia odontológica",
-    categoria: "Diagnóstico por imagem",
-  },
-  {
-    nome: "Tomografia computadorizada",
-    categoria: "Diagnóstico por imagem",
-  },
-  {
-    nome: "Ressonância magnética",
-    categoria: "Diagnóstico por imagem",
-  },
+  { nome: "Ultrassonografia abdominal", categoria: "Diagnóstico por imagem" },
+  { nome: "Ultrassonografia gestacional", categoria: "Diagnóstico por imagem" },
+  { nome: "Ultrassonografia cervical", categoria: "Diagnóstico por imagem" },
+  { nome: "Radiografia de tórax", categoria: "Diagnóstico por imagem" },
+  { nome: "Radiografia abdominal", categoria: "Diagnóstico por imagem" },
+  { nome: "Radiografia de coluna", categoria: "Diagnóstico por imagem" },
+  { nome: "Radiografia de membro torácico", categoria: "Diagnóstico por imagem" },
+  { nome: "Radiografia de membro pélvico", categoria: "Diagnóstico por imagem" },
+  { nome: "Radiografia de pelve", categoria: "Diagnóstico por imagem" },
+  { nome: "Radiografia de crânio", categoria: "Diagnóstico por imagem" },
+  { nome: "Radiografia odontológica", categoria: "Diagnóstico por imagem" },
+  { nome: "Tomografia computadorizada", categoria: "Diagnóstico por imagem" },
+  { nome: "Ressonância magnética", categoria: "Diagnóstico por imagem" },
 
-  {
-    nome: "Ecocardiograma",
-    categoria: "Cardiologia",
-  },
-  {
-    nome: "Ecocardiograma com Doppler",
-    categoria: "Cardiologia",
-  },
-  {
-    nome: "Eletrocardiograma",
-    categoria: "Cardiologia",
-  },
-  {
-    nome: "Holter",
-    categoria: "Cardiologia",
-  },
-  {
-    nome: "Aferição de pressão arterial",
-    categoria: "Cardiologia",
-  },
-  {
-    nome: "Troponina cardíaca",
-    categoria: "Cardiologia",
-  },
+  { nome: "Ecocardiograma", categoria: "Cardiologia" },
+  { nome: "Ecocardiograma com Doppler", categoria: "Cardiologia" },
+  { nome: "Eletrocardiograma", categoria: "Cardiologia" },
+  { nome: "Holter", categoria: "Cardiologia" },
+  { nome: "Aferição de pressão arterial", categoria: "Cardiologia" },
+  { nome: "Troponina cardíaca", categoria: "Cardiologia" },
 
-  {
-    nome: "T4 total",
-    categoria: "Endocrinologia",
-  },
-  {
-    nome: "T4 livre",
-    categoria: "Endocrinologia",
-  },
-  {
-    nome: "TSH",
-    categoria: "Endocrinologia",
-  },
-  {
-    nome: "Cortisol",
-    categoria: "Endocrinologia",
-  },
-  {
-    nome: "Teste de estimulação com ACTH",
-    categoria: "Endocrinologia",
-  },
-  {
-    nome: "Teste de supressão com dexametasona",
-    categoria: "Endocrinologia",
-  },
-  {
-    nome: "Frutosamina",
-    categoria: "Endocrinologia",
-  },
-  {
-    nome: "Insulina",
-    categoria: "Endocrinologia",
-  },
+  { nome: "T4 total", categoria: "Endocrinologia" },
+  { nome: "T4 livre", categoria: "Endocrinologia" },
+  { nome: "TSH", categoria: "Endocrinologia" },
+  { nome: "Cortisol", categoria: "Endocrinologia" },
+  { nome: "Teste de estimulação com ACTH", categoria: "Endocrinologia" },
+  { nome: "Teste de supressão com dexametasona", categoria: "Endocrinologia" },
+  { nome: "Frutosamina", categoria: "Endocrinologia" },
+  { nome: "Insulina", categoria: "Endocrinologia" },
 
-  {
-    nome: "Lipase pancreática específica canina (cPL)",
-    categoria: "Gastroenterologia",
-  },
-  {
-    nome: "Lipase pancreática específica felina (fPL)",
-    categoria: "Gastroenterologia",
-  },
-  {
-    nome: "TLI",
-    categoria: "Gastroenterologia",
-  },
-  {
-    nome: "Vitamina B12",
-    categoria: "Gastroenterologia",
-  },
-  {
-    nome: "Ácido fólico",
-    categoria: "Gastroenterologia",
-  },
+  { nome: "Lipase pancreática específica canina (cPL)", categoria: "Gastroenterologia" },
+  { nome: "Lipase pancreática específica felina (fPL)", categoria: "Gastroenterologia" },
+  { nome: "TLI", categoria: "Gastroenterologia" },
+  { nome: "Vitamina B12", categoria: "Gastroenterologia" },
+  { nome: "Ácido fólico", categoria: "Gastroenterologia" },
 
-  {
-    nome: "Tempo de protrombina (TP)",
-    categoria: "Coagulação",
-  },
-  {
-    nome: "Tempo de tromboplastina parcial ativada (TTPA)",
-    categoria: "Coagulação",
-  },
-  {
-    nome: "Coagulograma",
-    categoria: "Coagulação",
-  },
-  {
-    nome: "D-dímero",
-    categoria: "Coagulação",
-  },
+  { nome: "Tempo de protrombina (TP)", categoria: "Coagulação" },
+  { nome: "Tempo de tromboplastina parcial ativada (TTPA)", categoria: "Coagulação" },
+  { nome: "Coagulograma", categoria: "Coagulação" },
+  { nome: "D-dímero", categoria: "Coagulação" },
 
-  {
-    nome: "Citologia aspirativa",
-    categoria: "Citologia",
-  },
-  {
-    nome: "Citologia de pele",
-    categoria: "Citologia",
-  },
-  {
-    nome: "Citologia de ouvido",
-    categoria: "Citologia",
-  },
-  {
-    nome: "Citologia vaginal",
-    categoria: "Citologia",
-  },
-  {
-    nome: "Histopatológico",
-    categoria: "Patologia",
-  },
-  {
-    nome: "Biópsia",
-    categoria: "Patologia",
-  },
-  {
-    nome: "Imuno-histoquímica",
-    categoria: "Patologia",
-  },
+  { nome: "Citologia aspirativa", categoria: "Citologia" },
+  { nome: "Citologia de pele", categoria: "Citologia" },
+  { nome: "Citologia de ouvido", categoria: "Citologia" },
+  { nome: "Citologia vaginal", categoria: "Citologia" },
+  { nome: "Histopatológico", categoria: "Patologia" },
+  { nome: "Biópsia", categoria: "Patologia" },
+  { nome: "Imuno-histoquímica", categoria: "Patologia" },
 
-  {
-    nome: "Cultura bacteriana",
-    categoria: "Microbiologia",
-  },
-  {
-    nome: "Cultura fúngica",
-    categoria: "Microbiologia",
-  },
-  {
-    nome: "Antibiograma",
-    categoria: "Microbiologia",
-  },
+  { nome: "Cultura bacteriana", categoria: "Microbiologia" },
+  { nome: "Cultura fúngica", categoria: "Microbiologia" },
+  { nome: "Antibiograma", categoria: "Microbiologia" },
 
-  {
-    nome: "Raspado de pele",
-    categoria: "Dermatologia",
-  },
-  {
-    nome: "Tricograma",
-    categoria: "Dermatologia",
-  },
-  {
-    nome: "Lâmpada de Wood",
-    categoria: "Dermatologia",
-  },
-  {
-    nome: "Teste intradérmico",
-    categoria: "Dermatologia",
-  },
+  { nome: "Raspado de pele", categoria: "Dermatologia" },
+  { nome: "Tricograma", categoria: "Dermatologia" },
+  { nome: "Lâmpada de Wood", categoria: "Dermatologia" },
+  { nome: "Teste intradérmico", categoria: "Dermatologia" },
 
-  {
-    nome: "Teste de Schirmer",
-    categoria: "Oftalmologia",
-  },
-  {
-    nome: "Teste de fluoresceína",
-    categoria: "Oftalmologia",
-  },
-  {
-    nome: "Tonometria",
-    categoria: "Oftalmologia",
-  },
-  {
-    nome: "Fundoscopia",
-    categoria: "Oftalmologia",
-  },
-  {
-    nome: "Ultrassonografia ocular",
-    categoria: "Oftalmologia",
-  },
-  {
-    nome: "Eletrorretinografia",
-    categoria: "Oftalmologia",
-  },
+  { nome: "Teste de Schirmer", categoria: "Oftalmologia" },
+  { nome: "Teste de fluoresceína", categoria: "Oftalmologia" },
+  { nome: "Tonometria", categoria: "Oftalmologia" },
+  { nome: "Fundoscopia", categoria: "Oftalmologia" },
+  { nome: "Ultrassonografia ocular", categoria: "Oftalmologia" },
+  { nome: "Eletrorretinografia", categoria: "Oftalmologia" },
 
-  {
-    nome: "Análise de líquido cefalorraquidiano",
-    categoria: "Neurologia",
-  },
-  {
-    nome: "Eletromiografia",
-    categoria: "Neurologia",
-  },
+  { nome: "Análise de líquido cefalorraquidiano", categoria: "Neurologia" },
+  { nome: "Eletromiografia", categoria: "Neurologia" },
 
-  {
-    nome: "Espermograma",
-    categoria: "Reprodução",
-  },
-  {
-    nome: "Dosagem de progesterona",
-    categoria: "Reprodução",
-  },
-  {
-    nome: "Citologia vaginal para ciclo estral",
-    categoria: "Reprodução",
-  },
+  { nome: "Espermograma", categoria: "Reprodução" },
+  { nome: "Dosagem de progesterona", categoria: "Reprodução" },
+  { nome: "Citologia vaginal para ciclo estral", categoria: "Reprodução" },
 
-  {
-    nome: "Gasometria",
-    categoria: "Outros",
-  },
-  {
-    nome: "Lactato",
-    categoria: "Outros",
-  },
-  {
-    nome: "Proteína C reativa",
-    categoria: "Outros",
-  },
+  { nome: "Gasometria", categoria: "Outros" },
+  { nome: "Lactato", categoria: "Outros" },
+  { nome: "Proteína C reativa", categoria: "Outros" },
 ];
 
 function dataHoje() {
@@ -534,10 +219,62 @@ function dataHoje() {
   return `${ano}-${mes}-${dia}`;
 }
 
+function formatarTamanho(
+  bytes: number,
+) {
+  if (bytes < 1024) {
+    return `${bytes} B`;
+  }
+
+  const kb =
+    bytes / 1024;
+
+  if (kb < 1024) {
+    return `${kb.toFixed(
+      1,
+    )} KB`;
+  }
+
+  return `${(
+    kb / 1024
+  ).toFixed(1)} MB`;
+}
+
+function validarArquivo(
+  arquivo: File,
+) {
+  if (
+    arquivo.size <= 0
+  ) {
+    return "Arquivo vazio.";
+  }
+
+  if (
+    arquivo.size >
+    TAMANHO_MAXIMO
+  ) {
+    return "O arquivo ultrapassa 25 MB.";
+  }
+
+  if (
+    arquivo.type &&
+    !TIPOS_PERMITIDOS.includes(
+      arquivo.type,
+    )
+  ) {
+    return "Formato não permitido.";
+  }
+
+  return null;
+}
+
 export default function PacienteExameForm({
   pacienteId,
   pacienteNome,
 }: PacienteExameFormProps) {
+  const router =
+    useRouter();
+
   const [aberto, setAberto] =
     useState(false);
 
@@ -547,10 +284,44 @@ export default function PacienteExameForm({
   const [nomeExame, setNomeExame] =
     useState("");
 
+  const [tipoExame, setTipoExame] =
+    useState("");
+
   const [
     listaAberta,
     setListaAberta,
   ] = useState(false);
+
+  const [
+    anexosSelecionados,
+    setAnexosSelecionados,
+  ] = useState<
+    ArquivoNovoExame[]
+  >([]);
+
+  const [
+    arrastando,
+    setArrastando,
+  ] = useState(false);
+
+  const [
+    enviandoAnexos,
+    setEnviandoAnexos,
+  ] = useState(false);
+
+  const [
+    falhasAnexos,
+    setFalhasAnexos,
+  ] = useState<string[]>(
+    [],
+  );
+
+  const [
+    exameSalvoId,
+    setExameSalvoId,
+  ] = useState<
+    number | null
+  >(null);
 
   const formRef =
     useRef<HTMLFormElement>(
@@ -567,6 +338,16 @@ export default function PacienteExameForm({
       null,
     );
 
+  const inputAnexosRef =
+    useRef<HTMLInputElement>(
+      null,
+    );
+
+  const ultimoExameProcessadoRef =
+    useRef<number | null>(
+      null,
+    );
+
   const [
     estado,
     formAction,
@@ -575,6 +356,19 @@ export default function PacienteExameForm({
     adicionarExamePaciente,
     estadoInicial,
   );
+
+  const temAnexoInvalido =
+    anexosSelecionados.some(
+      (item) =>
+        Boolean(
+          item.erro,
+        ),
+    );
+
+  const bloqueado =
+    pending ||
+    enviandoAnexos ||
+    exameSalvoId !== null;
 
   const examesFiltrados =
     useMemo(() => {
@@ -634,21 +428,178 @@ export default function PacienteExameForm({
       );
     }, [examesFiltrados]);
 
-  useEffect(() => {
-    if (estado.ok) {
-      formRef.current?.reset();
+  function resetarFormulario() {
+    formRef.current?.reset();
 
-      setStatus(
-        "SOLICITADO",
+    setStatus(
+      "SOLICITADO",
+    );
+
+    setNomeExame("");
+
+    setTipoExame("");
+
+    setListaAberta(false);
+
+    setAnexosSelecionados(
+      [],
+    );
+
+    setFalhasAnexos(
+      [],
+    );
+
+    setExameSalvoId(
+      null,
+    );
+  }
+
+  function fecharFormulario() {
+    if (
+      pending ||
+      enviandoAnexos
+    ) {
+      return;
+    }
+
+    resetarFormulario();
+    setAberto(false);
+  }
+
+  async function enviarAnexosDoExame(
+    exameId: number,
+  ) {
+    const anexosValidos =
+      anexosSelecionados.filter(
+        (item) =>
+          !item.erro,
       );
 
-      setNomeExame("");
-
-      setListaAberta(false);
-
+    if (
+      anexosValidos.length ===
+      0
+    ) {
+      resetarFormulario();
       setAberto(false);
+      router.refresh();
+      return;
     }
-  }, [estado.ok]);
+
+    setExameSalvoId(
+      exameId,
+    );
+
+    setEnviandoAnexos(
+      true,
+    );
+
+    setFalhasAnexos(
+      [],
+    );
+
+    const falhas:
+      string[] = [];
+
+    for (
+      const item of
+      anexosValidos
+    ) {
+      const formData =
+        new FormData();
+
+      formData.set(
+        "pacienteId",
+        String(
+          pacienteId,
+        ),
+      );
+
+      formData.set(
+        "arquivo",
+        item.arquivo,
+      );
+
+      try {
+        const resposta =
+          await fetch(
+            `/api/paciente-exames/${exameId}/anexos`,
+            {
+              method:
+                "POST",
+              body:
+                formData,
+            },
+          );
+
+        const dados =
+          (await resposta.json()) as {
+            ok?: boolean;
+            mensagem?: string;
+          };
+
+        if (
+          !resposta.ok ||
+          !dados.ok
+        ) {
+          falhas.push(
+            `${item.arquivo.name}: ${
+              dados.mensagem ||
+              "falha no envio"
+            }`,
+          );
+        }
+      } catch {
+        falhas.push(
+          `${item.arquivo.name}: falha de comunicação`,
+        );
+      }
+    }
+
+    setEnviandoAnexos(
+      false,
+    );
+
+    router.refresh();
+
+    if (
+      falhas.length >
+      0
+    ) {
+      setFalhasAnexos(
+        falhas,
+      );
+
+      return;
+    }
+
+    resetarFormulario();
+    setAberto(false);
+  }
+
+  useEffect(() => {
+    if (
+      !estado.ok ||
+      !estado.exameId
+    ) {
+      return;
+    }
+
+    if (
+      ultimoExameProcessadoRef.current ===
+      estado.exameId
+    ) {
+      return;
+    }
+
+    ultimoExameProcessadoRef.current =
+      estado.exameId;
+
+    void enviarAnexosDoExame(
+      estado.exameId,
+    );
+  }, [
+    estado,
+  ]);
 
   useEffect(() => {
     function fecharLista(
@@ -683,8 +634,10 @@ export default function PacienteExameForm({
     setTimeout(() => {
       painelRef.current?.scrollIntoView(
         {
-          behavior: "smooth",
-          block: "start",
+          behavior:
+            "smooth",
+          block:
+            "start",
         },
       );
     }, 100);
@@ -697,7 +650,105 @@ export default function PacienteExameForm({
       exame.nome,
     );
 
+    setTipoExame(
+      exame.categoria,
+    );
+
     setListaAberta(false);
+  }
+
+  function adicionarArquivos(
+    lista:
+      | FileList
+      | File[],
+  ) {
+    const novos =
+      Array.from(
+        lista,
+      ).map(
+        (
+          arquivo,
+          indice,
+        ): ArquivoNovoExame => ({
+          id: [
+            arquivo.name,
+            arquivo.size,
+            arquivo.lastModified,
+            indice,
+            crypto.randomUUID(),
+          ].join("-"),
+
+          arquivo,
+
+          erro:
+            validarArquivo(
+              arquivo,
+            ) ??
+            undefined,
+        }),
+      );
+
+    setAnexosSelecionados(
+      (atuais) => [
+        ...atuais,
+        ...novos,
+      ],
+    );
+  }
+
+  function selecionarArquivos(
+    event: ChangeEvent<HTMLInputElement>,
+  ) {
+    if (
+      !event.target.files
+    ) {
+      return;
+    }
+
+    adicionarArquivos(
+      event.target.files,
+    );
+
+    event.target.value =
+      "";
+  }
+
+  function soltarArquivos(
+    event: DragEvent<HTMLDivElement>,
+  ) {
+    event.preventDefault();
+
+    setArrastando(
+      false,
+    );
+
+    if (
+      bloqueado ||
+      event.dataTransfer.files
+        .length === 0
+    ) {
+      return;
+    }
+
+    adicionarArquivos(
+      event.dataTransfer.files,
+    );
+  }
+
+  function removerArquivo(
+    id: string,
+  ) {
+    if (bloqueado) {
+      return;
+    }
+
+    setAnexosSelecionados(
+      (atuais) =>
+        atuais.filter(
+          (item) =>
+            item.id !== id,
+        ),
+    );
   }
 
   return (
@@ -706,11 +757,14 @@ export default function PacienteExameForm({
         type="button"
         onClick={
           aberto
-            ? () =>
-                setAberto(false)
+            ? fecharFormulario
             : abrirFormulario
         }
-        className="group relative flex min-h-[96px] flex-col items-center justify-center overflow-hidden rounded-2xl border border-[#EB5965] bg-[#EB5965] px-3 py-4 text-center text-white shadow-sm transition hover:bg-[#DA4E5A]"
+        className="group relative flex min-h-[96px] flex-col items-center justify-center overflow-hidden rounded-2xl border border-[#EB5965] bg-[#EB5965] px-3 py-4 text-center text-white shadow-sm transition hover:bg-[#DA4E5A] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#EB5965] focus-visible:ring-offset-2"
+        aria-expanded={
+          aberto
+        }
+        aria-controls={`formulario-exame-${pacienteId}`}
       >
         <div className="absolute -right-7 -top-7 h-20 w-20 rounded-full bg-white/10" />
 
@@ -735,7 +789,10 @@ export default function PacienteExameForm({
 
       {aberto && (
         <div
-          ref={painelRef}
+          id={`formulario-exame-${pacienteId}`}
+          ref={
+            painelRef
+          }
           className="col-span-full scroll-mt-6 rounded-[24px] border border-[#E4D8D9] bg-white p-4 shadow-sm sm:p-5"
         >
           <div className="flex flex-col gap-3 border-b border-[#ECE5E5] pb-4 sm:flex-row sm:items-center sm:justify-between">
@@ -751,32 +808,50 @@ export default function PacienteExameForm({
               <p className="mt-1 text-sm font-medium text-[#7D8A87]">
                 Paciente:{" "}
                 <span className="font-bold text-[#495754]">
-                  {pacienteNome}
+                  {
+                    pacienteNome
+                  }
                 </span>
               </p>
             </div>
 
             <button
               type="button"
-              onClick={() =>
-                setAberto(false)
+              onClick={
+                fecharFormulario
               }
-              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-[#E1E7E5] bg-[#F7F9F8] text-[#64736F] transition hover:bg-[#EEF2F0]"
+              disabled={
+                pending ||
+                enviandoAnexos
+              }
+              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-[#E1E7E5] bg-[#F7F9F8] text-[#64736F] transition hover:bg-[#EEF2F0] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7FA89A] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
               aria-label="Fechar formulário de exame"
             >
-              <X size={17} />
+              <X
+                size={17}
+              />
             </button>
           </div>
 
           <form
-            ref={formRef}
-            action={formAction}
+            ref={
+              formRef
+            }
+            action={
+              formAction
+            }
+            aria-busy={
+              pending ||
+              enviandoAnexos
+            }
             className="mt-5"
           >
             <input
               type="hidden"
               name="pacienteId"
-              value={pacienteId}
+              value={
+                pacienteId
+              }
             />
 
             <div className="grid gap-4 md:grid-cols-2">
@@ -789,7 +864,9 @@ export default function PacienteExameForm({
                 </Label>
 
                 <div
-                  ref={campoExameRef}
+                  ref={
+                    campoExameRef
+                  }
                   className="relative"
                 >
                   <div className="relative">
@@ -805,7 +882,12 @@ export default function PacienteExameForm({
                       required
                       maxLength={200}
                       autoComplete="off"
-                      value={nomeExame}
+                      disabled={
+                        bloqueado
+                      }
+                      value={
+                        nomeExame
+                      }
                       onFocus={() =>
                         setListaAberta(
                           true,
@@ -815,7 +897,8 @@ export default function PacienteExameForm({
                         event,
                       ) => {
                         setNomeExame(
-                          event.target
+                          event
+                            .target
                             .value,
                         );
 
@@ -829,6 +912,9 @@ export default function PacienteExameForm({
 
                     <button
                       type="button"
+                      disabled={
+                        bloqueado
+                      }
                       onClick={() =>
                         setListaAberta(
                           (
@@ -837,7 +923,7 @@ export default function PacienteExameForm({
                             !atual,
                         )
                       }
-                      className="absolute right-2 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-lg text-[#758480] hover:bg-[#EDF1EF]"
+                      className="absolute right-2 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-lg text-[#758480] hover:bg-[#EDF1EF] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7FA89A] disabled:opacity-50"
                       aria-label="Abrir lista de exames"
                     >
                       <ChevronDown
@@ -846,7 +932,8 @@ export default function PacienteExameForm({
                     </button>
                   </div>
 
-                  {listaAberta && (
+                  {listaAberta &&
+                    !bloqueado && (
                     <div className="absolute left-0 right-0 z-50 mt-2 max-h-[360px] overflow-y-auto rounded-2xl border border-[#DCE4E1] bg-white p-2 shadow-xl">
                       <div className="border-b border-[#EEF2F0] px-3 py-2">
                         <p className="text-sm font-bold text-[#5F6E6A]">
@@ -889,7 +976,7 @@ export default function PacienteExameForm({
                                           exame,
                                         )
                                       }
-                                      className="flex w-full items-center justify-between gap-3 rounded-xl px-3 py-2.5 text-left transition hover:bg-[#FFF1F2]"
+                                      className="flex w-full items-center justify-between gap-3 rounded-xl px-3 py-2.5 text-left transition hover:bg-[#FFF1F2] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#EB5965]/30"
                                     >
                                       <span className="text-sm font-bold text-[#34423F]">
                                         {
@@ -935,7 +1022,9 @@ export default function PacienteExameForm({
               </Campo>
 
               <Campo>
-                <Label htmlFor="exame-tipo">
+                <Label
+                  htmlFor="exame-tipo"
+                >
                   Tipo / categoria
                 </Label>
 
@@ -944,8 +1033,25 @@ export default function PacienteExameForm({
                   name="tipo"
                   type="text"
                   maxLength={150}
+                  disabled={
+                    bloqueado
+                  }
+                  value={
+                    tipoExame
+                  }
+                  onChange={(
+                    event,
+                  ) =>
+                    setTipoExame(
+                      event
+                        .target
+                        .value,
+                    )
+                  }
                   placeholder="Ex.: Laboratorial, imagem..."
-                  className={inputClass}
+                  className={
+                    inputClass
+                  }
                 />
               </Campo>
 
@@ -960,14 +1066,25 @@ export default function PacienteExameForm({
                 <select
                   id="exame-status"
                   name="status"
-                  value={status}
-                  onChange={(event) =>
+                  value={
+                    status
+                  }
+                  disabled={
+                    bloqueado
+                  }
+                  onChange={(
+                    event,
+                  ) =>
                     setStatus(
-                      event.target.value,
+                      event
+                        .target
+                        .value,
                     )
                   }
                   required
-                  className={inputClass}
+                  className={
+                    inputClass
+                  }
                 >
                   <option value="SOLICITADO">
                     Solicitado
@@ -988,7 +1105,9 @@ export default function PacienteExameForm({
               </Campo>
 
               <Campo>
-                <Label htmlFor="exame-laboratorio">
+                <Label
+                  htmlFor="exame-laboratorio"
+                >
                   Laboratório
                 </Label>
 
@@ -997,8 +1116,13 @@ export default function PacienteExameForm({
                   name="laboratorio"
                   type="text"
                   maxLength={200}
+                  disabled={
+                    bloqueado
+                  }
                   placeholder="Nome do laboratório"
-                  className={inputClass}
+                  className={
+                    inputClass
+                  }
                 />
               </Campo>
 
@@ -1023,6 +1147,9 @@ export default function PacienteExameForm({
                     defaultValue={
                       dataHoje()
                     }
+                    disabled={
+                      bloqueado
+                    }
                     required
                     className={`${inputClass} pl-10`}
                   />
@@ -1030,7 +1157,9 @@ export default function PacienteExameForm({
               </Campo>
 
               <Campo>
-                <Label htmlFor="exame-data-realizacao">
+                <Label
+                  htmlFor="exame-data-realizacao"
+                >
                   Data da realização
                 </Label>
 
@@ -1044,13 +1173,18 @@ export default function PacienteExameForm({
                     id="exame-data-realizacao"
                     name="dataRealizacao"
                     type="date"
+                    disabled={
+                      bloqueado
+                    }
                     className={`${inputClass} pl-10`}
                   />
                 </div>
               </Campo>
 
               <Campo>
-                <Label htmlFor="exame-data-resultado">
+                <Label
+                  htmlFor="exame-data-resultado"
+                >
                   Data do resultado
                 </Label>
 
@@ -1064,13 +1198,18 @@ export default function PacienteExameForm({
                     id="exame-data-resultado"
                     name="dataResultado"
                     type="date"
+                    disabled={
+                      bloqueado
+                    }
                     className={`${inputClass} pl-10`}
                   />
                 </div>
               </Campo>
 
               <Campo>
-                <Label htmlFor="exame-atendimento">
+                <Label
+                  htmlFor="exame-atendimento"
+                >
                   Atendimento relacionado
                 </Label>
 
@@ -1080,8 +1219,13 @@ export default function PacienteExameForm({
                   type="number"
                   min={1}
                   step={1}
+                  disabled={
+                    bloqueado
+                  }
                   placeholder="Opcional"
-                  className={inputClass}
+                  className={
+                    inputClass
+                  }
                 />
 
                 <p className="mt-1 text-[11px] font-medium text-[#8D9996]">
@@ -1092,7 +1236,9 @@ export default function PacienteExameForm({
 
             <div className="mt-4 grid gap-4 lg:grid-cols-2">
               <Campo>
-                <Label htmlFor="exame-resultado">
+                <Label
+                  htmlFor="exame-resultado"
+                >
                   Resultado
                 </Label>
 
@@ -1101,13 +1247,18 @@ export default function PacienteExameForm({
                   name="resultado"
                   rows={6}
                   maxLength={10000}
+                  disabled={
+                    bloqueado
+                  }
                   placeholder="Digite o resultado ou laudo do exame..."
                   className={`${inputClass} min-h-[150px] resize-y`}
                 />
               </Campo>
 
               <Campo>
-                <Label htmlFor="exame-observacoes">
+                <Label
+                  htmlFor="exame-observacoes"
+                >
                   Observações
                 </Label>
 
@@ -1116,47 +1267,389 @@ export default function PacienteExameForm({
                   name="observacoes"
                   rows={6}
                   maxLength={5000}
+                  disabled={
+                    bloqueado
+                  }
                   placeholder="Observações adicionais..."
                   className={`${inputClass} min-h-[150px] resize-y`}
                 />
               </Campo>
             </div>
 
-            {estado.mensagem && (
+            <section
+              aria-labelledby={`titulo-anexos-novo-exame-${pacienteId}`}
+              className="mt-4 rounded-2xl border border-[#DDE6E2] bg-[#FBFCFA] p-4"
+            >
+              <div className="flex items-start gap-3">
+                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#EEF4F1] text-[#55786D]">
+                  <Paperclip
+                    size={19}
+                  />
+                </span>
+
+                <div>
+                  <h4
+                    id={`titulo-anexos-novo-exame-${pacienteId}`}
+                    className="text-sm font-black text-[#34423F]"
+                  >
+                    Anexos do exame
+                  </h4>
+
+                  <p className="mt-1 text-xs font-medium leading-relaxed text-[#71807C]">
+                    Você pode selecionar os laudos, PDFs ou imagens agora. Os arquivos serão enviados logo após a criação do exame.
+                  </p>
+                </div>
+              </div>
+
+              <input
+                ref={
+                  inputAnexosRef
+                }
+                type="file"
+                multiple
+                accept=".pdf,.jpg,.jpeg,.png,.webp,application/pdf,image/jpeg,image/png,image/webp"
+                onChange={
+                  selecionarArquivos
+                }
+                disabled={
+                  bloqueado
+                }
+                className="sr-only"
+                aria-label="Selecionar anexos do exame"
+              />
+
               <div
+                role="button"
+                tabIndex={
+                  bloqueado
+                    ? -1
+                    : 0
+                }
+                aria-disabled={
+                  bloqueado
+                }
+                onClick={() => {
+                  if (
+                    !bloqueado
+                  ) {
+                    inputAnexosRef.current?.click();
+                  }
+                }}
+                onKeyDown={(
+                  event,
+                ) => {
+                  if (
+                    bloqueado
+                  ) {
+                    return;
+                  }
+
+                  if (
+                    event.key ===
+                      "Enter" ||
+                    event.key ===
+                      " "
+                  ) {
+                    event.preventDefault();
+
+                    inputAnexosRef.current?.click();
+                  }
+                }}
+                onDragEnter={(
+                  event,
+                ) => {
+                  event.preventDefault();
+
+                  if (
+                    !bloqueado
+                  ) {
+                    setArrastando(
+                      true,
+                    );
+                  }
+                }}
+                onDragOver={(
+                  event,
+                ) => {
+                  event.preventDefault();
+
+                  if (
+                    !bloqueado
+                  ) {
+                    setArrastando(
+                      true,
+                    );
+                  }
+                }}
+                onDragLeave={() =>
+                  setArrastando(
+                    false,
+                  )
+                }
+                onDrop={
+                  soltarArquivos
+                }
+                className={`mt-4 cursor-pointer rounded-2xl border-2 border-dashed px-4 py-6 text-center outline-none transition focus-visible:ring-2 focus-visible:ring-[#7FA89A] focus-visible:ring-offset-2 ${
+                  arrastando
+                    ? "border-[#7FA89A] bg-[#EDF5F2]"
+                    : "border-[#C9D7D2] bg-white hover:border-[#9BB7AE] hover:bg-[#F8FBF9]"
+                } ${
+                  bloqueado
+                    ? "cursor-not-allowed opacity-60"
+                    : ""
+                }`}
+              >
+                <Upload
+                  size={25}
+                  className="mx-auto text-[#6E9387]"
+                />
+
+                <p className="mt-2 text-sm font-black text-[#40514C]">
+                  Adicionar arquivos
+                </p>
+
+                <p className="mt-1 text-xs font-medium text-[#778682]">
+                  Arraste aqui ou clique para selecionar
+                </p>
+
+                <p className="mt-3 text-[11px] font-bold text-[#8A9692]">
+                  PDF, JPG, PNG ou WEBP • máximo de 25 MB por arquivo
+                </p>
+              </div>
+
+              {anexosSelecionados.length >
+                0 && (
+                <div className="mt-4 space-y-2">
+                  {anexosSelecionados.map(
+                    (
+                      item,
+                    ) => (
+                      <div
+                        key={
+                          item.id
+                        }
+                        className="flex items-start gap-3 rounded-xl border border-[#E0E7E4] bg-white p-3"
+                      >
+                        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#F0F4F2] text-[#607C73]">
+                          {item.arquivo.type.startsWith(
+                            "image/",
+                          ) ? (
+                            <FileImage
+                              size={18}
+                            />
+                          ) : (
+                            <FileText
+                              size={18}
+                            />
+                          )}
+                        </span>
+
+                        <div className="min-w-0 flex-1">
+                          <p className="truncate text-sm font-bold text-[#34423F]">
+                            {
+                              item
+                                .arquivo
+                                .name
+                            }
+                          </p>
+
+                          <p className="mt-0.5 text-xs font-medium text-[#82908C]">
+                            {formatarTamanho(
+                              item
+                                .arquivo
+                                .size,
+                            )}
+                          </p>
+
+                          {item.erro ? (
+                            <p
+                              role="alert"
+                              className="mt-1 text-xs font-bold text-[#B44A54]"
+                            >
+                              {
+                                item.erro
+                              }
+                            </p>
+                          ) : (
+                            <p className="mt-1 text-xs font-semibold text-[#397057]">
+                              Pronto para enviar
+                            </p>
+                          )}
+                        </div>
+
+                        {!bloqueado && (
+                          <button
+                            type="button"
+                            onClick={() =>
+                              removerArquivo(
+                                item.id,
+                              )
+                            }
+                            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-[#71807C] transition hover:bg-[#F1F4F3] hover:text-[#B44A54] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7FA89A]"
+                            aria-label={`Remover ${item.arquivo.name}`}
+                          >
+                            <X
+                              size={15}
+                            />
+                          </button>
+                        )}
+                      </div>
+                    ),
+                  )}
+                </div>
+              )}
+
+              {temAnexoInvalido &&
+                !exameSalvoId && (
+                <div
+                  role="alert"
+                  className="mt-4 flex items-start gap-2 rounded-xl border border-[#F0CDCF] bg-[#FFF1F2] px-4 py-3 text-sm font-bold text-[#A8444D]"
+                >
+                  <AlertCircle
+                    size={17}
+                    className="mt-0.5 shrink-0"
+                  />
+
+                  <span>
+                    Remova ou substitua os anexos inválidos antes de salvar o exame.
+                  </span>
+                </div>
+              )}
+
+              {enviandoAnexos && (
+                <div
+                  role="status"
+                  aria-live="polite"
+                  className="mt-4 flex items-center gap-2 rounded-xl border border-[#D5E6DF] bg-[#F0F7F4] px-4 py-3 text-sm font-bold text-[#496D62]"
+                >
+                  <Loader2
+                    size={17}
+                    className="animate-spin"
+                  />
+
+                  Exame criado. Enviando anexos...
+                </div>
+              )}
+            </section>
+
+            {estado.mensagem &&
+              !falhasAnexos.length && (
+              <div
+                role={
+                  estado.ok
+                    ? "status"
+                    : "alert"
+                }
+                aria-live="polite"
+                aria-atomic="true"
                 className={`mt-4 rounded-xl border px-4 py-3 text-sm font-semibold ${
                   estado.ok
                     ? "border-[#CDE4D7] bg-[#EDF7F1] text-[#397057]"
                     : "border-[#F0CDCF] bg-[#FFF1F2] text-[#A8444D]"
                 }`}
               >
-                {estado.mensagem}
+                {estado.ok && (
+                  <CheckCircle2
+                    size={17}
+                    className="mr-2 inline"
+                  />
+                )}
+
+                {
+                  estado.mensagem
+                }
+              </div>
+            )}
+
+            {falhasAnexos.length >
+              0 && (
+              <div
+                role="alert"
+                className="mt-4 rounded-xl border border-[#F0CDCF] bg-[#FFF1F2] px-4 py-3 text-sm font-semibold text-[#A8444D]"
+              >
+                <div className="flex items-start gap-2">
+                  <AlertCircle
+                    size={17}
+                    className="mt-0.5 shrink-0"
+                  />
+
+                  <div>
+                    <p className="font-black">
+                      O exame foi salvo, mas alguns anexos não foram enviados.
+                    </p>
+
+                    <p className="mt-1 text-xs font-semibold">
+                      Feche este formulário e adicione novamente esses arquivos pelo exame no histórico.
+                    </p>
+
+                    <ul className="mt-2 list-disc pl-5 text-xs">
+                      {falhasAnexos.map(
+                        (
+                          falha,
+                        ) => (
+                          <li
+                            key={
+                              falha
+                            }
+                          >
+                            {
+                              falha
+                            }
+                          </li>
+                        ),
+                      )}
+                    </ul>
+                  </div>
+                </div>
               </div>
             )}
 
             <div className="mt-5 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
               <button
                 type="button"
-                onClick={() =>
-                  setAberto(false)
+                onClick={
+                  fecharFormulario
                 }
-                disabled={pending}
-                className="rounded-xl border border-[#DCE4E1] bg-white px-5 py-2.5 text-sm font-bold text-[#5C6B67] transition hover:bg-[#F6F8F7] disabled:cursor-not-allowed disabled:opacity-50"
+                disabled={
+                  pending ||
+                  enviandoAnexos
+                }
+                className="rounded-xl border border-[#DCE4E1] bg-white px-5 py-2.5 text-sm font-bold text-[#5C6B67] transition hover:bg-[#F6F8F7] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7FA89A] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
               >
-                Cancelar
+                {exameSalvoId
+                  ? "Fechar"
+                  : "Cancelar"}
               </button>
 
-              <button
-                type="submit"
-                disabled={pending}
-                className="flex items-center justify-center gap-2 rounded-xl bg-[#EB5965] px-5 py-2.5 text-sm font-bold text-white transition hover:bg-[#DA4E5A] disabled:cursor-not-allowed disabled:opacity-60"
-              >
-                <Save size={16} />
+              {!exameSalvoId && (
+                <button
+                  type="submit"
+                  disabled={
+                    pending ||
+                    enviandoAnexos ||
+                    temAnexoInvalido
+                  }
+                  className="flex items-center justify-center gap-2 rounded-xl bg-[#EB5965] px-5 py-2.5 text-sm font-bold text-white transition hover:bg-[#DA4E5A] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#EB5965] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  {pending ||
+                  enviandoAnexos ? (
+                    <Loader2
+                      size={16}
+                      className="animate-spin"
+                    />
+                  ) : (
+                    <Save
+                      size={16}
+                    />
+                  )}
 
-                {pending
-                  ? "Salvando..."
-                  : "Salvar exame"}
-              </button>
+                  {pending
+                    ? "Salvando exame..."
+                    : enviandoAnexos
+                      ? "Enviando anexos..."
+                      : "Salvar exame"}
+                </button>
+              )}
             </div>
           </form>
         </div>
@@ -1166,12 +1659,13 @@ export default function PacienteExameForm({
 }
 
 const inputClass =
-  "w-full rounded-xl border border-[#DCE4E1] bg-[#F9FBFA] px-3 py-2.5 text-sm font-semibold text-[#34423F] outline-none transition placeholder:font-medium placeholder:text-[#A0AAA7] focus:border-[#EB5965] focus:bg-white focus:ring-2 focus:ring-[#EB5965]/10";
+  "w-full rounded-xl border border-[#DCE4E1] bg-[#F9FBFA] px-3 py-2.5 text-sm font-semibold text-[#34423F] outline-none transition placeholder:font-medium placeholder:text-[#A0AAA7] hover:border-[#C7D4D0] focus:border-[#7FA89A] focus:bg-white focus:ring-2 focus:ring-[#7FA89A]/20 disabled:cursor-not-allowed disabled:bg-[#EEF2F0] disabled:text-[#84918D]";
 
 function Campo({
   children,
 }: {
-  children: React.ReactNode;
+  children:
+    ReactNode;
 }) {
   return (
     <div className="min-w-0">
@@ -1186,12 +1680,15 @@ function Label({
   obrigatorio = false,
 }: {
   htmlFor: string;
-  children: React.ReactNode;
+  children:
+    ReactNode;
   obrigatorio?: boolean;
 }) {
   return (
     <label
-      htmlFor={htmlFor}
+      htmlFor={
+        htmlFor
+      }
       className="mb-1.5 block text-[11px] font-black uppercase tracking-[0.1em] text-[#667773]"
     >
       {children}
