@@ -39,6 +39,9 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
-node_modules/
+
+# build outputs
 dist/
-.env
+
+# private exam attachments
+/storage/
