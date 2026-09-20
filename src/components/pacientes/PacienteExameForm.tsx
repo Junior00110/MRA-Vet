@@ -343,6 +343,11 @@ export default function PacienteExameForm({
       null,
     );
 
+  const campoExameInputRef =
+    useRef<HTMLInputElement>(
+      null,
+    );
+
   const inputAnexosRef =
     useRef<HTMLInputElement>(
       null,
@@ -676,6 +681,10 @@ export default function PacienteExameForm({
   function abrirFormulario() {
     setAberto(true);
 
+    requestAnimationFrame(() => {
+      campoExameInputRef.current?.focus();
+    });
+
     setTimeout(() => {
       painelRef.current?.scrollIntoView(
         {
@@ -927,6 +936,7 @@ export default function PacienteExameForm({
                     />
 
                     <input
+                      ref={campoExameInputRef}
                       id="exame-nome"
                       name="nome"
                       type="text"
