@@ -33,9 +33,9 @@ import type {
 } from '@prisma/orm-postgres/contract/types';
 
 export type StorageHash =
-  StorageHashBase<'25dd399e6846636ff5e2da9cd5283b812f624af0df041b5f24f3f750e310e308'>;
+  StorageHashBase<'5b97a057d73caa2f32421a7fbd230f60e5fcd6c19b53a874dec5611902579393'>;
 export type ExecutionHash =
-  ExecutionHashBase<'9156bfa341d35e9ef0d7c9feb35156b0842f2818546739119c80ad22ea6e3c3a'>;
+  ExecutionHashBase<'96db797a991f2ca27f606529056f75ee16487e11b715d7d1a90741ff506bdce7'>;
 export type ProfileHash =
   ProfileHashBase<'3916f444a8a17ad749191acf9e08dad97d1a327b88c2f1d45d12f240296aa8b2'>;
 
@@ -261,16 +261,6 @@ export type FieldOutputTypes = {
       readonly createdAt: CodecTypes['pg/timestamptz-string@1']['output'];
       readonly updatedAt: CodecTypes['pg/timestamptz-string@1']['output'];
     };
-    readonly DoencaVeterinaria: {
-      readonly id: CodecTypes['pg/int4@1']['output'];
-      readonly nome: CodecTypes['pg/text@1']['output'];
-      readonly especie: 'CANINO' | 'FELINO' | 'AMBOS';
-      readonly categoria: CodecTypes['pg/text@1']['output'] | null;
-      readonly sinonimos: CodecTypes['pg/text@1']['output'] | null;
-      readonly ativo: CodecTypes['pg/bool@1']['output'];
-      readonly createdAt: CodecTypes['pg/timestamptz-string@1']['output'];
-      readonly updatedAt: CodecTypes['pg/timestamptz-string@1']['output'];
-    };
     readonly Paciente: {
       readonly id: CodecTypes['pg/int4@1']['output'];
       readonly codigoAntigo: CodecTypes['pg/int4@1']['output'] | null;
@@ -301,7 +291,6 @@ export type FieldOutputTypes = {
     readonly PacienteAtendimento: {
       readonly id: CodecTypes['pg/int4@1']['output'];
       readonly tipo: 'CONSULTA' | 'RETORNO';
-      readonly statusAtendimento: 'EM_ANDAMENTO' | 'AGUARDANDO_PATOLOGIA' | 'FINALIZADO';
       readonly motivoConsulta: CodecTypes['pg/text@1']['output'] | null;
       readonly anamnese: CodecTypes['pg/text@1']['output'] | null;
       readonly exameClinico: CodecTypes['pg/text@1']['output'] | null;
@@ -348,22 +337,6 @@ export type FieldOutputTypes = {
       readonly profissionalNome: CodecTypes['pg/text@1']['output'] | null;
       readonly ativo: CodecTypes['pg/bool@1']['output'];
       readonly exameId: CodecTypes['pg/int4@1']['output'];
-      readonly createdAt: CodecTypes['pg/timestamptz-string@1']['output'];
-      readonly updatedAt: CodecTypes['pg/timestamptz-string@1']['output'];
-    };
-    readonly PacientePatologia: {
-      readonly id: CodecTypes['pg/int4@1']['output'];
-      readonly nome: CodecTypes['pg/text@1']['output'] | null;
-      readonly status: 'SUSPEITA' | 'EM_ACOMPANHAMENTO' | 'TRATADA' | 'SEM_PROBLEMA_CLINICO';
-      readonly observacoes: CodecTypes['pg/text@1']['output'] | null;
-      readonly dataRegistro: CodecTypes['pg/timestamptz-string@1']['output'];
-      readonly profissionalUsuarioId: CodecTypes['pg/int4@1']['output'] | null;
-      readonly profissionalNome: CodecTypes['pg/text@1']['output'] | null;
-      readonly ativo: CodecTypes['pg/bool@1']['output'];
-      readonly pacienteId: CodecTypes['pg/int4@1']['output'];
-      readonly atendimentoId: CodecTypes['pg/int4@1']['output'];
-      readonly doencaId: CodecTypes['pg/int4@1']['output'] | null;
-      readonly patologiaOrigemId: CodecTypes['pg/int4@1']['output'] | null;
       readonly createdAt: CodecTypes['pg/timestamptz-string@1']['output'];
       readonly updatedAt: CodecTypes['pg/timestamptz-string@1']['output'];
     };
@@ -496,16 +469,6 @@ export type FieldInputTypes = {
       readonly createdAt: CodecTypes['pg/timestamptz-string@1']['input'];
       readonly updatedAt: CodecTypes['pg/timestamptz-string@1']['input'];
     };
-    readonly DoencaVeterinaria: {
-      readonly id: CodecTypes['pg/int4@1']['input'];
-      readonly nome: CodecTypes['pg/text@1']['input'];
-      readonly especie: 'CANINO' | 'FELINO' | 'AMBOS';
-      readonly categoria: CodecTypes['pg/text@1']['input'] | null;
-      readonly sinonimos: CodecTypes['pg/text@1']['input'] | null;
-      readonly ativo: CodecTypes['pg/bool@1']['input'];
-      readonly createdAt: CodecTypes['pg/timestamptz-string@1']['input'];
-      readonly updatedAt: CodecTypes['pg/timestamptz-string@1']['input'];
-    };
     readonly Paciente: {
       readonly id: CodecTypes['pg/int4@1']['input'];
       readonly codigoAntigo: CodecTypes['pg/int4@1']['input'] | null;
@@ -536,7 +499,6 @@ export type FieldInputTypes = {
     readonly PacienteAtendimento: {
       readonly id: CodecTypes['pg/int4@1']['input'];
       readonly tipo: 'CONSULTA' | 'RETORNO';
-      readonly statusAtendimento: 'EM_ANDAMENTO' | 'AGUARDANDO_PATOLOGIA' | 'FINALIZADO';
       readonly motivoConsulta: CodecTypes['pg/text@1']['input'] | null;
       readonly anamnese: CodecTypes['pg/text@1']['input'] | null;
       readonly exameClinico: CodecTypes['pg/text@1']['input'] | null;
@@ -583,22 +545,6 @@ export type FieldInputTypes = {
       readonly profissionalNome: CodecTypes['pg/text@1']['input'] | null;
       readonly ativo: CodecTypes['pg/bool@1']['input'];
       readonly exameId: CodecTypes['pg/int4@1']['input'];
-      readonly createdAt: CodecTypes['pg/timestamptz-string@1']['input'];
-      readonly updatedAt: CodecTypes['pg/timestamptz-string@1']['input'];
-    };
-    readonly PacientePatologia: {
-      readonly id: CodecTypes['pg/int4@1']['input'];
-      readonly nome: CodecTypes['pg/text@1']['input'] | null;
-      readonly status: 'SUSPEITA' | 'EM_ACOMPANHAMENTO' | 'TRATADA' | 'SEM_PROBLEMA_CLINICO';
-      readonly observacoes: CodecTypes['pg/text@1']['input'] | null;
-      readonly dataRegistro: CodecTypes['pg/timestamptz-string@1']['input'];
-      readonly profissionalUsuarioId: CodecTypes['pg/int4@1']['input'] | null;
-      readonly profissionalNome: CodecTypes['pg/text@1']['input'] | null;
-      readonly ativo: CodecTypes['pg/bool@1']['input'];
-      readonly pacienteId: CodecTypes['pg/int4@1']['input'];
-      readonly atendimentoId: CodecTypes['pg/int4@1']['input'];
-      readonly doencaId: CodecTypes['pg/int4@1']['input'] | null;
-      readonly patologiaOrigemId: CodecTypes['pg/int4@1']['input'] | null;
       readonly createdAt: CodecTypes['pg/timestamptz-string@1']['input'];
       readonly updatedAt: CodecTypes['pg/timestamptz-string@1']['input'];
     };
@@ -731,16 +677,6 @@ export type StorageColumnTypes = {
       readonly updatedAt: CodecTypes['pg/timestamptz-string@1']['output'];
       readonly whatsapp: CodecTypes['pg/text@1']['output'] | null;
     };
-    readonly doencaVeterinaria: {
-      readonly ativo: CodecTypes['pg/bool@1']['output'];
-      readonly categoria: CodecTypes['pg/text@1']['output'] | null;
-      readonly createdAt: CodecTypes['pg/timestamptz-string@1']['output'];
-      readonly especie: 'CANINO' | 'FELINO' | 'AMBOS';
-      readonly id: CodecTypes['pg/int4@1']['output'];
-      readonly nome: CodecTypes['pg/text@1']['output'];
-      readonly sinonimos: CodecTypes['pg/text@1']['output'] | null;
-      readonly updatedAt: CodecTypes['pg/timestamptz-string@1']['output'];
-    };
     readonly paciente: {
       readonly ativo: CodecTypes['pg/bool@1']['output'];
       readonly castrado: CodecTypes['pg/bool@1']['output'];
@@ -784,7 +720,6 @@ export type StorageColumnTypes = {
       readonly pacienteId: CodecTypes['pg/int4@1']['output'];
       readonly profissionalNome: CodecTypes['pg/text@1']['output'] | null;
       readonly profissionalUsuarioId: CodecTypes['pg/int4@1']['output'] | null;
-      readonly statusAtendimento: 'EM_ANDAMENTO' | 'AGUARDANDO_PATOLOGIA' | 'FINALIZADO';
       readonly tipo: 'CONSULTA' | 'RETORNO';
       readonly updatedAt: CodecTypes['pg/timestamptz-string@1']['output'];
     };
@@ -819,22 +754,6 @@ export type StorageColumnTypes = {
       readonly profissionalUsuarioId: CodecTypes['pg/int4@1']['output'] | null;
       readonly storageKey: CodecTypes['pg/text@1']['output'];
       readonly tamanhoBytes: CodecTypes['pg/int4@1']['output'];
-      readonly updatedAt: CodecTypes['pg/timestamptz-string@1']['output'];
-    };
-    readonly pacientePatologia: {
-      readonly atendimentoId: CodecTypes['pg/int4@1']['output'];
-      readonly ativo: CodecTypes['pg/bool@1']['output'];
-      readonly createdAt: CodecTypes['pg/timestamptz-string@1']['output'];
-      readonly dataRegistro: CodecTypes['pg/timestamptz-string@1']['output'];
-      readonly doencaId: CodecTypes['pg/int4@1']['output'] | null;
-      readonly id: CodecTypes['pg/int4@1']['output'];
-      readonly nome: CodecTypes['pg/text@1']['output'] | null;
-      readonly observacoes: CodecTypes['pg/text@1']['output'] | null;
-      readonly pacienteId: CodecTypes['pg/int4@1']['output'];
-      readonly patologiaOrigemId: CodecTypes['pg/int4@1']['output'] | null;
-      readonly profissionalNome: CodecTypes['pg/text@1']['output'] | null;
-      readonly profissionalUsuarioId: CodecTypes['pg/int4@1']['output'] | null;
-      readonly status: 'SUSPEITA' | 'EM_ACOMPANHAMENTO' | 'TRATADA' | 'SEM_PROBLEMA_CLINICO';
       readonly updatedAt: CodecTypes['pg/timestamptz-string@1']['output'];
     };
     readonly pacientePeso: {
@@ -966,16 +885,6 @@ export type StorageColumnInputTypes = {
       readonly updatedAt: CodecTypes['pg/timestamptz-string@1']['input'];
       readonly whatsapp: CodecTypes['pg/text@1']['input'] | null;
     };
-    readonly doencaVeterinaria: {
-      readonly ativo: CodecTypes['pg/bool@1']['input'];
-      readonly categoria: CodecTypes['pg/text@1']['input'] | null;
-      readonly createdAt: CodecTypes['pg/timestamptz-string@1']['input'];
-      readonly especie: 'CANINO' | 'FELINO' | 'AMBOS';
-      readonly id: CodecTypes['pg/int4@1']['input'];
-      readonly nome: CodecTypes['pg/text@1']['input'];
-      readonly sinonimos: CodecTypes['pg/text@1']['input'] | null;
-      readonly updatedAt: CodecTypes['pg/timestamptz-string@1']['input'];
-    };
     readonly paciente: {
       readonly ativo: CodecTypes['pg/bool@1']['input'];
       readonly castrado: CodecTypes['pg/bool@1']['input'];
@@ -1019,7 +928,6 @@ export type StorageColumnInputTypes = {
       readonly pacienteId: CodecTypes['pg/int4@1']['input'];
       readonly profissionalNome: CodecTypes['pg/text@1']['input'] | null;
       readonly profissionalUsuarioId: CodecTypes['pg/int4@1']['input'] | null;
-      readonly statusAtendimento: 'EM_ANDAMENTO' | 'AGUARDANDO_PATOLOGIA' | 'FINALIZADO';
       readonly tipo: 'CONSULTA' | 'RETORNO';
       readonly updatedAt: CodecTypes['pg/timestamptz-string@1']['input'];
     };
@@ -1054,22 +962,6 @@ export type StorageColumnInputTypes = {
       readonly profissionalUsuarioId: CodecTypes['pg/int4@1']['input'] | null;
       readonly storageKey: CodecTypes['pg/text@1']['input'];
       readonly tamanhoBytes: CodecTypes['pg/int4@1']['input'];
-      readonly updatedAt: CodecTypes['pg/timestamptz-string@1']['input'];
-    };
-    readonly pacientePatologia: {
-      readonly atendimentoId: CodecTypes['pg/int4@1']['input'];
-      readonly ativo: CodecTypes['pg/bool@1']['input'];
-      readonly createdAt: CodecTypes['pg/timestamptz-string@1']['input'];
-      readonly dataRegistro: CodecTypes['pg/timestamptz-string@1']['input'];
-      readonly doencaId: CodecTypes['pg/int4@1']['input'] | null;
-      readonly id: CodecTypes['pg/int4@1']['input'];
-      readonly nome: CodecTypes['pg/text@1']['input'] | null;
-      readonly observacoes: CodecTypes['pg/text@1']['input'] | null;
-      readonly pacienteId: CodecTypes['pg/int4@1']['input'];
-      readonly patologiaOrigemId: CodecTypes['pg/int4@1']['input'] | null;
-      readonly profissionalNome: CodecTypes['pg/text@1']['input'] | null;
-      readonly profissionalUsuarioId: CodecTypes['pg/int4@1']['input'] | null;
-      readonly status: 'SUSPEITA' | 'EM_ACOMPANHAMENTO' | 'TRATADA' | 'SEM_PROBLEMA_CLINICO';
       readonly updatedAt: CodecTypes['pg/timestamptz-string@1']['input'];
     };
     readonly pacientePeso: {
@@ -1304,63 +1196,6 @@ type ContractBase = Omit<
               indexes: readonly [];
               foreignKeys: readonly [];
             };
-            readonly doencaVeterinaria: {
-              columns: {
-                readonly id: {
-                  readonly nativeType: 'int4';
-                  readonly codecId: 'pg/int4@1';
-                  readonly nullable: false;
-                  readonly default: {
-                    readonly kind: 'function';
-                    readonly expression: 'autoincrement()';
-                  };
-                };
-                readonly nome: {
-                  readonly nativeType: 'text';
-                  readonly codecId: 'pg/text@1';
-                  readonly nullable: false;
-                };
-                readonly especie: {
-                  readonly nativeType: 'text';
-                  readonly codecId: 'pg/text@1';
-                  readonly nullable: false;
-                };
-                readonly categoria: {
-                  readonly nativeType: 'text';
-                  readonly codecId: 'pg/text@1';
-                  readonly nullable: true;
-                };
-                readonly sinonimos: {
-                  readonly nativeType: 'text';
-                  readonly codecId: 'pg/text@1';
-                  readonly nullable: true;
-                };
-                readonly ativo: {
-                  readonly nativeType: 'bool';
-                  readonly codecId: 'pg/bool@1';
-                  readonly nullable: false;
-                  readonly default: {
-                    readonly kind: 'literal';
-                    readonly value: DefaultLiteralValue<'pg/bool@1', true>;
-                  };
-                };
-                readonly createdAt: {
-                  readonly nativeType: 'timestamptz';
-                  readonly codecId: 'pg/timestamptz-string@1';
-                  readonly nullable: false;
-                  readonly default: { readonly kind: 'function'; readonly expression: 'now()' };
-                };
-                readonly updatedAt: {
-                  readonly nativeType: 'timestamptz';
-                  readonly codecId: 'pg/timestamptz-string@1';
-                  readonly nullable: false;
-                };
-              };
-              primaryKey: { readonly columns: readonly ['id'] };
-              uniques: readonly [{ readonly columns: readonly ['nome', 'especie'] }];
-              indexes: readonly [];
-              foreignKeys: readonly [];
-            };
             readonly paciente: {
               columns: {
                 readonly id: {
@@ -1572,15 +1407,6 @@ type ContractBase = Omit<
                   readonly default: {
                     readonly kind: 'literal';
                     readonly value: DefaultLiteralValue<'pg/text@1', 'CONSULTA'>;
-                  };
-                };
-                readonly statusAtendimento: {
-                  readonly nativeType: 'text';
-                  readonly codecId: 'pg/text@1';
-                  readonly nullable: false;
-                  readonly default: {
-                    readonly kind: 'literal';
-                    readonly value: DefaultLiteralValue<'pg/text@1', 'FINALIZADO'>;
                   };
                 };
                 readonly motivoConsulta: {
@@ -1945,168 +1771,6 @@ type ContractBase = Omit<
                   readonly target: {
                     readonly namespaceId: 'public' & NamespaceId;
                     readonly tableName: 'pacienteExame';
-                    readonly columns: readonly ['id'];
-                  };
-                },
-              ];
-            };
-            readonly pacientePatologia: {
-              columns: {
-                readonly id: {
-                  readonly nativeType: 'int4';
-                  readonly codecId: 'pg/int4@1';
-                  readonly nullable: false;
-                  readonly default: {
-                    readonly kind: 'function';
-                    readonly expression: 'autoincrement()';
-                  };
-                };
-                readonly nome: {
-                  readonly nativeType: 'text';
-                  readonly codecId: 'pg/text@1';
-                  readonly nullable: true;
-                };
-                readonly status: {
-                  readonly nativeType: 'text';
-                  readonly codecId: 'pg/text@1';
-                  readonly nullable: false;
-                };
-                readonly observacoes: {
-                  readonly nativeType: 'text';
-                  readonly codecId: 'pg/text@1';
-                  readonly nullable: true;
-                };
-                readonly dataRegistro: {
-                  readonly nativeType: 'timestamptz';
-                  readonly codecId: 'pg/timestamptz-string@1';
-                  readonly nullable: false;
-                  readonly default: { readonly kind: 'function'; readonly expression: 'now()' };
-                };
-                readonly profissionalUsuarioId: {
-                  readonly nativeType: 'int4';
-                  readonly codecId: 'pg/int4@1';
-                  readonly nullable: true;
-                };
-                readonly profissionalNome: {
-                  readonly nativeType: 'text';
-                  readonly codecId: 'pg/text@1';
-                  readonly nullable: true;
-                };
-                readonly ativo: {
-                  readonly nativeType: 'bool';
-                  readonly codecId: 'pg/bool@1';
-                  readonly nullable: false;
-                  readonly default: {
-                    readonly kind: 'literal';
-                    readonly value: DefaultLiteralValue<'pg/bool@1', true>;
-                  };
-                };
-                readonly pacienteId: {
-                  readonly nativeType: 'int4';
-                  readonly codecId: 'pg/int4@1';
-                  readonly nullable: false;
-                };
-                readonly atendimentoId: {
-                  readonly nativeType: 'int4';
-                  readonly codecId: 'pg/int4@1';
-                  readonly nullable: false;
-                };
-                readonly doencaId: {
-                  readonly nativeType: 'int4';
-                  readonly codecId: 'pg/int4@1';
-                  readonly nullable: true;
-                };
-                readonly patologiaOrigemId: {
-                  readonly nativeType: 'int4';
-                  readonly codecId: 'pg/int4@1';
-                  readonly nullable: true;
-                };
-                readonly createdAt: {
-                  readonly nativeType: 'timestamptz';
-                  readonly codecId: 'pg/timestamptz-string@1';
-                  readonly nullable: false;
-                  readonly default: { readonly kind: 'function'; readonly expression: 'now()' };
-                };
-                readonly updatedAt: {
-                  readonly nativeType: 'timestamptz';
-                  readonly codecId: 'pg/timestamptz-string@1';
-                  readonly nullable: false;
-                };
-              };
-              primaryKey: { readonly columns: readonly ['id'] };
-              uniques: readonly [];
-              indexes: readonly [
-                {
-                  readonly name: 'pacientePatologia_pacienteId_idx_8734dc3f';
-                  readonly prefix: 'pacientePatologia_pacienteId_idx';
-                  readonly columns: readonly ['pacienteId'];
-                  readonly unique: false;
-                },
-                {
-                  readonly name: 'pacientePatologia_atendimentoId_idx_b14914dc';
-                  readonly prefix: 'pacientePatologia_atendimentoId_idx';
-                  readonly columns: readonly ['atendimentoId'];
-                  readonly unique: false;
-                },
-                {
-                  readonly name: 'pacientePatologia_doencaId_idx_09d96f81';
-                  readonly prefix: 'pacientePatologia_doencaId_idx';
-                  readonly columns: readonly ['doencaId'];
-                  readonly unique: false;
-                },
-                {
-                  readonly name: 'pacientePatologia_patologiaOrigemId_idx_4352d26d';
-                  readonly prefix: 'pacientePatologia_patologiaOrigemId_idx';
-                  readonly columns: readonly ['patologiaOrigemId'];
-                  readonly unique: false;
-                },
-              ];
-              foreignKeys: readonly [
-                {
-                  readonly source: {
-                    readonly namespaceId: 'public' & NamespaceId;
-                    readonly tableName: 'pacientePatologia';
-                    readonly columns: readonly ['pacienteId'];
-                  };
-                  readonly target: {
-                    readonly namespaceId: 'public' & NamespaceId;
-                    readonly tableName: 'paciente';
-                    readonly columns: readonly ['id'];
-                  };
-                },
-                {
-                  readonly source: {
-                    readonly namespaceId: 'public' & NamespaceId;
-                    readonly tableName: 'pacientePatologia';
-                    readonly columns: readonly ['atendimentoId'];
-                  };
-                  readonly target: {
-                    readonly namespaceId: 'public' & NamespaceId;
-                    readonly tableName: 'pacienteAtendimento';
-                    readonly columns: readonly ['id'];
-                  };
-                },
-                {
-                  readonly source: {
-                    readonly namespaceId: 'public' & NamespaceId;
-                    readonly tableName: 'pacientePatologia';
-                    readonly columns: readonly ['doencaId'];
-                  };
-                  readonly target: {
-                    readonly namespaceId: 'public' & NamespaceId;
-                    readonly tableName: 'doencaVeterinaria';
-                    readonly columns: readonly ['id'];
-                  };
-                },
-                {
-                  readonly source: {
-                    readonly namespaceId: 'public' & NamespaceId;
-                    readonly tableName: 'pacientePatologia';
-                    readonly columns: readonly ['patologiaOrigemId'];
-                  };
-                  readonly target: {
-                    readonly namespaceId: 'public' & NamespaceId;
-                    readonly tableName: 'pacientePatologia';
                     readonly columns: readonly ['id'];
                   };
                 },
@@ -2914,14 +2578,6 @@ type ContractBase = Omit<
               readonly kind: 'valueSet';
               readonly values: readonly ['OWN', 'UNIT', 'ALL'];
             };
-            readonly EspecieDoencaVeterinaria: {
-              readonly kind: 'valueSet';
-              readonly values: readonly ['CANINO', 'FELINO', 'AMBOS'];
-            };
-            readonly StatusAtendimento: {
-              readonly kind: 'valueSet';
-              readonly values: readonly ['EM_ANDAMENTO', 'AGUARDANDO_PATOLOGIA', 'FINALIZADO'];
-            };
             readonly StatusExame: {
               readonly kind: 'valueSet';
               readonly values: readonly [
@@ -2929,15 +2585,6 @@ type ContractBase = Omit<
                 'REALIZADO',
                 'RESULTADO_DISPONIVEL',
                 'CANCELADO',
-              ];
-            };
-            readonly StatusPatologia: {
-              readonly kind: 'valueSet';
-              readonly values: readonly [
-                'SUSPEITA',
-                'EM_ACOMPANHAMENTO',
-                'TRATADA',
-                'SEM_PROBLEMA_CLINICO',
               ];
             };
             readonly TipoAtendimento: {
@@ -2989,14 +2636,6 @@ type ContractBase = Omit<
     readonly pacienteAtendimento: {
       readonly namespace: 'public' & NamespaceId;
       readonly model: 'PacienteAtendimento';
-    };
-    readonly doencaVeterinaria: {
-      readonly namespace: 'public' & NamespaceId;
-      readonly model: 'DoencaVeterinaria';
-    };
-    readonly pacientePatologia: {
-      readonly namespace: 'public' & NamespaceId;
-      readonly model: 'PacientePatologia';
     };
     readonly pacientePeso: {
       readonly namespace: 'public' & NamespaceId;
@@ -3138,75 +2777,6 @@ type ContractBase = Omit<
               };
             };
           };
-          readonly DoencaVeterinaria: {
-            readonly fields: {
-              readonly id: {
-                readonly nullable: false;
-                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int4@1' };
-              };
-              readonly nome: {
-                readonly nullable: false;
-                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
-              };
-              readonly especie: {
-                readonly nullable: false;
-                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
-              };
-              readonly categoria: {
-                readonly nullable: true;
-                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
-              };
-              readonly sinonimos: {
-                readonly nullable: true;
-                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
-              };
-              readonly ativo: {
-                readonly nullable: false;
-                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/bool@1' };
-              };
-              readonly createdAt: {
-                readonly nullable: false;
-                readonly type: {
-                  readonly kind: 'scalar';
-                  readonly codecId: 'pg/timestamptz-string@1';
-                };
-              };
-              readonly updatedAt: {
-                readonly nullable: false;
-                readonly type: {
-                  readonly kind: 'scalar';
-                  readonly codecId: 'pg/timestamptz-string@1';
-                };
-              };
-            };
-            readonly relations: {
-              readonly patologias: {
-                readonly to: {
-                  readonly namespace: 'public' & NamespaceId;
-                  readonly model: 'PacientePatologia';
-                };
-                readonly cardinality: '1:N';
-                readonly on: {
-                  readonly localFields: readonly ['id'];
-                  readonly targetFields: readonly ['doencaId'];
-                };
-              };
-            };
-            readonly storage: {
-              readonly table: 'doencaVeterinaria';
-              readonly namespaceId: 'public';
-              readonly fields: {
-                readonly id: { readonly column: 'id' };
-                readonly nome: { readonly column: 'nome' };
-                readonly especie: { readonly column: 'especie' };
-                readonly categoria: { readonly column: 'categoria' };
-                readonly sinonimos: { readonly column: 'sinonimos' };
-                readonly ativo: { readonly column: 'ativo' };
-                readonly createdAt: { readonly column: 'createdAt' };
-                readonly updatedAt: { readonly column: 'updatedAt' };
-              };
-            };
-          };
           readonly Paciente: {
             readonly fields: {
               readonly id: {
@@ -3318,17 +2888,6 @@ type ContractBase = Omit<
                 readonly to: {
                   readonly namespace: 'public' & NamespaceId;
                   readonly model: 'PacienteExame';
-                };
-                readonly cardinality: '1:N';
-                readonly on: {
-                  readonly localFields: readonly ['id'];
-                  readonly targetFields: readonly ['pacienteId'];
-                };
-              };
-              readonly patologias: {
-                readonly to: {
-                  readonly namespace: 'public' & NamespaceId;
-                  readonly model: 'PacientePatologia';
                 };
                 readonly cardinality: '1:N';
                 readonly on: {
@@ -3464,10 +3023,6 @@ type ContractBase = Omit<
                 readonly nullable: false;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
               };
-              readonly statusAtendimento: {
-                readonly nullable: false;
-                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
-              };
               readonly motivoConsulta: {
                 readonly nullable: true;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
@@ -3572,17 +3127,6 @@ type ContractBase = Omit<
                   readonly targetFields: readonly ['id'];
                 };
               };
-              readonly patologias: {
-                readonly to: {
-                  readonly namespace: 'public' & NamespaceId;
-                  readonly model: 'PacientePatologia';
-                };
-                readonly cardinality: '1:N';
-                readonly on: {
-                  readonly localFields: readonly ['id'];
-                  readonly targetFields: readonly ['atendimentoId'];
-                };
-              };
               readonly retornos: {
                 readonly to: {
                   readonly namespace: 'public' & NamespaceId;
@@ -3601,7 +3145,6 @@ type ContractBase = Omit<
               readonly fields: {
                 readonly id: { readonly column: 'id' };
                 readonly tipo: { readonly column: 'tipo' };
-                readonly statusAtendimento: { readonly column: 'statusAtendimento' };
                 readonly motivoConsulta: { readonly column: 'motivoConsulta' };
                 readonly anamnese: { readonly column: 'anamnese' };
                 readonly exameClinico: { readonly column: 'exameClinico' };
@@ -3849,152 +3392,6 @@ type ContractBase = Omit<
                 readonly profissionalNome: { readonly column: 'profissionalNome' };
                 readonly ativo: { readonly column: 'ativo' };
                 readonly exameId: { readonly column: 'exameId' };
-                readonly createdAt: { readonly column: 'createdAt' };
-                readonly updatedAt: { readonly column: 'updatedAt' };
-              };
-            };
-          };
-          readonly PacientePatologia: {
-            readonly fields: {
-              readonly id: {
-                readonly nullable: false;
-                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int4@1' };
-              };
-              readonly nome: {
-                readonly nullable: true;
-                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
-              };
-              readonly status: {
-                readonly nullable: false;
-                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
-              };
-              readonly observacoes: {
-                readonly nullable: true;
-                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
-              };
-              readonly dataRegistro: {
-                readonly nullable: false;
-                readonly type: {
-                  readonly kind: 'scalar';
-                  readonly codecId: 'pg/timestamptz-string@1';
-                };
-              };
-              readonly profissionalUsuarioId: {
-                readonly nullable: true;
-                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int4@1' };
-              };
-              readonly profissionalNome: {
-                readonly nullable: true;
-                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
-              };
-              readonly ativo: {
-                readonly nullable: false;
-                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/bool@1' };
-              };
-              readonly pacienteId: {
-                readonly nullable: false;
-                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int4@1' };
-              };
-              readonly atendimentoId: {
-                readonly nullable: false;
-                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int4@1' };
-              };
-              readonly doencaId: {
-                readonly nullable: true;
-                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int4@1' };
-              };
-              readonly patologiaOrigemId: {
-                readonly nullable: true;
-                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int4@1' };
-              };
-              readonly createdAt: {
-                readonly nullable: false;
-                readonly type: {
-                  readonly kind: 'scalar';
-                  readonly codecId: 'pg/timestamptz-string@1';
-                };
-              };
-              readonly updatedAt: {
-                readonly nullable: false;
-                readonly type: {
-                  readonly kind: 'scalar';
-                  readonly codecId: 'pg/timestamptz-string@1';
-                };
-              };
-            };
-            readonly relations: {
-              readonly atendimento: {
-                readonly to: {
-                  readonly namespace: 'public' & NamespaceId;
-                  readonly model: 'PacienteAtendimento';
-                };
-                readonly cardinality: 'N:1';
-                readonly on: {
-                  readonly localFields: readonly ['atendimentoId'];
-                  readonly targetFields: readonly ['id'];
-                };
-              };
-              readonly doenca: {
-                readonly to: {
-                  readonly namespace: 'public' & NamespaceId;
-                  readonly model: 'DoencaVeterinaria';
-                };
-                readonly cardinality: 'N:1';
-                readonly on: {
-                  readonly localFields: readonly ['doencaId'];
-                  readonly targetFields: readonly ['id'];
-                };
-              };
-              readonly evolucoes: {
-                readonly to: {
-                  readonly namespace: 'public' & NamespaceId;
-                  readonly model: 'PacientePatologia';
-                };
-                readonly cardinality: '1:N';
-                readonly on: {
-                  readonly localFields: readonly ['id'];
-                  readonly targetFields: readonly ['patologiaOrigemId'];
-                };
-              };
-              readonly paciente: {
-                readonly to: {
-                  readonly namespace: 'public' & NamespaceId;
-                  readonly model: 'Paciente';
-                };
-                readonly cardinality: 'N:1';
-                readonly on: {
-                  readonly localFields: readonly ['pacienteId'];
-                  readonly targetFields: readonly ['id'];
-                };
-              };
-              readonly patologiaOrigem: {
-                readonly to: {
-                  readonly namespace: 'public' & NamespaceId;
-                  readonly model: 'PacientePatologia';
-                };
-                readonly cardinality: 'N:1';
-                readonly on: {
-                  readonly localFields: readonly ['patologiaOrigemId'];
-                  readonly targetFields: readonly ['id'];
-                };
-              };
-            };
-            readonly storage: {
-              readonly table: 'pacientePatologia';
-              readonly namespaceId: 'public';
-              readonly fields: {
-                readonly id: { readonly column: 'id' };
-                readonly nome: { readonly column: 'nome' };
-                readonly status: { readonly column: 'status' };
-                readonly observacoes: { readonly column: 'observacoes' };
-                readonly dataRegistro: { readonly column: 'dataRegistro' };
-                readonly profissionalUsuarioId: { readonly column: 'profissionalUsuarioId' };
-                readonly profissionalNome: { readonly column: 'profissionalNome' };
-                readonly ativo: { readonly column: 'ativo' };
-                readonly pacienteId: { readonly column: 'pacienteId' };
-                readonly atendimentoId: { readonly column: 'atendimentoId' };
-                readonly doencaId: { readonly column: 'doencaId' };
-                readonly patologiaOrigemId: { readonly column: 'patologiaOrigemId' };
                 readonly createdAt: { readonly column: 'createdAt' };
                 readonly updatedAt: { readonly column: 'updatedAt' };
               };
@@ -4846,31 +4243,6 @@ type ContractBase = Omit<
               { readonly name: 'RETORNO'; readonly value: 'RETORNO' },
             ];
           };
-          readonly StatusAtendimento: {
-            readonly codecId: 'pg/text@1';
-            readonly members: readonly [
-              { readonly name: 'EM_ANDAMENTO'; readonly value: 'EM_ANDAMENTO' },
-              { readonly name: 'AGUARDANDO_PATOLOGIA'; readonly value: 'AGUARDANDO_PATOLOGIA' },
-              { readonly name: 'FINALIZADO'; readonly value: 'FINALIZADO' },
-            ];
-          };
-          readonly StatusPatologia: {
-            readonly codecId: 'pg/text@1';
-            readonly members: readonly [
-              { readonly name: 'SUSPEITA'; readonly value: 'SUSPEITA' },
-              { readonly name: 'EM_ACOMPANHAMENTO'; readonly value: 'EM_ACOMPANHAMENTO' },
-              { readonly name: 'TRATADA'; readonly value: 'TRATADA' },
-              { readonly name: 'SEM_PROBLEMA_CLINICO'; readonly value: 'SEM_PROBLEMA_CLINICO' },
-            ];
-          };
-          readonly EspecieDoencaVeterinaria: {
-            readonly codecId: 'pg/text@1';
-            readonly members: readonly [
-              { readonly name: 'CANINO'; readonly value: 'CANINO' },
-              { readonly name: 'FELINO'; readonly value: 'FELINO' },
-              { readonly name: 'AMBOS'; readonly value: 'AMBOS' },
-            ];
-          };
         };
       };
     };
@@ -4910,15 +4282,6 @@ type ContractBase = Omit<
         {
           readonly ref: {
             readonly namespace: 'public';
-            readonly table: 'doencaVeterinaria';
-            readonly column: 'updatedAt';
-          };
-          readonly onCreate: { readonly kind: 'generator'; readonly id: 'timestampNow' };
-          readonly onUpdate: { readonly kind: 'generator'; readonly id: 'timestampNow' };
-        },
-        {
-          readonly ref: {
-            readonly namespace: 'public';
             readonly table: 'paciente';
             readonly column: 'updatedAt';
           };
@@ -4947,15 +4310,6 @@ type ContractBase = Omit<
           readonly ref: {
             readonly namespace: 'public';
             readonly table: 'pacienteExameAnexo';
-            readonly column: 'updatedAt';
-          };
-          readonly onCreate: { readonly kind: 'generator'; readonly id: 'timestampNow' };
-          readonly onUpdate: { readonly kind: 'generator'; readonly id: 'timestampNow' };
-        },
-        {
-          readonly ref: {
-            readonly namespace: 'public';
-            readonly table: 'pacientePatologia';
             readonly column: 'updatedAt';
           };
           readonly onCreate: { readonly kind: 'generator'; readonly id: 'timestampNow' };

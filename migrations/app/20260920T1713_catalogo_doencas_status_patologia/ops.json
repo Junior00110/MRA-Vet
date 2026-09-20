@@ -1,0 +1,290 @@
+[
+  {
+    "id": "dropCheckConstraint.pacientePatologia.pacientePatologia_status_check_0fb0281a",
+    "label": "Drop check constraint \"pacientePatologia_status_check_0fb0281a\" on \"pacientePatologia\"",
+    "operationClass": "destructive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "checkConstraint",
+        "name": "pacientePatologia_status_check_0fb0281a",
+        "table": "pacientePatologia"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"pacientePatologia_status_check_0fb0281a\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "pacientePatologia_status_check_0fb0281a",
+          "public",
+          "\"public\".\"pacientePatologia\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "drop check constraint \"pacientePatologia_status_check_0fb0281a\"",
+        "sql": "ALTER TABLE \"public\".\"pacientePatologia\" DROP CONSTRAINT \"pacientePatologia_status_check_0fb0281a\""
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"pacientePatologia_status_check_0fb0281a\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "pacientePatologia_status_check_0fb0281a",
+          "public",
+          "\"public\".\"pacientePatologia\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.doencaVeterinaria",
+    "label": "Create table \"doencaVeterinaria\"",
+    "summary": "Creates table \"doencaVeterinaria\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "doencaVeterinaria"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"doencaVeterinaria\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"doencaVeterinaria\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"doencaVeterinaria\"",
+        "sql": "CREATE TABLE \"public\".\"doencaVeterinaria\" (\n  \"ativo\" bool DEFAULT true NOT NULL,\n  \"categoria\" text,\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"especie\" text NOT NULL,\n  \"id\" SERIAL NOT NULL,\n  \"nome\" text NOT NULL,\n  \"sinonimos\" text,\n  \"updatedAt\" timestamptz NOT NULL,\n  PRIMARY KEY (\"id\"),\n  CONSTRAINT \"doencaVeterinaria_especie_check_992bef08\" CHECK (\"especie\" IN ('CANINO', 'FELINO', 'AMBOS'))\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"doencaVeterinaria\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"doencaVeterinaria\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.pacientePatologia.doencaId",
+    "label": "Add column \"doencaId\" to \"pacientePatologia\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "doencaId",
+        "table": "pacientePatologia"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"doencaId\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "pacientePatologia",
+          "doencaId"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"doencaId\"",
+        "sql": "ALTER TABLE \"public\".\"pacientePatologia\" ADD COLUMN \"doencaId\" int4"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"doencaId\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "pacientePatologia",
+          "doencaId"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.doencaVeterinaria.doencaVeterinaria_nome_especie_key",
+    "label": "Add unique constraint on \"doencaVeterinaria\" (nome, especie)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "doencaVeterinaria_nome_especie_key",
+        "table": "doencaVeterinaria"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"doencaVeterinaria_nome_especie_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "doencaVeterinaria_nome_especie_key",
+          "public",
+          "\"public\".\"doencaVeterinaria\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"doencaVeterinaria_nome_especie_key\"",
+        "sql": "ALTER TABLE \"public\".\"doencaVeterinaria\" ADD CONSTRAINT \"doencaVeterinaria_nome_especie_key\" UNIQUE (\"nome\", \"especie\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"doencaVeterinaria_nome_especie_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "doencaVeterinaria_nome_especie_key",
+          "public",
+          "\"public\".\"doencaVeterinaria\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "checkConstraint.pacientePatologia.pacientePatologia_status_check_1a591222",
+    "label": "Add check constraint \"pacientePatologia_status_check_1a591222\" on \"pacientePatologia\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "checkConstraint",
+        "name": "pacientePatologia_status_check_1a591222",
+        "table": "pacientePatologia"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"pacientePatologia_status_check_1a591222\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "pacientePatologia_status_check_1a591222",
+          "public",
+          "\"public\".\"pacientePatologia\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add check constraint \"pacientePatologia_status_check_1a591222\"",
+        "sql": "ALTER TABLE \"public\".\"pacientePatologia\" ADD CONSTRAINT \"pacientePatologia_status_check_1a591222\" CHECK (\"status\" IN ('SUSPEITA', 'EM_ACOMPANHAMENTO', 'TRATADA', 'SEM_PROBLEMA_CLINICO'))"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"pacientePatologia_status_check_1a591222\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "pacientePatologia_status_check_1a591222",
+          "public",
+          "\"public\".\"pacientePatologia\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.pacientePatologia.pacientePatologia_doencaId_idx_09d96f81",
+    "label": "Create index \"pacientePatologia_doencaId_idx_09d96f81\" on \"pacientePatologia\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "pacientePatologia_doencaId_idx_09d96f81",
+        "table": "pacientePatologia"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"pacientePatologia_doencaId_idx_09d96f81\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"pacientePatologia_doencaId_idx_09d96f81\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"pacientePatologia_doencaId_idx_09d96f81\"",
+        "sql": "CREATE INDEX \"pacientePatologia_doencaId_idx_09d96f81\" ON \"public\".\"pacientePatologia\" (\"doencaId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"pacientePatologia_doencaId_idx_09d96f81\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"pacientePatologia_doencaId_idx_09d96f81\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.pacientePatologia.pacientePatologia_doencaId_fkey",
+    "label": "Add foreign key \"pacientePatologia_doencaId_fkey\" on \"pacientePatologia\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "pacientePatologia_doencaId_fkey",
+        "table": "pacientePatologia"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"pacientePatologia_doencaId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "pacientePatologia_doencaId_fkey",
+          "public",
+          "\"public\".\"pacientePatologia\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"pacientePatologia_doencaId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"pacientePatologia\"\nADD CONSTRAINT \"pacientePatologia_doencaId_fkey\"\nFOREIGN KEY (\"doencaId\")\nREFERENCES \"public\".\"doencaVeterinaria\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"pacientePatologia_doencaId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "pacientePatologia_doencaId_fkey",
+          "public",
+          "\"public\".\"pacientePatologia\""
+        ]
+      }
+    ]
+  }
+]

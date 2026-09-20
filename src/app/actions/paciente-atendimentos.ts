@@ -8,79 +8,23 @@ import { exigirPermissao } from "@/lib/auth/authorization";
 export type EstadoAtendimento = {
   ok: boolean;
   mensagem: string;
+  atendimentoId?: number;
+  requerPatologia?: boolean;
 };
 
-export async function adicionarAtendimentoPaciente(
-  _estadoAnterior: EstadoAtendimento,
+function textoCampo(
   formData: FormData,
-): Promise<EstadoAtendimento> {
-  const acesso =
-    await exigirPermissao(
-      "paciente.editar",
-    );
-
-  const pacienteId = Number(
-    formData.get("pacienteId"),
-  );
-
-  const motivoConsulta = String(
-    formData.get("motivoConsulta") ??
+  nome: string,
+) {
+  return String(
+    formData.get(nome) ??
       "",
   ).trim();
+}
 
-  const anamnese = String(
-    formData.get("anamnese") ??
-      "",
-  ).trim();
-
-  const exameClinico = String(
-    formData.get("exameClinico") ??
-      "",
-  ).trim();
-
-  const diagnosticoSuspeita =
-    String(
-      formData.get(
-        "diagnosticoSuspeita",
-      ) ?? "",
-    ).trim();
-
-  const conduta = String(
-    formData.get("conduta") ??
-      "",
-  ).trim();
-
-  const observacoes = String(
-    formData.get("observacoes") ??
-      "",
-  ).trim();
-
-  if (
-    !Number.isInteger(pacienteId) ||
-    pacienteId <= 0
-  ) {
-    return {
-      ok: false,
-      mensagem:
-        "Paciente inválido.",
-    };
-  }
-
-  if (
-    !motivoConsulta &&
-    !anamnese &&
-    !exameClinico &&
-    !diagnosticoSuspeita &&
-    !conduta &&
-    !observacoes
-  ) {
-    return {
-      ok: false,
-      mensagem:
-        "Preencha pelo menos uma informação do atendimento.",
-    };
-  }
-
+async function buscarPaciente(
+  pacienteId: number,
+) {
   const runtime =
     db.runtime();
 
@@ -105,8 +49,120 @@ export async function adicionarAtendimentoPaciente(
       consultaPaciente,
     );
 
-  const paciente =
-    resultadoPaciente[0];
+  return {
+    runtime,
+    paciente:
+      resultadoPaciente[0],
+  };
+}
+
+function revalidarPaciente(
+  pacienteId: number,
+  clienteId:
+    | number
+    | null
+    | undefined,
+) {
+  revalidatePath(
+    `/pacientes/${pacienteId}`,
+  );
+
+  if (
+    clienteId !== null &&
+    clienteId !== undefined
+  ) {
+    revalidatePath(
+      `/clientes/${clienteId}`,
+    );
+  }
+}
+
+export async function adicionarAtendimentoPaciente(
+  _estadoAnterior: EstadoAtendimento,
+  formData: FormData,
+): Promise<EstadoAtendimento> {
+  const acesso =
+    await exigirPermissao(
+      "paciente.editar",
+    );
+
+  const pacienteId =
+    Number(
+      formData.get(
+        "pacienteId",
+      ),
+    );
+
+  const motivoConsulta =
+    textoCampo(
+      formData,
+      "motivoConsulta",
+    );
+
+  const anamnese =
+    textoCampo(
+      formData,
+      "anamnese",
+    );
+
+  const exameClinico =
+    textoCampo(
+      formData,
+      "exameClinico",
+    );
+
+  const diagnosticoSuspeita =
+    textoCampo(
+      formData,
+      "diagnosticoSuspeita",
+    );
+
+  const conduta =
+    textoCampo(
+      formData,
+      "conduta",
+    );
+
+  const observacoes =
+    textoCampo(
+      formData,
+      "observacoes",
+    );
+
+  if (
+    !Number.isInteger(
+      pacienteId,
+    ) ||
+    pacienteId <= 0
+  ) {
+    return {
+      ok: false,
+      mensagem:
+        "Paciente inválido.",
+    };
+  }
+
+  if (
+    !motivoConsulta &&
+    !anamnese &&
+    !exameClinico &&
+    !diagnosticoSuspeita &&
+    !conduta &&
+    !observacoes
+  ) {
+    return {
+      ok: false,
+      mensagem:
+        "Preencha pelo menos uma informação do atendimento.",
+    };
+  }
+
+  const {
+    runtime,
+    paciente,
+  } = await buscarPaciente(
+    pacienteId,
+  );
 
   if (!paciente) {
     return {
@@ -131,7 +187,16 @@ export async function adicionarAtendimentoPaciente(
     db.sql.public.pacienteAtendimento
       .insert([
         {
+          tipo:
+            "CONSULTA",
+
+          statusAtendimento:
+            "AGUARDANDO_PATOLOGIA",
+
           pacienteId,
+
+          atendimentoOrigemId:
+            null,
 
           motivoConsulta:
             motivoConsulta ||
@@ -157,6 +222,9 @@ export async function adicionarAtendimentoPaciente(
             observacoes ||
             null,
 
+          evolucao:
+            null,
+
           dataAtendimento:
             agora,
 
@@ -171,28 +239,284 @@ export async function adicionarAtendimentoPaciente(
           updatedAt: agora,
         },
       ])
+      .returning("id")
       .build();
 
-  await runtime.execute(
-    inserirAtendimento,
-  );
-
-  revalidatePath(
-    `/pacientes/${pacienteId}`,
-  );
-
-  if (
-    paciente.clienteId !== null
-  ) {
-    revalidatePath(
-      `/clientes/${paciente.clienteId}`,
+  const resultadoInsercao =
+    await runtime.query(
+      inserirAtendimento,
     );
+
+  const atendimentoCriado =
+    resultadoInsercao[0];
+
+  if (!atendimentoCriado) {
+    return {
+      ok: false,
+      mensagem:
+        "O atendimento foi salvo, mas não foi possível confirmar o identificador criado.",
+    };
   }
+
+  revalidarPaciente(
+    pacienteId,
+    paciente.clienteId,
+  );
 
   return {
     ok: true,
     mensagem:
-      "Atendimento salvo com sucesso.",
+      "Atendimento registrado. Agora informe a patologia para concluir.",
+    atendimentoId:
+      atendimentoCriado.id,
+    requerPatologia: true,
+  };
+}
+
+export async function adicionarRetornoPaciente(
+  _estadoAnterior: EstadoAtendimento,
+  formData: FormData,
+): Promise<EstadoAtendimento> {
+  const acesso =
+    await exigirPermissao(
+      "paciente.editar",
+    );
+
+  const pacienteId =
+    Number(
+      formData.get(
+        "pacienteId",
+      ),
+    );
+
+  const atendimentoOrigemId =
+    Number(
+      formData.get(
+        "atendimentoOrigemId",
+      ),
+    );
+
+  const evolucao =
+    textoCampo(
+      formData,
+      "evolucao",
+    );
+
+  const exameClinico =
+    textoCampo(
+      formData,
+      "exameClinico",
+    );
+
+  const diagnosticoSuspeita =
+    textoCampo(
+      formData,
+      "diagnosticoSuspeita",
+    );
+
+  const conduta =
+    textoCampo(
+      formData,
+      "conduta",
+    );
+
+  const observacoes =
+    textoCampo(
+      formData,
+      "observacoes",
+    );
+
+  if (
+    !Number.isInteger(
+      pacienteId,
+    ) ||
+    pacienteId <= 0 ||
+    !Number.isInteger(
+      atendimentoOrigemId,
+    ) ||
+    atendimentoOrigemId <= 0
+  ) {
+    return {
+      ok: false,
+      mensagem:
+        "Dados inválidos para registrar o retorno.",
+    };
+  }
+
+  if (
+    !evolucao &&
+    !exameClinico &&
+    !diagnosticoSuspeita &&
+    !conduta &&
+    !observacoes
+  ) {
+    return {
+      ok: false,
+      mensagem:
+        "Preencha pelo menos uma informação do retorno.",
+    };
+  }
+
+  const {
+    runtime,
+    paciente,
+  } = await buscarPaciente(
+    pacienteId,
+  );
+
+  if (!paciente) {
+    return {
+      ok: false,
+      mensagem:
+        "Paciente não encontrado.",
+    };
+  }
+
+  if (!paciente.ativo) {
+    return {
+      ok: false,
+      mensagem:
+        "Não é possível registrar retorno para um paciente inativo.",
+    };
+  }
+
+  const consultaAtendimentoOrigem =
+    db.sql.public.pacienteAtendimento
+      .select(
+        "id",
+        "pacienteId",
+        "tipo",
+        "ativo",
+      )
+      .where((f, fns) =>
+        fns.eq(
+          f.id,
+          atendimentoOrigemId,
+        ),
+      )
+      .limit(1)
+      .build();
+
+  const resultadoAtendimentoOrigem =
+    await runtime.query(
+      consultaAtendimentoOrigem,
+    );
+
+  const atendimentoOrigem =
+    resultadoAtendimentoOrigem[0];
+
+  if (
+    !atendimentoOrigem ||
+    !atendimentoOrigem.ativo ||
+    atendimentoOrigem.pacienteId !==
+      pacienteId
+  ) {
+    return {
+      ok: false,
+      mensagem:
+        "A consulta de origem não foi encontrada.",
+    };
+  }
+
+  if (
+    atendimentoOrigem.tipo !==
+    "CONSULTA"
+  ) {
+    return {
+      ok: false,
+      mensagem:
+        "O retorno deve ser vinculado à consulta inicial.",
+    };
+  }
+
+  const agora =
+    new Date().toISOString();
+
+  const inserirRetorno =
+    db.sql.public.pacienteAtendimento
+      .insert([
+        {
+          tipo:
+            "RETORNO",
+
+          statusAtendimento:
+            "AGUARDANDO_PATOLOGIA",
+
+          pacienteId,
+
+          atendimentoOrigemId,
+
+          motivoConsulta:
+            null,
+
+          anamnese:
+            null,
+
+          exameClinico:
+            exameClinico ||
+            null,
+
+          diagnosticoSuspeita:
+            diagnosticoSuspeita ||
+            null,
+
+          conduta:
+            conduta ||
+            null,
+
+          observacoes:
+            observacoes ||
+            null,
+
+          evolucao:
+            evolucao ||
+            null,
+
+          dataAtendimento:
+            agora,
+
+          profissionalUsuarioId:
+            acesso.usuario.id,
+
+          profissionalNome:
+            acesso.usuario.nome,
+
+          ativo: true,
+
+          updatedAt: agora,
+        },
+      ])
+      .returning("id")
+      .build();
+
+  const resultadoInsercao =
+    await runtime.query(
+      inserirRetorno,
+    );
+
+  const retornoCriado =
+    resultadoInsercao[0];
+
+  if (!retornoCriado) {
+    return {
+      ok: false,
+      mensagem:
+        "O retorno foi salvo, mas não foi possível confirmar o identificador criado.",
+    };
+  }
+
+  revalidarPaciente(
+    pacienteId,
+    paciente.clienteId,
+  );
+
+  return {
+    ok: true,
+    mensagem:
+      "Retorno registrado. Agora informe a patologia para concluir.",
+    atendimentoId:
+      retornoCriado.id,
+    requerPatologia: true,
   };
 }
 
@@ -210,13 +534,19 @@ export async function removerAtendimentoPaciente(
     "paciente.editar",
   );
 
-  const atendimentoId = Number(
-    formData.get("atendimentoId"),
-  );
+  const atendimentoId =
+    Number(
+      formData.get(
+        "atendimentoId",
+      ),
+    );
 
-  const pacienteId = Number(
-    formData.get("pacienteId"),
-  );
+  const pacienteId =
+    Number(
+      formData.get(
+        "pacienteId",
+      ),
+    );
 
   if (
     !Number.isInteger(
@@ -236,10 +566,6 @@ export async function removerAtendimentoPaciente(
   const runtime =
     db.runtime();
 
-  /*
-   * CONFERE SE O ATENDIMENTO
-   * REALMENTE PERTENCE AO PACIENTE
-   */
   const consultaAtendimento =
     db.sql.public.pacienteAtendimento
       .select(
@@ -274,10 +600,6 @@ export async function removerAtendimentoPaciente(
     );
   }
 
-  /*
-   * NÃO APAGA DO BANCO.
-   * SOMENTE MARCA COMO INATIVO.
-   */
   const desativarAtendimento =
     db.sql.public.pacienteAtendimento
       .update({

@@ -251,20 +251,37 @@ export default function PacienteAtendimentoForm({
     );
 
   useEffect(() => {
-    if (estado.ok) {
-      formRef.current?.reset();
-
-      setAnamnese(
-        anamneseInicial,
-      );
-
-      setExame(
-        exameInicial,
-      );
-
-      setAberto(false);
+    if (
+      !estado.ok ||
+      !estado.requerPatologia ||
+      !estado.atendimentoId
+    ) {
+      return;
     }
-  }, [estado.ok]);
+
+    // A patologia obrigatória é renderizada somente pela página
+    // do paciente. Isso evita duas janelas idênticas sobrepostas.
+    formRef.current?.reset();
+
+    setAnamnese(
+      anamneseInicial,
+    );
+
+    setExame(
+      exameInicial,
+    );
+
+    setAberto(false);
+
+    requestAnimationFrame(
+      () =>
+        botaoAbrirRef.current?.focus(),
+    );
+  }, [
+    estado.atendimentoId,
+    estado.ok,
+    estado.requerPatologia,
+  ]);
 
   useEffect(() => {
     if (!aberto) return;
@@ -1414,7 +1431,7 @@ export default function PacienteAtendimentoForm({
 
             <div className="mt-7 flex flex-col gap-4 border-t border-[#E4EAE8] pt-5 sm:flex-row sm:items-center sm:justify-between">
               <p className="max-w-[520px] text-xs font-medium text-[#8A9794]">
-                As informações da anamnese e do exame físico serão registradas no histórico clínico do paciente.
+                Após finalizar o atendimento, o registro obrigatório de patologia / problema clínico será aberto automaticamente.
               </p>
 
               <div className="flex w-full flex-col-reverse gap-3 sm:w-auto sm:flex-row">
@@ -1440,14 +1457,15 @@ export default function PacienteAtendimentoForm({
                   />
 
                   {pending
-                    ? "Salvando..."
-                    : "Salvar atendimento"}
+                    ? "Finalizando..."
+                    : "Finalizar atendimento"}
                 </button>
               </div>
             </div>
           </form>
         </div>
       )}
+
     </>
   );
 }

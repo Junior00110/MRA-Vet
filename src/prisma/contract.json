@@ -8,6 +8,10 @@
       "model": "Cliente",
       "namespace": "public"
     },
+    "doencaVeterinaria": {
+      "model": "DoencaVeterinaria",
+      "namespace": "public"
+    },
     "paciente": {
       "model": "Paciente",
       "namespace": "public"
@@ -26,6 +30,10 @@
     },
     "pacienteExameAnexo": {
       "model": "PacienteExameAnexo",
+      "namespace": "public"
+    },
+    "pacientePatologia": {
+      "model": "PacientePatologia",
       "namespace": "public"
     },
     "pacientePeso": {
@@ -111,6 +119,40 @@
               }
             ]
           },
+          "EspecieDoencaVeterinaria": {
+            "codecId": "pg/text@1",
+            "members": [
+              {
+                "name": "CANINO",
+                "value": "CANINO"
+              },
+              {
+                "name": "FELINO",
+                "value": "FELINO"
+              },
+              {
+                "name": "AMBOS",
+                "value": "AMBOS"
+              }
+            ]
+          },
+          "StatusAtendimento": {
+            "codecId": "pg/text@1",
+            "members": [
+              {
+                "name": "EM_ANDAMENTO",
+                "value": "EM_ANDAMENTO"
+              },
+              {
+                "name": "AGUARDANDO_PATOLOGIA",
+                "value": "AGUARDANDO_PATOLOGIA"
+              },
+              {
+                "name": "FINALIZADO",
+                "value": "FINALIZADO"
+              }
+            ]
+          },
           "StatusExame": {
             "codecId": "pg/text@1",
             "members": [
@@ -129,6 +171,40 @@
               {
                 "name": "CANCELADO",
                 "value": "CANCELADO"
+              }
+            ]
+          },
+          "StatusPatologia": {
+            "codecId": "pg/text@1",
+            "members": [
+              {
+                "name": "SUSPEITA",
+                "value": "SUSPEITA"
+              },
+              {
+                "name": "EM_ACOMPANHAMENTO",
+                "value": "EM_ACOMPANHAMENTO"
+              },
+              {
+                "name": "TRATADA",
+                "value": "TRATADA"
+              },
+              {
+                "name": "SEM_PROBLEMA_CLINICO",
+                "value": "SEM_PROBLEMA_CLINICO"
+              }
+            ]
+          },
+          "TipoAtendimento": {
+            "codecId": "pg/text@1",
+            "members": [
+              {
+                "name": "CONSULTA",
+                "value": "CONSULTA"
+              },
+              {
+                "name": "RETORNO",
+                "value": "RETORNO"
               }
             ]
           },
@@ -362,6 +438,119 @@
               "table": "cliente"
             }
           },
+          "DoencaVeterinaria": {
+            "fields": {
+              "ativo": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/bool@1",
+                  "kind": "scalar"
+                }
+              },
+              "categoria": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "createdAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "kind": "scalar"
+                }
+              },
+              "especie": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                },
+                "valueSet": {
+                  "entityKind": "enum",
+                  "entityName": "EspecieDoencaVeterinaria",
+                  "namespaceId": "public",
+                  "plane": "domain"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "nome": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "sinonimos": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "updatedAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "patologias": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "doencaId"
+                  ]
+                },
+                "to": {
+                  "model": "PacientePatologia",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "ativo": {
+                  "column": "ativo"
+                },
+                "categoria": {
+                  "column": "categoria"
+                },
+                "createdAt": {
+                  "column": "createdAt"
+                },
+                "especie": {
+                  "column": "especie"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "nome": {
+                  "column": "nome"
+                },
+                "sinonimos": {
+                  "column": "sinonimos"
+                },
+                "updatedAt": {
+                  "column": "updatedAt"
+                }
+              },
+              "namespaceId": "public",
+              "table": "doencaVeterinaria"
+            }
+          },
           "Paciente": {
             "fields": {
               "ativo": {
@@ -535,6 +724,21 @@
                 },
                 "to": {
                   "model": "PacienteExame",
+                  "namespace": "public"
+                }
+              },
+              "patologias": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "pacienteId"
+                  ]
+                },
+                "to": {
+                  "model": "PacientePatologia",
                   "namespace": "public"
                 }
               },
@@ -745,6 +949,13 @@
                   "kind": "scalar"
                 }
               },
+              "atendimentoOrigemId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
               "ativo": {
                 "nullable": false,
                 "type": {
@@ -774,6 +985,13 @@
                 }
               },
               "diagnosticoSuspeita": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "evolucao": {
                 "nullable": true,
                 "type": {
                   "codecId": "pg/text@1",
@@ -829,6 +1047,32 @@
                   "kind": "scalar"
                 }
               },
+              "statusAtendimento": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                },
+                "valueSet": {
+                  "entityKind": "enum",
+                  "entityName": "StatusAtendimento",
+                  "namespaceId": "public",
+                  "plane": "domain"
+                }
+              },
+              "tipo": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                },
+                "valueSet": {
+                  "entityKind": "enum",
+                  "entityName": "TipoAtendimento",
+                  "namespaceId": "public",
+                  "plane": "domain"
+                }
+              },
               "updatedAt": {
                 "nullable": false,
                 "type": {
@@ -838,6 +1082,21 @@
               }
             },
             "relations": {
+              "atendimentoOrigem": {
+                "cardinality": "N:1",
+                "on": {
+                  "localFields": [
+                    "atendimentoOrigemId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "PacienteAtendimento",
+                  "namespace": "public"
+                }
+              },
               "exames": {
                 "cardinality": "1:N",
                 "on": {
@@ -867,12 +1126,45 @@
                   "model": "Paciente",
                   "namespace": "public"
                 }
+              },
+              "patologias": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "atendimentoId"
+                  ]
+                },
+                "to": {
+                  "model": "PacientePatologia",
+                  "namespace": "public"
+                }
+              },
+              "retornos": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "atendimentoOrigemId"
+                  ]
+                },
+                "to": {
+                  "model": "PacienteAtendimento",
+                  "namespace": "public"
+                }
               }
             },
             "storage": {
               "fields": {
                 "anamnese": {
                   "column": "anamnese"
+                },
+                "atendimentoOrigemId": {
+                  "column": "atendimentoOrigemId"
                 },
                 "ativo": {
                   "column": "ativo"
@@ -888,6 +1180,9 @@
                 },
                 "diagnosticoSuspeita": {
                   "column": "diagnosticoSuspeita"
+                },
+                "evolucao": {
+                  "column": "evolucao"
                 },
                 "exameClinico": {
                   "column": "exameClinico"
@@ -909,6 +1204,12 @@
                 },
                 "profissionalUsuarioId": {
                   "column": "profissionalUsuarioId"
+                },
+                "statusAtendimento": {
+                  "column": "statusAtendimento"
+                },
+                "tipo": {
+                  "column": "tipo"
                 },
                 "updatedAt": {
                   "column": "updatedAt"
@@ -1296,6 +1597,239 @@
               },
               "namespaceId": "public",
               "table": "pacienteExameAnexo"
+            }
+          },
+          "PacientePatologia": {
+            "fields": {
+              "atendimentoId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "ativo": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/bool@1",
+                  "kind": "scalar"
+                }
+              },
+              "createdAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "kind": "scalar"
+                }
+              },
+              "dataRegistro": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "kind": "scalar"
+                }
+              },
+              "doencaId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "nome": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "observacoes": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "pacienteId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "patologiaOrigemId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "profissionalNome": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "profissionalUsuarioId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "status": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                },
+                "valueSet": {
+                  "entityKind": "enum",
+                  "entityName": "StatusPatologia",
+                  "namespaceId": "public",
+                  "plane": "domain"
+                }
+              },
+              "updatedAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "atendimento": {
+                "cardinality": "N:1",
+                "on": {
+                  "localFields": [
+                    "atendimentoId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "PacienteAtendimento",
+                  "namespace": "public"
+                }
+              },
+              "doenca": {
+                "cardinality": "N:1",
+                "on": {
+                  "localFields": [
+                    "doencaId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "DoencaVeterinaria",
+                  "namespace": "public"
+                }
+              },
+              "evolucoes": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "patologiaOrigemId"
+                  ]
+                },
+                "to": {
+                  "model": "PacientePatologia",
+                  "namespace": "public"
+                }
+              },
+              "paciente": {
+                "cardinality": "N:1",
+                "on": {
+                  "localFields": [
+                    "pacienteId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Paciente",
+                  "namespace": "public"
+                }
+              },
+              "patologiaOrigem": {
+                "cardinality": "N:1",
+                "on": {
+                  "localFields": [
+                    "patologiaOrigemId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "PacientePatologia",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "atendimentoId": {
+                  "column": "atendimentoId"
+                },
+                "ativo": {
+                  "column": "ativo"
+                },
+                "createdAt": {
+                  "column": "createdAt"
+                },
+                "dataRegistro": {
+                  "column": "dataRegistro"
+                },
+                "doencaId": {
+                  "column": "doencaId"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "nome": {
+                  "column": "nome"
+                },
+                "observacoes": {
+                  "column": "observacoes"
+                },
+                "pacienteId": {
+                  "column": "pacienteId"
+                },
+                "patologiaOrigemId": {
+                  "column": "patologiaOrigemId"
+                },
+                "profissionalNome": {
+                  "column": "profissionalNome"
+                },
+                "profissionalUsuarioId": {
+                  "column": "profissionalUsuarioId"
+                },
+                "status": {
+                  "column": "status"
+                },
+                "updatedAt": {
+                  "column": "updatedAt"
+                }
+              },
+              "namespaceId": "public",
+              "table": "pacientePatologia"
             }
           },
           "PacientePeso": {
@@ -2662,6 +3196,90 @@
                 }
               ]
             },
+            "doencaVeterinaria": {
+              "checks": [
+                {
+                  "expression": "\"especie\" IN ('CANINO', 'FELINO', 'AMBOS')",
+                  "name": "doencaVeterinaria_especie_check_992bef08",
+                  "prefix": "doencaVeterinaria_especie_check"
+                }
+              ],
+              "columns": {
+                "ativo": {
+                  "codecId": "pg/bool@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": true
+                  },
+                  "nativeType": "bool",
+                  "nullable": false
+                },
+                "categoria": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "createdAt": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "especie": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false,
+                  "valueSet": {
+                    "entityKind": "valueSet",
+                    "entityName": "EspecieDoencaVeterinaria",
+                    "namespaceId": "public",
+                    "plane": "storage"
+                  }
+                },
+                "id": {
+                  "codecId": "pg/int4@1",
+                  "default": {
+                    "expression": "autoincrement()",
+                    "kind": "function"
+                  },
+                  "nativeType": "int4",
+                  "nullable": false
+                },
+                "nome": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "sinonimos": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "updatedAt": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [],
+              "indexes": [],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": [
+                {
+                  "columns": [
+                    "nome",
+                    "especie"
+                  ]
+                }
+              ]
+            },
             "paciente": {
               "columns": {
                 "ativo": {
@@ -2888,10 +3506,27 @@
               "uniques": []
             },
             "pacienteAtendimento": {
+              "checks": [
+                {
+                  "expression": "\"statusAtendimento\" IN ('EM_ANDAMENTO', 'AGUARDANDO_PATOLOGIA', 'FINALIZADO')",
+                  "name": "pacienteAtendimento_statusAtendimento_check_1e2f0699",
+                  "prefix": "pacienteAtendimento_statusAtendimento_check"
+                },
+                {
+                  "expression": "\"tipo\" IN ('CONSULTA', 'RETORNO')",
+                  "name": "pacienteAtendimento_tipo_check_10b78058",
+                  "prefix": "pacienteAtendimento_tipo_check"
+                }
+              ],
               "columns": {
                 "anamnese": {
                   "codecId": "pg/text@1",
                   "nativeType": "text",
+                  "nullable": true
+                },
+                "atendimentoOrigemId": {
+                  "codecId": "pg/int4@1",
+                  "nativeType": "int4",
                   "nullable": true
                 },
                 "ativo": {
@@ -2927,6 +3562,11 @@
                   "nullable": false
                 },
                 "diagnosticoSuspeita": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "evolucao": {
                   "codecId": "pg/text@1",
                   "nativeType": "text",
                   "nullable": true
@@ -2970,6 +3610,36 @@
                   "nativeType": "int4",
                   "nullable": true
                 },
+                "statusAtendimento": {
+                  "codecId": "pg/text@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": "FINALIZADO"
+                  },
+                  "nativeType": "text",
+                  "nullable": false,
+                  "valueSet": {
+                    "entityKind": "valueSet",
+                    "entityName": "StatusAtendimento",
+                    "namespaceId": "public",
+                    "plane": "storage"
+                  }
+                },
+                "tipo": {
+                  "codecId": "pg/text@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": "CONSULTA"
+                  },
+                  "nativeType": "text",
+                  "nullable": false,
+                  "valueSet": {
+                    "entityKind": "valueSet",
+                    "entityName": "TipoAtendimento",
+                    "namespaceId": "public",
+                    "plane": "storage"
+                  }
+                },
                 "updatedAt": {
                   "codecId": "pg/timestamptz-string@1",
                   "nativeType": "timestamptz",
@@ -2992,9 +3662,33 @@
                     "namespaceId": "public",
                     "tableName": "paciente"
                   }
+                },
+                {
+                  "source": {
+                    "columns": [
+                      "atendimentoOrigemId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "pacienteAtendimento"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "pacienteAtendimento"
+                  }
                 }
               ],
               "indexes": [
+                {
+                  "columns": [
+                    "atendimentoOrigemId"
+                  ],
+                  "name": "pacienteAtendimento_atendimentoOrigemId_idx_b3773bde",
+                  "prefix": "pacienteAtendimento_atendimentoOrigemId_idx",
+                  "unique": false
+                },
                 {
                   "columns": [
                     "pacienteId"
@@ -3306,6 +4000,215 @@
                   ]
                 }
               ]
+            },
+            "pacientePatologia": {
+              "checks": [
+                {
+                  "expression": "\"status\" IN ('SUSPEITA', 'EM_ACOMPANHAMENTO', 'TRATADA', 'SEM_PROBLEMA_CLINICO')",
+                  "name": "pacientePatologia_status_check_1a591222",
+                  "prefix": "pacientePatologia_status_check"
+                }
+              ],
+              "columns": {
+                "atendimentoId": {
+                  "codecId": "pg/int4@1",
+                  "nativeType": "int4",
+                  "nullable": false
+                },
+                "ativo": {
+                  "codecId": "pg/bool@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": true
+                  },
+                  "nativeType": "bool",
+                  "nullable": false
+                },
+                "createdAt": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "dataRegistro": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "doencaId": {
+                  "codecId": "pg/int4@1",
+                  "nativeType": "int4",
+                  "nullable": true
+                },
+                "id": {
+                  "codecId": "pg/int4@1",
+                  "default": {
+                    "expression": "autoincrement()",
+                    "kind": "function"
+                  },
+                  "nativeType": "int4",
+                  "nullable": false
+                },
+                "nome": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "observacoes": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "pacienteId": {
+                  "codecId": "pg/int4@1",
+                  "nativeType": "int4",
+                  "nullable": false
+                },
+                "patologiaOrigemId": {
+                  "codecId": "pg/int4@1",
+                  "nativeType": "int4",
+                  "nullable": true
+                },
+                "profissionalNome": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "profissionalUsuarioId": {
+                  "codecId": "pg/int4@1",
+                  "nativeType": "int4",
+                  "nullable": true
+                },
+                "status": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false,
+                  "valueSet": {
+                    "entityKind": "valueSet",
+                    "entityName": "StatusPatologia",
+                    "namespaceId": "public",
+                    "plane": "storage"
+                  }
+                },
+                "updatedAt": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [
+                {
+                  "source": {
+                    "columns": [
+                      "pacienteId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "pacientePatologia"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "paciente"
+                  }
+                },
+                {
+                  "source": {
+                    "columns": [
+                      "atendimentoId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "pacientePatologia"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "pacienteAtendimento"
+                  }
+                },
+                {
+                  "source": {
+                    "columns": [
+                      "doencaId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "pacientePatologia"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "doencaVeterinaria"
+                  }
+                },
+                {
+                  "source": {
+                    "columns": [
+                      "patologiaOrigemId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "pacientePatologia"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "pacientePatologia"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "atendimentoId"
+                  ],
+                  "name": "pacientePatologia_atendimentoId_idx_b14914dc",
+                  "prefix": "pacientePatologia_atendimentoId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "doencaId"
+                  ],
+                  "name": "pacientePatologia_doencaId_idx_09d96f81",
+                  "prefix": "pacientePatologia_doencaId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "pacienteId"
+                  ],
+                  "name": "pacientePatologia_pacienteId_idx_8734dc3f",
+                  "prefix": "pacientePatologia_pacienteId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "patologiaOrigemId"
+                  ],
+                  "name": "pacientePatologia_patologiaOrigemId_idx_4352d26d",
+                  "prefix": "pacientePatologia_patologiaOrigemId_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": []
             },
             "pacientePeso": {
               "columns": {
@@ -4351,6 +5254,22 @@
                 "ALL"
               ]
             },
+            "EspecieDoencaVeterinaria": {
+              "kind": "valueSet",
+              "values": [
+                "CANINO",
+                "FELINO",
+                "AMBOS"
+              ]
+            },
+            "StatusAtendimento": {
+              "kind": "valueSet",
+              "values": [
+                "EM_ANDAMENTO",
+                "AGUARDANDO_PATOLOGIA",
+                "FINALIZADO"
+              ]
+            },
             "StatusExame": {
               "kind": "valueSet",
               "values": [
@@ -4358,6 +5277,22 @@
                 "REALIZADO",
                 "RESULTADO_DISPONIVEL",
                 "CANCELADO"
+              ]
+            },
+            "StatusPatologia": {
+              "kind": "valueSet",
+              "values": [
+                "SUSPEITA",
+                "EM_ACOMPANHAMENTO",
+                "TRATADA",
+                "SEM_PROBLEMA_CLINICO"
+              ]
+            },
+            "TipoAtendimento": {
+              "kind": "valueSet",
+              "values": [
+                "CONSULTA",
+                "RETORNO"
               ]
             },
             "TipoPerfil": {
@@ -4375,10 +5310,10 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "1d59fafc5d6331c250d2427de4ff70ae1f67ff50599d89258a680ea44d9f3d89"
+    "storageHash": "25dd399e6846636ff5e2da9cd5283b812f624af0df041b5f24f3f750e310e308"
   },
   "execution": {
-    "executionHash": "96db797a991f2ca27f606529056f75ee16487e11b715d7d1a90741ff506bdce7",
+    "executionHash": "9156bfa341d35e9ef0d7c9feb35156b0842f2818546739119c80ad22ea6e3c3a",
     "mutations": {
       "defaults": [
         {
@@ -4394,6 +5329,21 @@
             "column": "updatedAt",
             "namespace": "public",
             "table": "cliente"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "timestampNow",
+            "kind": "generator"
+          },
+          "onUpdate": {
+            "id": "timestampNow",
+            "kind": "generator"
+          },
+          "ref": {
+            "column": "updatedAt",
+            "namespace": "public",
+            "table": "doencaVeterinaria"
           }
         },
         {
@@ -4454,6 +5404,21 @@
             "column": "updatedAt",
             "namespace": "public",
             "table": "pacienteExameAnexo"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "timestampNow",
+            "kind": "generator"
+          },
+          "onUpdate": {
+            "id": "timestampNow",
+            "kind": "generator"
+          },
+          "ref": {
+            "column": "updatedAt",
+            "namespace": "public",
+            "table": "pacientePatologia"
           }
         },
         {
