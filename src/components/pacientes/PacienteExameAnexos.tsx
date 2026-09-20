@@ -488,6 +488,7 @@ export default function PacienteExameAnexos({
     <>
       <section
         aria-labelledby={`titulo-anexos-exame-${exameId}`}
+        aria-busy={enviando || excluindo}
         className="rounded-2xl border border-[#DDE6E2] bg-[#FBFCFA] p-4"
       >
         <div className="flex items-start gap-3">
@@ -584,6 +585,7 @@ export default function PacienteExameAnexos({
           aria-disabled={
             enviando
           }
+          aria-describedby={`descricao-upload-exame-${exameId}`}
           onClick={() => {
             if (!enviando) {
               inputRef.current?.click();
@@ -666,7 +668,10 @@ export default function PacienteExameAnexos({
             Arraste aqui ou clique para selecionar
           </p>
 
-          <p className="mt-3 text-[11px] font-bold text-[#8A9692]">
+          <p
+            id={`descricao-upload-exame-${exameId}`}
+            className="mt-3 text-[11px] font-bold text-[#8A9692]"
+          >
             PDF, JPG, PNG ou WEBP • máximo de 25 MB por arquivo
           </p>
         </div>
