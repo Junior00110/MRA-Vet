@@ -323,6 +323,11 @@ export default function PacienteExameForm({
     number | null
   >(null);
 
+  const botaoAbrirRef =
+    useRef<HTMLButtonElement>(
+      null,
+    );
+
   const formRef =
     useRef<HTMLFormElement>(
       null,
@@ -464,6 +469,10 @@ export default function PacienteExameForm({
 
     resetarFormulario();
     setAberto(false);
+
+    requestAnimationFrame(() => {
+      botaoAbrirRef.current?.focus();
+    });
   }
 
   async function enviarAnexosDoExame(
@@ -628,6 +637,42 @@ export default function PacienteExameForm({
     };
   }, []);
 
+  useEffect(() => {
+    if (!aberto) {
+      return;
+    }
+
+    function tratarEscape(event: KeyboardEvent) {
+      if (event.key !== "Escape") {
+        return;
+      }
+
+      if (listaAberta) {
+        event.preventDefault();
+        setListaAberta(false);
+        return;
+      }
+
+      if (pending || enviandoAnexos) {
+        return;
+      }
+
+      event.preventDefault();
+      fecharFormulario();
+    }
+
+    document.addEventListener("keydown", tratarEscape);
+
+    return () => {
+      document.removeEventListener("keydown", tratarEscape);
+    };
+  }, [
+    aberto,
+    listaAberta,
+    pending,
+    enviandoAnexos,
+  ]);
+
   function abrirFormulario() {
     setAberto(true);
 
@@ -754,6 +799,7 @@ export default function PacienteExameForm({
   return (
     <>
       <button
+        ref={botaoAbrirRef}
         type="button"
         onClick={
           aberto
@@ -793,6 +839,8 @@ export default function PacienteExameForm({
           ref={
             painelRef
           }
+          role="region"
+          aria-labelledby={`titulo-formulario-exame-${pacienteId}`}
           className="col-span-full scroll-mt-6 rounded-[24px] border border-[#E4D8D9] bg-white p-4 shadow-sm sm:p-5"
         >
           <div className="flex flex-col gap-3 border-b border-[#ECE5E5] pb-4 sm:flex-row sm:items-center sm:justify-between">
@@ -801,7 +849,10 @@ export default function PacienteExameForm({
                 Prontuário clínico
               </p>
 
-              <h3 className="mt-1 text-lg font-black text-[#24343A]">
+              <h3
+                id={`titulo-formulario-exame-${pacienteId}`}
+                className="mt-1 text-lg font-black text-[#24343A]"
+              >
                 Registrar exame
               </h3>
 
@@ -907,6 +958,11 @@ export default function PacienteExameForm({
                         );
                       }}
                       placeholder="Pesquisar exame..."
+                      role="combobox"
+                      aria-expanded={listaAberta && !bloqueado}
+                      aria-controls={`lista-exames-${pacienteId}`}
+                      aria-autocomplete="list"
+                      aria-describedby={`ajuda-exame-${pacienteId}`}
                       className={`${inputClass} pl-10 pr-10`}
                     />
 
@@ -924,7 +980,13 @@ export default function PacienteExameForm({
                         )
                       }
                       className="absolute right-2 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-lg text-[#758480] hover:bg-[#EDF1EF] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7FA89A] disabled:opacity-50"
-                      aria-label="Abrir lista de exames"
+                      aria-label={
+                        listaAberta
+                          ? "Fechar lista de exames"
+                          : "Abrir lista de exames"
+                      }
+                      aria-expanded={listaAberta && !bloqueado}
+                      aria-controls={`lista-exames-${pacienteId}`}
                     >
                       <ChevronDown
                         size={16}
@@ -934,7 +996,12 @@ export default function PacienteExameForm({
 
                   {listaAberta &&
                     !bloqueado && (
-                    <div className="absolute left-0 right-0 z-50 mt-2 max-h-[360px] overflow-y-auto rounded-2xl border border-[#DCE4E1] bg-white p-2 shadow-xl">
+                    <div
+                      id={`lista-exames-${pacienteId}`}
+                      role="listbox"
+                      aria-label="Exames encontrados"
+                      className="absolute left-0 right-0 z-50 mt-2 max-h-[360px] overflow-y-auto rounded-2xl border border-[#DCE4E1] bg-white p-2 shadow-xl"
+                    >
                       <div className="border-b border-[#EEF2F0] px-3 py-2">
                         <p className="text-sm font-bold text-[#5F6E6A]">
                           {
@@ -971,6 +1038,8 @@ export default function PacienteExameForm({
                                     <button
                                       key={`${exame.categoria}-${exame.nome}`}
                                       type="button"
+                                      role="option"
+                                      aria-selected={nomeExame === exame.nome}
                                       onClick={() =>
                                         selecionarExame(
                                           exame,
@@ -1016,7 +1085,10 @@ export default function PacienteExameForm({
                   )}
                 </div>
 
-                <p className="mt-1 text-[11px] font-medium text-[#8D9996]">
+                <p
+                  id={`ajuda-exame-${pacienteId}`}
+                  className="mt-1 text-[11px] font-medium text-[#8D9996]"
+                >
                   Pesquise pelo nome ou pela categoria. Se o exame não existir na lista, você pode digitá-lo normalmente.
                 </p>
               </Campo>
