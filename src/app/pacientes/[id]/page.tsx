@@ -39,6 +39,7 @@ import ExcluirPesoButton from "@/components/pacientes/ExcluirPesoButton";
 import PacienteVacinaForm from "@/components/pacientes/PacienteVacinaForm";
 import ExcluirVacinaButton from "@/components/pacientes/ExcluirVacinaButton";
 import PacienteExameForm from "@/components/pacientes/PacienteExameForm";
+import EditarExameButton from "@/components/pacientes/EditarExameButton";
 import ExcluirExameButton from "@/components/pacientes/ExcluirExameButton";
 
 import { db } from "@/prisma/db";
@@ -2735,21 +2736,34 @@ export default async function PacientePage({
                                         "Profissional do sistema"}
                                     </div>
 
-                                    <ExcluirExameButton
-                                      exameId={
-                                        registro
-                                          .exame
-                                          .id
-                                      }
-                                      pacienteId={
-                                        paciente.id
-                                      }
-                                      exameNome={
-                                        registro
-                                          .exame
-                                          .nome
-                                      }
-                                    />
+                                    <div className="flex items-center gap-2">
+                                      <EditarExameButton
+                                        exameId={registro.exame.id}
+                                        pacienteId={paciente.id}
+                                        nome={registro.exame.nome}
+                                        tipo={registro.exame.tipo}
+                                        status={registro.exame.status}
+                                        laboratorio={registro.exame.laboratorio}
+                                        dataRealizacao={
+                                          registro.exame.dataRealizacao
+                                            ? String(registro.exame.dataRealizacao)
+                                            : null
+                                        }
+                                        dataResultado={
+                                          registro.exame.dataResultado
+                                            ? String(registro.exame.dataResultado)
+                                            : null
+                                        }
+                                        resultado={registro.exame.resultado}
+                                        observacoes={registro.exame.observacoes}
+                                      />
+
+                                      <ExcluirExameButton
+                                        exameId={registro.exame.id}
+                                        pacienteId={paciente.id}
+                                        exameNome={registro.exame.nome}
+                                      />
+                                    </div>
                                   </div>
                                 </div>
                               </details>
