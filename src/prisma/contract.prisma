@@ -26,6 +26,30 @@ enum StatusExame {
   CANCELADO
 }
 
+enum TipoAtendimento {
+  CONSULTA
+  RETORNO
+}
+
+enum StatusAtendimento {
+  EM_ANDAMENTO
+  AGUARDANDO_PATOLOGIA
+  FINALIZADO
+}
+
+enum StatusPatologia {
+  SUSPEITA
+  EM_ACOMPANHAMENTO
+  TRATADA
+  SEM_PROBLEMA_CLINICO
+}
+
+enum EspecieDoencaVeterinaria {
+  CANINO
+  FELINO
+  AMBOS
+}
+
 model Cliente {
   id              Int      @id @default(autoincrement())
   codigoAntigo    Int?     @unique
@@ -72,6 +96,7 @@ model Paciente {
   pesagens          PacientePeso[]
   vacinas           PacienteVacina[]
   exames            PacienteExame[]
+  patologias         PacientePatologia[]
 
   createdAt         TimestamptzString @default(now())
   updatedAt         temporal.updatedAtString()
@@ -212,12 +237,17 @@ model PacientePlano {
 model PacienteAtendimento {
   id Int @id @default(autoincrement())
 
+  tipo TipoAtendimento @default(CONSULTA)
+  statusAtendimento StatusAtendimento @default(FINALIZADO)
+
   motivoConsulta      String?
   anamnese            String?
   exameClinico        String?
   diagnosticoSuspeita String?
   conduta             String?
   observacoes         String?
+
+  evolucao String?
 
   dataAtendimento TimestamptzString @default(now())
 
@@ -229,7 +259,71 @@ model PacienteAtendimento {
   pacienteId Int
   paciente   Paciente @relation(fields: [pacienteId], references: [id])
 
+  atendimentoOrigemId Int?
+  atendimentoOrigem   PacienteAtendimento? @relation(
+    "AtendimentoRetornos",
+    fields: [atendimentoOrigemId],
+    references: [id]
+  )
+
+  retornos PacienteAtendimento[] @relation("AtendimentoRetornos")
+
   exames PacienteExame[]
+  patologias PacientePatologia[]
+
+  createdAt TimestamptzString @default(now())
+  updatedAt temporal.updatedAtString()
+}
+
+model DoencaVeterinaria {
+  id Int @id @default(autoincrement())
+
+  nome      String
+  especie   EspecieDoencaVeterinaria
+  categoria String?
+  sinonimos String?
+
+  ativo Boolean @default(true)
+
+  patologias PacientePatologia[]
+
+  createdAt TimestamptzString @default(now())
+  updatedAt temporal.updatedAtString()
+
+  @@unique([nome, especie])
+}
+
+model PacientePatologia {
+  id Int @id @default(autoincrement())
+
+  nome        String?
+  status      StatusPatologia
+  observacoes String?
+
+  dataRegistro TimestamptzString @default(now())
+
+  profissionalUsuarioId Int?
+  profissionalNome      String?
+
+  ativo Boolean @default(true)
+
+  pacienteId Int
+  paciente   Paciente @relation(fields: [pacienteId], references: [id])
+
+  atendimentoId Int
+  atendimento   PacienteAtendimento @relation(fields: [atendimentoId], references: [id])
+
+  doencaId Int?
+  doenca   DoencaVeterinaria? @relation(fields: [doencaId], references: [id])
+
+  patologiaOrigemId Int?
+  patologiaOrigem   PacientePatologia? @relation(
+    "PatologiaEvolucoes",
+    fields: [patologiaOrigemId],
+    references: [id]
+  )
+
+  evolucoes PacientePatologia[] @relation("PatologiaEvolucoes")
 
   createdAt TimestamptzString @default(now())
   updatedAt temporal.updatedAtString()

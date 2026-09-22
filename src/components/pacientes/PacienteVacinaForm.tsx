@@ -34,24 +34,24 @@ const estadoInicial: EstadoVacina = {
 };
 
 const VACINAS_CAES = [
-  "MÃºltipla â€“ CÃ£es",
-  "AntirrÃ¡bica",
+  "Múltipla – Cães",
+  "Antirrábica",
   "Gripe",
-  "GiÃ¡rdia",
+  "Giárdia",
   "ProHeart",
 ];
 
 const VACINAS_GATOS = [
-  "MÃºltipla â€“ Gatos",
-  "AntirrÃ¡bica",
+  "Múltipla – Gatos",
+  "Antirrábica",
 ];
 
 const VACINAS_GERAIS = [
-  "MÃºltipla â€“ CÃ£es",
-  "MÃºltipla â€“ Gatos",
-  "AntirrÃ¡bica",
+  "Múltipla – Cães",
+  "Múltipla – Gatos",
+  "Antirrábica",
   "Gripe",
-  "GiÃ¡rdia",
+  "Giárdia",
   "ProHeart",
 ];
 
@@ -121,7 +121,7 @@ export default function PacienteVacinaForm({
 
       if (
         especieNormalizada.includes(
-          "cÃ£o",
+          "cão",
         ) ||
         especieNormalizada.includes(
           "cao",
@@ -249,14 +249,14 @@ export default function PacienteVacinaForm({
 
               <div>
                 <p className="text-[9px] font-semibold uppercase tracking-[0.16em] text-[#608777]">
-                  ProntuÃ¡rio
+                  Prontuário
                 </p>
 
                 <h2
                   id="titulo-registrar-vacina"
                   className="text-xl font-black text-[#24343A]"
                 >
-                  Registrar vacinaÃ§Ã£o
+                  Registrar vacinação
                 </h2>
 
                 <p className="text-xs font-semibold text-[#82908D]">
@@ -411,11 +411,11 @@ export default function PacienteVacinaForm({
 
                   <div>
                     <h3 className="text-sm font-black text-[#354340]">
-                      Dados da aplicaÃ§Ã£o
+                      Dados da aplicação
                     </h3>
 
                     <p className="text-xs font-medium text-[#879592]">
-                      InformaÃ§Ãµes do produto e da dose aplicada.
+                      Informações do produto e da dose aplicada.
                     </p>
                   </div>
                 </div>
@@ -423,7 +423,7 @@ export default function PacienteVacinaForm({
                 <div className="grid gap-4 md:grid-cols-2">
                   <label className="block">
                     <span className="mb-2 block text-xs font-bold text-[#52615E]">
-                      Data da aplicaÃ§Ã£o *
+                      Data da aplicação *
                     </span>
 
                     <input
@@ -444,7 +444,7 @@ export default function PacienteVacinaForm({
 
                     <input
                       name="dose"
-                      placeholder="Ex.: 1Âª dose, reforÃ§o, 1 mL"
+                      placeholder="Ex.: 1ª dose, reforço, 1 mL"
                       maxLength={80}
                       className="w-full rounded-2xl border border-[#D7E0DD] bg-white px-4 py-3 text-sm font-semibold text-[#354340] outline-none focus:border-[#6F9A89] focus:ring-4 focus:ring-[#6F9A89]/10"
                     />
@@ -470,7 +470,7 @@ export default function PacienteVacinaForm({
 
                     <input
                       name="lote"
-                      placeholder="NÃºmero do lote"
+                      placeholder="Número do lote"
                       maxLength={100}
                       className="w-full rounded-2xl border border-[#D7E0DD] bg-white px-4 py-3 text-sm font-semibold text-[#354340] outline-none focus:border-[#6F9A89] focus:ring-4 focus:ring-[#6F9A89]/10"
                     />
@@ -490,7 +490,7 @@ export default function PacienteVacinaForm({
 
                   <label className="block">
                     <span className="mb-2 block text-xs font-bold text-[#52615E]">
-                      PrÃ³xima dose
+                      Próxima dose
                     </span>
 
                     <input
@@ -505,14 +505,14 @@ export default function PacienteVacinaForm({
               <section className="rounded-2xl border border-[#E2E8E5] bg-white p-5">
                 <label className="block">
                   <span className="mb-2 block text-xs font-bold text-[#52615E]">
-                    ObservaÃ§Ãµes
+                    Observações
                   </span>
 
                   <textarea
                     name="observacoes"
                     rows={4}
                     maxLength={1500}
-                    placeholder="Ex.: aplicaÃ§Ã£o sem intercorrÃªncias, orientaÃ§Ã£o ao tutor, reaÃ§Ã£o anterior..."
+                    placeholder="Ex.: aplicação sem intercorrências, orientação ao tutor, reação anterior..."
                     className="w-full resize-y rounded-2xl border border-[#D7E0DD] bg-white px-4 py-3 text-sm font-medium text-[#354340] outline-none focus:border-[#6F9A89] focus:ring-4 focus:ring-[#6F9A89]/10"
                   />
                 </label>
@@ -573,7 +573,7 @@ export default function PacienteVacinaForm({
 
                   {pending
                     ? "Salvando..."
-                    : "Salvar vacinaÃ§Ã£o"}
+                    : "Salvar vacinação"}
                 </button>
               </div>
             </div>

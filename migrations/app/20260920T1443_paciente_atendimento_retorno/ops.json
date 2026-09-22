@@ -1,0 +1,251 @@
+[
+  {
+    "id": "column.public.pacienteAtendimento.atendimentoOrigemId",
+    "label": "Add column \"atendimentoOrigemId\" to \"pacienteAtendimento\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "atendimentoOrigemId",
+        "table": "pacienteAtendimento"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"atendimentoOrigemId\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "pacienteAtendimento",
+          "atendimentoOrigemId"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"atendimentoOrigemId\"",
+        "sql": "ALTER TABLE \"public\".\"pacienteAtendimento\" ADD COLUMN \"atendimentoOrigemId\" int4"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"atendimentoOrigemId\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "pacienteAtendimento",
+          "atendimentoOrigemId"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.pacienteAtendimento.evolucao",
+    "label": "Add column \"evolucao\" to \"pacienteAtendimento\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "evolucao",
+        "table": "pacienteAtendimento"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"evolucao\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "pacienteAtendimento",
+          "evolucao"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"evolucao\"",
+        "sql": "ALTER TABLE \"public\".\"pacienteAtendimento\" ADD COLUMN \"evolucao\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"evolucao\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "pacienteAtendimento",
+          "evolucao"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.pacienteAtendimento.tipo",
+    "label": "Add column \"tipo\" to \"pacienteAtendimento\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "tipo",
+        "table": "pacienteAtendimento"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"tipo\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "pacienteAtendimento",
+          "tipo"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"tipo\"",
+        "sql": "ALTER TABLE \"public\".\"pacienteAtendimento\" ADD COLUMN \"tipo\" text DEFAULT 'CONSULTA' NOT NULL"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"tipo\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "pacienteAtendimento",
+          "tipo"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "checkConstraint.pacienteAtendimento.pacienteAtendimento_tipo_check_10b78058",
+    "label": "Add check constraint \"pacienteAtendimento_tipo_check_10b78058\" on \"pacienteAtendimento\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "checkConstraint",
+        "name": "pacienteAtendimento_tipo_check_10b78058",
+        "table": "pacienteAtendimento"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"pacienteAtendimento_tipo_check_10b78058\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "pacienteAtendimento_tipo_check_10b78058",
+          "public",
+          "\"public\".\"pacienteAtendimento\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add check constraint \"pacienteAtendimento_tipo_check_10b78058\"",
+        "sql": "ALTER TABLE \"public\".\"pacienteAtendimento\" ADD CONSTRAINT \"pacienteAtendimento_tipo_check_10b78058\" CHECK (\"tipo\" IN ('CONSULTA', 'RETORNO'))"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"pacienteAtendimento_tipo_check_10b78058\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "pacienteAtendimento_tipo_check_10b78058",
+          "public",
+          "\"public\".\"pacienteAtendimento\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.pacienteAtendimento.pacienteAtendimento_atendimentoOrigemId_idx_b3773bde",
+    "label": "Create index \"pacienteAtendimento_atendimentoOrigemId_idx_b3773bde\" on \"pacienteAtendimento\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "pacienteAtendimento_atendimentoOrigemId_idx_b3773bde",
+        "table": "pacienteAtendimento"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"pacienteAtendimento_atendimentoOrigemId_idx_b3773bde\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"pacienteAtendimento_atendimentoOrigemId_idx_b3773bde\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"pacienteAtendimento_atendimentoOrigemId_idx_b3773bde\"",
+        "sql": "CREATE INDEX \"pacienteAtendimento_atendimentoOrigemId_idx_b3773bde\" ON \"public\".\"pacienteAtendimento\" (\"atendimentoOrigemId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"pacienteAtendimento_atendimentoOrigemId_idx_b3773bde\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"pacienteAtendimento_atendimentoOrigemId_idx_b3773bde\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.pacienteAtendimento.pacienteAtendimento_atendimentoOrigemId_fkey",
+    "label": "Add foreign key \"pacienteAtendimento_atendimentoOrigemId_fkey\" on \"pacienteAtendimento\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "pacienteAtendimento_atendimentoOrigemId_fkey",
+        "table": "pacienteAtendimento"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"pacienteAtendimento_atendimentoOrigemId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "pacienteAtendimento_atendimentoOrigemId_fkey",
+          "public",
+          "\"public\".\"pacienteAtendimento\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"pacienteAtendimento_atendimentoOrigemId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"pacienteAtendimento\"\nADD CONSTRAINT \"pacienteAtendimento_atendimentoOrigemId_fkey\"\nFOREIGN KEY (\"atendimentoOrigemId\")\nREFERENCES \"public\".\"pacienteAtendimento\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"pacienteAtendimento_atendimentoOrigemId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "pacienteAtendimento_atendimentoOrigemId_fkey",
+          "public",
+          "\"public\".\"pacienteAtendimento\""
+        ]
+      }
+    ]
+  }
+]

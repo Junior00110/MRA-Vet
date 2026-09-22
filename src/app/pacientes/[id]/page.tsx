@@ -29,6 +29,10 @@ import {
 import Sidebar from "@/components/layout/Sidebar";
 import Header from "@/components/layout/Header";
 import PacienteAtendimentoForm from "@/components/pacientes/PacienteAtendimentoForm";
+import PacienteRetornoForm from "@/components/pacientes/PacienteRetornoForm";
+import PacientePatologiaObrigatoria, {
+  type PatologiaReferencia,
+} from "@/components/pacientes/PacientePatologiaObrigatoria";
 import ExcluirAtendimentoButton from "@/components/pacientes/ExcluirAtendimentoButton";
 import PacientePesoForm from "@/components/pacientes/PacientePesoForm";
 import ExcluirPesoButton from "@/components/pacientes/ExcluirPesoButton";
@@ -547,9 +551,10 @@ export default async function PacientePage({
   params,
   searchParams,
 }: PacientePageProps) {
-  await exigirPermissao(
-    "cliente.visualizar",
-  );
+  const acesso =
+    await exigirPermissao(
+      "cliente.visualizar",
+    );
 
   const { id } = await params;
 
@@ -711,13 +716,18 @@ export default async function PacientePage({
     db.sql.public.pacienteAtendimento
       .select(
         "id",
+        "tipo",
+        "statusAtendimento",
         "motivoConsulta",
         "anamnese",
         "exameClinico",
         "diagnosticoSuspeita",
         "conduta",
         "observacoes",
+        "evolucao",
+        "atendimentoOrigemId",
         "dataAtendimento",
+        "profissionalUsuarioId",
         "profissionalNome",
         "ativo",
         "createdAt",
@@ -896,6 +906,136 @@ export default async function PacientePage({
       consultaPlanos,
     );
 
+  const consultaPatologias =
+    db.sql.public.pacientePatologia
+      .select(
+        "id",
+        "nome",
+        "status",
+        "observacoes",
+        "dataRegistro",
+        "profissionalNome",
+        "atendimentoId",
+        "doencaId",
+        "patologiaOrigemId",
+        "ativo",
+        "createdAt",
+      )
+      .where((f, fns) =>
+        fns.and(
+          fns.eq(
+            f.pacienteId,
+            pacienteId,
+          ),
+          fns.eq(
+            f.ativo,
+            true,
+          ),
+        ),
+      )
+      .orderBy(
+        "dataRegistro",
+        {
+          direction: "desc",
+        },
+      )
+      .build();
+
+  const patologias =
+    await runtime.query(
+      consultaPatologias,
+    );
+
+  function montarPatologiasReferencia(
+    atendimentoOrigemId: number,
+  ): PatologiaReferencia[] {
+    const raizes =
+      patologias.filter(
+        (patologia) =>
+          patologia.atendimentoId ===
+            atendimentoOrigemId &&
+          patologia.patologiaOrigemId ===
+            null &&
+          patologia.status !==
+            "SEM_PROBLEMA_CLINICO",
+      );
+
+    return raizes.flatMap(
+      (raiz) => {
+        const evolucoes =
+          patologias
+            .filter(
+              (patologia) =>
+                patologia.patologiaOrigemId ===
+                  raiz.id,
+            )
+            .sort(
+              (a, b) =>
+                new Date(
+                  String(
+                    b.dataRegistro,
+                  ),
+                ).getTime() -
+                new Date(
+                  String(
+                    a.dataRegistro,
+                  ),
+                ).getTime(),
+            );
+
+        const atual =
+          evolucoes[0] ??
+          raiz;
+
+        if (
+          atual.status ===
+            "TRATADA" ||
+          atual.status ===
+            "SEM_PROBLEMA_CLINICO"
+        ) {
+          return [];
+        }
+
+        return [
+          {
+            id:
+              raiz.id,
+            nome:
+              atual.nome ??
+              raiz.nome,
+            doencaId:
+              atual.doencaId ??
+              raiz.doencaId,
+            status:
+              atual.status,
+          },
+        ];
+      },
+    );
+  }
+
+  const atendimentoPendentePatologia =
+    atendimentos.find(
+      (atendimento) =>
+        atendimento.statusAtendimento ===
+          "AGUARDANDO_PATOLOGIA" &&
+        atendimento.profissionalUsuarioId ===
+          acesso.usuario.id,
+    );
+
+  const atendimentoReferenciaPendenteId =
+    atendimentoPendentePatologia?.tipo ===
+      "RETORNO"
+      ? atendimentoPendentePatologia.atendimentoOrigemId
+      : atendimentoPendentePatologia?.id;
+
+  const patologiasReferenciaPendentes =
+    atendimentoReferenciaPendenteId
+      ? montarPatologiasReferencia(
+          atendimentoReferenciaPendenteId,
+        )
+      : [];
+
   const planoAtivo =
     planos.find(
       (plano) =>
@@ -1015,14 +1155,32 @@ export default async function PacientePage({
           const item =
             registro.atendimento;
 
+          const patologiasDoAtendimento =
+            patologias.filter(
+              (patologia) =>
+                patologia.atendimentoId ===
+                item.id,
+            );
+
           texto = [
+            item.tipo,
+            item.statusAtendimento,
             item.motivoConsulta,
             item.anamnese,
             item.exameClinico,
             item.diagnosticoSuspeita,
             item.conduta,
             item.observacoes,
+            item.evolucao,
             item.profissionalNome,
+            ...patologiasDoAtendimento.flatMap(
+              (patologia) => [
+                patologia.nome,
+                patologia.status,
+                patologia.observacoes,
+                patologia.profissionalNome,
+              ],
+            ),
           ]
             .filter(Boolean)
             .join(" ");
@@ -1837,8 +1995,22 @@ export default async function PacientePage({
                             {registro.tipo ===
                               "atendimento" && (
                               <details className="group border-b border-[#E7ECEA] last:border-b-0">
-                                <summary className="flex cursor-pointer list-none items-start gap-3 border-l-4 border-l-[#3A8DDA] px-4 py-4 transition hover:bg-[#F8FBFD] [&::-webkit-details-marker]:hidden">
-                                  <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#E6F1FB] text-[#3A8DDA]">
+                                <summary
+                                  className={`flex cursor-pointer list-none items-start gap-3 border-l-4 px-4 py-4 transition [&::-webkit-details-marker]:hidden ${
+                                    registro.atendimento.tipo ===
+                                    "RETORNO"
+                                      ? "border-l-[#7FA89A] hover:bg-[#F7FBF9]"
+                                      : "border-l-[#3A8DDA] hover:bg-[#F8FBFD]"
+                                  }`}
+                                >
+                                  <div
+                                    className={`mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${
+                                      registro.atendimento.tipo ===
+                                      "RETORNO"
+                                        ? "bg-[#E7F0ED] text-[#5F8579]"
+                                        : "bg-[#E6F1FB] text-[#3A8DDA]"
+                                    }`}
+                                  >
                                     <Stethoscope
                                       size={15}
                                     />
@@ -1846,7 +2018,14 @@ export default async function PacientePage({
 
                                   <div className="min-w-0 flex-1">
                                     <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-                                      <span className="text-sm font-black text-[#3A8DDA]">
+                                      <span
+                                        className={`text-sm font-black ${
+                                          registro.atendimento.tipo ===
+                                          "RETORNO"
+                                            ? "text-[#5F8579]"
+                                            : "text-[#3A8DDA]"
+                                        }`}
+                                      >
                                         {formatarDataHora(
                                           String(
                                             registro.atendimento
@@ -1856,15 +2035,41 @@ export default async function PacientePage({
                                       </span>
 
                                       <span className="text-xs font-bold uppercase tracking-[0.10em] text-[#6F7E7A]">
-                                        Atendimento
+                                        {registro.atendimento.tipo ===
+                                        "RETORNO"
+                                          ? "Retorno"
+                                          : "Consulta"}
                                       </span>
+
+                                      {registro.atendimento.tipo ===
+                                        "RETORNO" &&
+                                        registro.atendimento
+                                          .atendimentoOrigemId && (
+                                          <span className="rounded-full bg-[#EDF4F1] px-2.5 py-1 text-[10px] font-bold text-[#5F7C73]">
+                                            Consulta #
+                                            {
+                                              registro.atendimento
+                                                .atendimentoOrigemId
+                                            }
+                                          </span>
+                                        )}
+
+                                      {registro.atendimento
+                                        .statusAtendimento ===
+                                        "AGUARDANDO_PATOLOGIA" && (
+                                        <span className="rounded-full bg-[#F4EAF7] px-2.5 py-1 text-[10px] font-bold text-[#725A89]">
+                                          Aguardando patologia
+                                        </span>
+                                      )}
                                     </div>
 
                                     <p className="mt-1 truncate text-lg font-black text-[#2F3A37]">
-                                      {registro
-                                        .atendimento
-                                        .motivoConsulta ||
-                                        "Atendimento clínico"}
+                                      {registro.atendimento.tipo ===
+                                      "RETORNO"
+                                        ? "Consulta de retorno"
+                                        : registro.atendimento
+                                            .motivoConsulta ||
+                                          "Atendimento clínico"}
                                     </p>
 
                                     <p className="mt-1 text-sm font-semibold text-[#778480]">
@@ -1887,8 +2092,28 @@ export default async function PacientePage({
                                   </div>
                                 </summary>
 
-                                <div className="border-l-4 border-l-[#3A8DDA] bg-[#FBFDFE] px-4 pb-4 pl-[60px]">
+                                <div
+                                  className={`border-l-4 px-4 pb-4 pl-[60px] ${
+                                    registro.atendimento.tipo ===
+                                    "RETORNO"
+                                      ? "border-l-[#7FA89A] bg-[#FAFCFB]"
+                                      : "border-l-[#3A8DDA] bg-[#FBFDFE]"
+                                  }`}
+                                >
                                   <div className="grid gap-3">
+                                    {registro
+                                      .atendimento
+                                      .evolucao && (
+                                      <BlocoAtendimento
+                                        titulo="Evolução"
+                                        texto={
+                                          registro
+                                            .atendimento
+                                            .evolucao
+                                        }
+                                      />
+                                    )}
+
                                     {registro
                                       .atendimento
                                       .anamnese && (
@@ -1953,7 +2178,74 @@ export default async function PacientePage({
                                         }
                                       />
                                     )}
+
+                                    {patologias
+                                      .filter(
+                                        (patologia) =>
+                                          patologia.atendimentoId ===
+                                          registro.atendimento.id,
+                                      )
+                                      .map(
+                                        (patologia) => (
+                                          <BlocoAtendimento
+                                            key={`patologia-${patologia.id}`}
+                                            titulo={`Patologia — ${rotuloStatusPatologia(
+                                              patologia.status,
+                                            )}`}
+                                            texto={
+                                              patologia.status ===
+                                              "SEM_PROBLEMA_CLINICO"
+                                                ? patologia.observacoes ||
+                                                  "Sem problema clínico identificado."
+                                                : [
+                                                    patologia.nome,
+                                                    patologia.observacoes,
+                                                  ]
+                                                    .filter(Boolean)
+                                                    .join(
+                                                      "\n\n",
+                                                    )
+                                            }
+                                          />
+                                        ),
+                                      )}
                                   </div>
+
+                                  {registro.atendimento.tipo !==
+                                    "RETORNO" && (
+                                    <div className="mt-4">
+                                      <PacienteRetornoForm
+                                        pacienteId={
+                                          paciente.id
+                                        }
+                                        pacienteNome={
+                                          paciente.nome
+                                        }
+                                        atendimentoOrigemId={
+                                          registro
+                                            .atendimento
+                                            .id
+                                        }
+                                        motivoConsulta={
+                                          registro
+                                            .atendimento
+                                            .motivoConsulta
+                                        }
+                                        diagnosticoSuspeita={
+                                          registro
+                                            .atendimento
+                                            .diagnosticoSuspeita
+                                        }
+                                        patologiasReferencia={
+                                          montarPatologiasReferencia(
+                                            registro
+                                              .atendimento
+                                              .id,
+                                          )
+                                        }
+                                      />
+                                    </div>
+                                  )}
 
                                   <div className="mt-4 flex justify-end">
                                     <ExcluirAtendimentoButton
@@ -2534,6 +2826,26 @@ export default async function PacientePage({
           </div>
         </div>
       </main>
+
+      {atendimentoPendentePatologia && (
+        <PacientePatologiaObrigatoria
+          pacienteId={
+            paciente.id
+          }
+          pacienteNome={
+            paciente.nome
+          }
+          atendimentoId={
+            atendimentoPendentePatologia.id
+          }
+          tipoAtendimento={
+            atendimentoPendentePatologia.tipo
+          }
+          patologiasReferencia={
+            patologiasReferenciaPendentes
+          }
+        />
+      )}
     </div>
   );
 }
@@ -2782,6 +3094,27 @@ function ConteudoClinicoEstruturado({
   );
 }
 
+function rotuloStatusPatologia(
+  status: string,
+) {
+  switch (status) {
+    case "SUSPEITA":
+      return "Suspeita";
+
+    case "EM_ACOMPANHAMENTO":
+      return "Em acompanhamento";
+
+    case "TRATADA":
+      return "Tratada";
+
+    case "SEM_PROBLEMA_CLINICO":
+      return "Sem problema clínico";
+
+    default:
+      return status;
+  }
+}
+
 function formatarStatusExame(
   status: string,
 ) {
@@ -2902,4 +3235,3 @@ function AcaoCard({
     </button>
   );
 }
- 
