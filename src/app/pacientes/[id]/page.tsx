@@ -1110,6 +1110,32 @@ export default async function PacientePage({
     return dataB - dataA;
   });
 
+  const contagemHistorico = {
+    todos: historico.length,
+    atendimento: historico.filter(
+      (registro) =>
+        registro.tipo ===
+        "atendimento",
+    ).length,
+    vacina: historico.filter(
+      (registro) =>
+        registro.tipo === "vacina",
+    ).length,
+    exame: historico.filter(
+      (registro) =>
+        registro.tipo === "exame",
+    ).length,
+    peso: historico.filter(
+      (registro) =>
+        registro.tipo === "peso",
+    ).length,
+    anotacao: historico.filter(
+      (registro) =>
+        registro.tipo ===
+        "anotacao",
+    ).length,
+  };
+
   const tiposHistoricoValidos =
     new Set([
       "todos",
@@ -1674,7 +1700,23 @@ export default async function PacientePage({
                               : "border-[#DCE4E1] bg-[#F8FAF9] text-[#657572] hover:border-[#B8CBC5] hover:bg-white"
                           }`}
                         >
-                          {filtro.label}
+                          <span>
+                            {filtro.label}
+                          </span>
+
+                          <span
+                            className={`ml-1.5 inline-flex min-w-5 items-center justify-center rounded-full px-1.5 py-0.5 text-[10px] font-black ${
+                              ativo
+                                ? "bg-white/20 text-white"
+                                : "bg-[#E8EFEC] text-[#657572]"
+                            }`}
+                          >
+                            {
+                              contagemHistorico[
+                                filtro.valor as keyof typeof contagemHistorico
+                              ]
+                            }
+                          </span>
                         </Link>
                       );
                     },
