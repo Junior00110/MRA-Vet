@@ -38,6 +38,7 @@ import PacientePesoForm from "@/components/pacientes/PacientePesoForm";
 import EditarPesoButton from "@/components/pacientes/EditarPesoButton";
 import ExcluirPesoButton from "@/components/pacientes/ExcluirPesoButton";
 import PacienteVacinaForm from "@/components/pacientes/PacienteVacinaForm";
+import EditarVacinaButton from "@/components/pacientes/EditarVacinaButton";
 import ExcluirVacinaButton from "@/components/pacientes/ExcluirVacinaButton";
 import PacienteExameForm from "@/components/pacientes/PacienteExameForm";
 import EditarExameButton from "@/components/pacientes/EditarExameButton";
@@ -2546,6 +2547,74 @@ export default async function PacientePage({
                                         "Profissional do sistema"}
                                     </span>
 
+                                    <div className="flex items-center gap-2">
+                                      <EditarVacinaButton
+                                        vacinaId={
+                                          registro
+                                            .vacina.id
+                                        }
+                                        pacienteId={
+                                          paciente.id
+                                        }
+                                        especie={
+                                          paciente.especie
+                                        }
+                                        nome={
+                                          registro
+                                            .vacina
+                                            .nome
+                                        }
+                                        dose={
+                                          registro
+                                            .vacina
+                                            .dose
+                                        }
+                                        lote={
+                                          registro
+                                            .vacina
+                                            .lote
+                                        }
+                                        fabricante={
+                                          registro
+                                            .vacina
+                                            .fabricante
+                                        }
+                                        observacoes={
+                                          registro
+                                            .vacina
+                                            .observacoes
+                                        }
+                                        dataAplicacao={
+                                          String(
+                                            registro
+                                              .vacina
+                                              .dataAplicacao,
+                                          )
+                                        }
+                                        validade={
+                                          registro
+                                            .vacina
+                                            .validade
+                                            ? String(
+                                                registro
+                                                  .vacina
+                                                  .validade,
+                                              )
+                                            : null
+                                        }
+                                        proximaDose={
+                                          registro
+                                            .vacina
+                                            .proximaDose
+                                            ? String(
+                                                registro
+                                                  .vacina
+                                                  .proximaDose,
+                                              )
+                                            : null
+                                        }
+                                      />
+
                                     <ExcluirVacinaButton
                                       vacinaId={
                                         registro
@@ -2560,6 +2629,7 @@ export default async function PacientePage({
                                           .nome
                                       }
                                     />
+                                    </div>
                                   </div>
                                 </div>
                               </details>
