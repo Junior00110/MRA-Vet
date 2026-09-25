@@ -35,6 +35,7 @@ import PacientePatologiaObrigatoria, {
 } from "@/components/pacientes/PacientePatologiaObrigatoria";
 import ExcluirAtendimentoButton from "@/components/pacientes/ExcluirAtendimentoButton";
 import PacientePesoForm from "@/components/pacientes/PacientePesoForm";
+import EditarPesoButton from "@/components/pacientes/EditarPesoButton";
 import ExcluirPesoButton from "@/components/pacientes/ExcluirPesoButton";
 import PacienteVacinaForm from "@/components/pacientes/PacienteVacinaForm";
 import ExcluirVacinaButton from "@/components/pacientes/ExcluirVacinaButton";
@@ -2337,20 +2338,42 @@ export default async function PacientePage({
                                   )}
 
                                   <div className="mt-4 flex justify-end">
-                                    <ExcluirPesoButton
-                                      pesoId={
-                                        registro
-                                          .pesagem.id
-                                      }
-                                      pacienteId={
-                                        paciente.id
-                                      }
-                                      peso={
-                                        registro
-                                          .pesagem
-                                          .peso
-                                      }
-                                    />
+                                    <div className="flex items-center gap-2">
+                                      <EditarPesoButton
+                                        pesoId={
+                                          registro
+                                            .pesagem.id
+                                        }
+                                        pacienteId={
+                                          paciente.id
+                                        }
+                                        peso={
+                                          registro
+                                            .pesagem
+                                            .peso
+                                        }
+                                        observacoes={
+                                          registro
+                                            .pesagem
+                                            .observacoes
+                                        }
+                                      />
+
+                                      <ExcluirPesoButton
+                                        pesoId={
+                                          registro
+                                            .pesagem.id
+                                        }
+                                        pacienteId={
+                                          paciente.id
+                                        }
+                                        peso={
+                                          registro
+                                            .pesagem
+                                            .peso
+                                        }
+                                      />
+                                    </div>
                                   </div>
                                 </div>
                               </details>
