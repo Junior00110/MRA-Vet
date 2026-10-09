@@ -3377,7 +3377,7 @@ function AcaoCard({
       <span className="relative flex h-11 w-11 items-center justify-center rounded-xl bg-white/15 shadow-sm">
         {icon}
       </span>
-''
+      
       <span className="relative mt-2 text-xs font-bold">
         {titulo}
       </span>
