@@ -35,10 +35,13 @@ import PacientePatologiaObrigatoria, {
 } from "@/components/pacientes/PacientePatologiaObrigatoria";
 import ExcluirAtendimentoButton from "@/components/pacientes/ExcluirAtendimentoButton";
 import PacientePesoForm from "@/components/pacientes/PacientePesoForm";
+import EditarPesoButton from "@/components/pacientes/EditarPesoButton";
 import ExcluirPesoButton from "@/components/pacientes/ExcluirPesoButton";
 import PacienteVacinaForm from "@/components/pacientes/PacienteVacinaForm";
+import EditarVacinaButton from "@/components/pacientes/EditarVacinaButton";
 import ExcluirVacinaButton from "@/components/pacientes/ExcluirVacinaButton";
 import PacienteExameForm from "@/components/pacientes/PacienteExameForm";
+import EditarExameButton from "@/components/pacientes/EditarExameButton";
 import ExcluirExameButton from "@/components/pacientes/ExcluirExameButton";
 
 import { db } from "@/prisma/db";
@@ -1107,6 +1110,32 @@ export default async function PacientePage({
     return dataB - dataA;
   });
 
+  const contagemHistorico = {
+    todos: historico.length,
+    atendimento: historico.filter(
+      (registro) =>
+        registro.tipo ===
+        "atendimento",
+    ).length,
+    vacina: historico.filter(
+      (registro) =>
+        registro.tipo === "vacina",
+    ).length,
+    exame: historico.filter(
+      (registro) =>
+        registro.tipo === "exame",
+    ).length,
+    peso: historico.filter(
+      (registro) =>
+        registro.tipo === "peso",
+    ).length,
+    anotacao: historico.filter(
+      (registro) =>
+        registro.tipo ===
+        "anotacao",
+    ).length,
+  };
+
   const tiposHistoricoValidos =
     new Set([
       "todos",
@@ -1671,7 +1700,23 @@ export default async function PacientePage({
                               : "border-[#DCE4E1] bg-[#F8FAF9] text-[#657572] hover:border-[#B8CBC5] hover:bg-white"
                           }`}
                         >
-                          {filtro.label}
+                          <span>
+                            {filtro.label}
+                          </span>
+
+                          <span
+                            className={`ml-1.5 inline-flex min-w-5 items-center justify-center rounded-full px-1.5 py-0.5 text-[10px] font-black ${
+                              ativo
+                                ? "bg-white/20 text-white"
+                                : "bg-[#E8EFEC] text-[#657572]"
+                            }`}
+                          >
+                            {
+                              contagemHistorico[
+                                filtro.valor as keyof typeof contagemHistorico
+                              ]
+                            }
+                          </span>
                         </Link>
                       );
                     },
@@ -2336,20 +2381,42 @@ export default async function PacientePage({
                                   )}
 
                                   <div className="mt-4 flex justify-end">
-                                    <ExcluirPesoButton
-                                      pesoId={
-                                        registro
-                                          .pesagem.id
-                                      }
-                                      pacienteId={
-                                        paciente.id
-                                      }
-                                      peso={
-                                        registro
-                                          .pesagem
-                                          .peso
-                                      }
-                                    />
+                                    <div className="flex items-center gap-2">
+                                      <EditarPesoButton
+                                        pesoId={
+                                          registro
+                                            .pesagem.id
+                                        }
+                                        pacienteId={
+                                          paciente.id
+                                        }
+                                        peso={
+                                          registro
+                                            .pesagem
+                                            .peso
+                                        }
+                                        observacoes={
+                                          registro
+                                            .pesagem
+                                            .observacoes
+                                        }
+                                      />
+
+                                      <ExcluirPesoButton
+                                        pesoId={
+                                          registro
+                                            .pesagem.id
+                                        }
+                                        pacienteId={
+                                          paciente.id
+                                        }
+                                        peso={
+                                          registro
+                                            .pesagem
+                                            .peso
+                                        }
+                                      />
+                                    </div>
                                   </div>
                                 </div>
                               </details>
@@ -2522,6 +2589,74 @@ export default async function PacientePage({
                                         "Profissional do sistema"}
                                     </span>
 
+                                    <div className="flex items-center gap-2">
+                                      <EditarVacinaButton
+                                        vacinaId={
+                                          registro
+                                            .vacina.id
+                                        }
+                                        pacienteId={
+                                          paciente.id
+                                        }
+                                        especie={
+                                          paciente.especie
+                                        }
+                                        nome={
+                                          registro
+                                            .vacina
+                                            .nome
+                                        }
+                                        dose={
+                                          registro
+                                            .vacina
+                                            .dose
+                                        }
+                                        lote={
+                                          registro
+                                            .vacina
+                                            .lote
+                                        }
+                                        fabricante={
+                                          registro
+                                            .vacina
+                                            .fabricante
+                                        }
+                                        observacoes={
+                                          registro
+                                            .vacina
+                                            .observacoes
+                                        }
+                                        dataAplicacao={
+                                          String(
+                                            registro
+                                              .vacina
+                                              .dataAplicacao,
+                                          )
+                                        }
+                                        validade={
+                                          registro
+                                            .vacina
+                                            .validade
+                                            ? String(
+                                                registro
+                                                  .vacina
+                                                  .validade,
+                                              )
+                                            : null
+                                        }
+                                        proximaDose={
+                                          registro
+                                            .vacina
+                                            .proximaDose
+                                            ? String(
+                                                registro
+                                                  .vacina
+                                                  .proximaDose,
+                                              )
+                                            : null
+                                        }
+                                      />
+
                                     <ExcluirVacinaButton
                                       vacinaId={
                                         registro
@@ -2536,6 +2671,7 @@ export default async function PacientePage({
                                           .nome
                                       }
                                     />
+                                    </div>
                                   </div>
                                 </div>
                               </details>
@@ -2735,21 +2871,34 @@ export default async function PacientePage({
                                         "Profissional do sistema"}
                                     </div>
 
-                                    <ExcluirExameButton
-                                      exameId={
-                                        registro
-                                          .exame
-                                          .id
-                                      }
-                                      pacienteId={
-                                        paciente.id
-                                      }
-                                      exameNome={
-                                        registro
-                                          .exame
-                                          .nome
-                                      }
-                                    />
+                                    <div className="flex items-center gap-2">
+                                      <EditarExameButton
+                                        exameId={registro.exame.id}
+                                        pacienteId={paciente.id}
+                                        nome={registro.exame.nome}
+                                        tipo={registro.exame.tipo}
+                                        status={registro.exame.status}
+                                        laboratorio={registro.exame.laboratorio}
+                                        dataRealizacao={
+                                          registro.exame.dataRealizacao
+                                            ? String(registro.exame.dataRealizacao)
+                                            : null
+                                        }
+                                        dataResultado={
+                                          registro.exame.dataResultado
+                                            ? String(registro.exame.dataResultado)
+                                            : null
+                                        }
+                                        resultado={registro.exame.resultado}
+                                        observacoes={registro.exame.observacoes}
+                                      />
+
+                                      <ExcluirExameButton
+                                        exameId={registro.exame.id}
+                                        pacienteId={paciente.id}
+                                        exameNome={registro.exame.nome}
+                                      />
+                                    </div>
                                   </div>
                                 </div>
                               </details>

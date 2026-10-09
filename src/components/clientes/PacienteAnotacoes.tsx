@@ -19,6 +19,7 @@ import {
 import { useRouter } from "next/navigation";
 
 import ConfirmDialog from "@/components/ui/ConfirmDialog";
+import EditarAnotacaoButton from "@/components/clientes/EditarAnotacaoButton";
 
 import {
   adicionarAnotacaoPaciente,
@@ -347,6 +348,22 @@ export default function PacienteAnotacoes({
                       </div>
 
                       {podeAdicionar && (
+                        <div className="flex shrink-0 items-center gap-1">
+                          <EditarAnotacaoButton
+                            anotacaoId={
+                              anotacao.id
+                            }
+                            pacienteId={
+                              pacienteId
+                            }
+                            clienteId={
+                              clienteId
+                            }
+                            texto={
+                              anotacao.texto
+                            }
+                          />
+
                         <button
                           type="button"
                           onClick={() =>
@@ -363,6 +380,7 @@ export default function PacienteAnotacoes({
                             }
                           />
                         </button>
+                        </div>
                       )}
                     </div>
 

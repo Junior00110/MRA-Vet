@@ -291,6 +291,319 @@ export async function adicionarVacinaPaciente(
   };
 }
 
+
+export async function atualizarVacinaPaciente(
+  _estadoAnterior: EstadoVacina,
+  formData: FormData,
+): Promise<EstadoVacina> {
+  await exigirPermissao(
+    "paciente.editar",
+  );
+
+  const vacinaId = Number(
+    formData.get("vacinaId"),
+  );
+
+  const pacienteId = Number(
+    formData.get("pacienteId"),
+  );
+
+  const nome = String(
+    formData.get("nome") ?? "",
+  ).trim();
+
+  const dose = String(
+    formData.get("dose") ?? "",
+  ).trim();
+
+  const lote = String(
+    formData.get("lote") ?? "",
+  ).trim();
+
+  const fabricante = String(
+    formData.get("fabricante") ?? "",
+  ).trim();
+
+  const observacoes = String(
+    formData.get("observacoes") ?? "",
+  ).trim();
+
+  const dataAplicacaoTexto = String(
+    formData.get("dataAplicacao") ?? "",
+  ).trim();
+
+  const validadeTexto = String(
+    formData.get("validade") ?? "",
+  ).trim();
+
+  const proximaDoseTexto = String(
+    formData.get("proximaDose") ?? "",
+  ).trim();
+
+  if (
+    !Number.isInteger(vacinaId) ||
+    vacinaId <= 0 ||
+    !Number.isInteger(pacienteId) ||
+    pacienteId <= 0
+  ) {
+    return {
+      ok: false,
+      mensagem:
+        "Dados inválidos para editar a vacinação.",
+    };
+  }
+
+  if (!nome) {
+    return {
+      ok: false,
+      mensagem:
+        "Informe a vacina aplicada.",
+    };
+  }
+
+  if (nome.length > 120) {
+    return {
+      ok: false,
+      mensagem:
+        "O nome da vacina pode ter no máximo 120 caracteres.",
+    };
+  }
+
+  if (dose.length > 80) {
+    return {
+      ok: false,
+      mensagem:
+        "A dose pode ter no máximo 80 caracteres.",
+    };
+  }
+
+  if (lote.length > 100) {
+    return {
+      ok: false,
+      mensagem:
+        "O lote pode ter no máximo 100 caracteres.",
+    };
+  }
+
+  if (fabricante.length > 120) {
+    return {
+      ok: false,
+      mensagem:
+        "O fabricante pode ter no máximo 120 caracteres.",
+    };
+  }
+
+  if (observacoes.length > 1500) {
+    return {
+      ok: false,
+      mensagem:
+        "As observações podem ter no máximo 1500 caracteres.",
+    };
+  }
+
+  if (!dataAplicacaoTexto) {
+    return {
+      ok: false,
+      mensagem:
+        "Informe a data de aplicação.",
+    };
+  }
+
+  const dataAplicacao = new Date(
+    `${dataAplicacaoTexto}T12:00:00`,
+  );
+
+  if (
+    Number.isNaN(
+      dataAplicacao.getTime(),
+    )
+  ) {
+    return {
+      ok: false,
+      mensagem:
+        "Data de aplicação inválida.",
+    };
+  }
+
+  if (
+    validadeTexto &&
+    Number.isNaN(
+      new Date(
+        `${validadeTexto}T12:00:00`,
+      ).getTime(),
+    )
+  ) {
+    return {
+      ok: false,
+      mensagem:
+        "Data de validade inválida.",
+    };
+  }
+
+  if (
+    proximaDoseTexto &&
+    Number.isNaN(
+      new Date(
+        `${proximaDoseTexto}T12:00:00`,
+      ).getTime(),
+    )
+  ) {
+    return {
+      ok: false,
+      mensagem:
+        "Data da próxima dose inválida.",
+    };
+  }
+
+  const runtime =
+    db.runtime();
+
+  const consultaPaciente =
+    db.sql.public.paciente
+      .select(
+        "id",
+        "ativo",
+        "clienteId",
+      )
+      .where((f, fns) =>
+        fns.eq(
+          f.id,
+          pacienteId,
+        ),
+      )
+      .limit(1)
+      .build();
+
+  const resultadoPaciente =
+    await runtime.query(
+      consultaPaciente,
+    );
+
+  const paciente =
+    resultadoPaciente[0];
+
+  if (!paciente) {
+    return {
+      ok: false,
+      mensagem:
+        "Paciente não encontrado.",
+    };
+  }
+
+  if (!paciente.ativo) {
+    return {
+      ok: false,
+      mensagem:
+        "Não é possível editar a vacinação de um paciente inativo.",
+    };
+  }
+
+  const consultaVacina =
+    db.sql.public.pacienteVacina
+      .select(
+        "id",
+        "pacienteId",
+        "ativo",
+      )
+      .where((f, fns) =>
+        fns.eq(
+          f.id,
+          vacinaId,
+        ),
+      )
+      .limit(1)
+      .build();
+
+  const resultadoVacina =
+    await runtime.query(
+      consultaVacina,
+    );
+
+  const vacina =
+    resultadoVacina[0];
+
+  if (
+    !vacina ||
+    vacina.pacienteId !==
+      pacienteId ||
+    !vacina.ativo
+  ) {
+    return {
+      ok: false,
+      mensagem:
+        "Vacinação não encontrada.",
+    };
+  }
+
+  const agora =
+    new Date().toISOString();
+
+  const atualizarVacina =
+    db.sql.public.pacienteVacina
+      .update({
+        nome,
+
+        dose:
+          dose ||
+          null,
+
+        lote:
+          lote ||
+          null,
+
+        fabricante:
+          fabricante ||
+          null,
+
+        observacoes:
+          observacoes ||
+          null,
+
+        dataAplicacao:
+          dataAplicacao.toISOString(),
+
+        validade:
+          validadeTexto ||
+          null,
+
+        proximaDose:
+          proximaDoseTexto ||
+          null,
+
+        updatedAt:
+          agora,
+      })
+      .where((f, fns) =>
+        fns.eq(
+          f.id,
+          vacinaId,
+        ),
+      )
+      .build();
+
+  await runtime.execute(
+    atualizarVacina,
+  );
+
+  revalidatePath(
+    `/pacientes/${pacienteId}`,
+  );
+
+  if (
+    paciente.clienteId !== null
+  ) {
+    revalidatePath(
+      `/clientes/${paciente.clienteId}`,
+    );
+  }
+
+  return {
+    ok: true,
+    mensagem:
+      "Vacinação atualizada com sucesso.",
+  };
+}
+
 export async function removerVacinaPaciente(
   formData: FormData,
 ): Promise<void> {
