@@ -8,8 +8,8 @@
 
 ## Homologacao
 
-- Ultimo relatorio encontrado: relatorio-fase3-2026-10-21T18-06-23-749Z.json
-- Resultado desse relatorio: Aprovados: 4; Reprovados: 1; Nao executados: 4
+- Ultimo relatorio encontrado: relatorio-fase3-2026-10-21T19-50-59-648Z.json
+- Resultado desse relatorio: Aprovados: 2; Reprovados: 1; Nao executados: 1
 
 ## Fase 3 - Validacoes complementares
 

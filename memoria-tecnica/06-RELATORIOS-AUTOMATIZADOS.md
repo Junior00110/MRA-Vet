@@ -13,6 +13,12 @@ Campos livres, dados pessoais e conteudo clinico nao sao copiados.
 - Reprovados: 1
 - Nao executados: 4
 
+### Relatorio 2
+- Arquivo: relatorio-fase3-2026-10-21T19-50-59-648Z.json
+- Aprovados: 2
+- Reprovados: 1
+- Nao executados: 1
+
 ## Validacao complementar conhecida
 
 - Teste 5: isolamento entre unidades.
