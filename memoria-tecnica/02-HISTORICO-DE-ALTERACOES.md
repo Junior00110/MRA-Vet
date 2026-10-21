@@ -1,7 +1,16 @@
 # Historico de alteracoes
 
 ## Commits recentes (identificadores)
-System.Object[]
+- 66d856d3
+- 90e9141d
+- 04711547
+- 7b56e13a
+- d39fe9a0
+- 3e11693c
+- 2e80e124
+- 08ac8478
+- 0e495e4e
+- c5a588c2
 
 ## Desenvolvimento local
 - Arquivos rastreados modificados: 36
