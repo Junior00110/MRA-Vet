@@ -14,7 +14,7 @@
 
 ## Desenvolvimento local
 - Arquivos rastreados modificados: 36
-- Entradas ainda nao rastreadas: 115
+- Entradas ainda nao rastreadas: 116
 
 ## Justificativas
 Decisoes e justificativas nao sao inferidas automaticamente.
