@@ -1,3 +1,5 @@
+> AVISO DE CONTINUIDADE: este resumo pode conter referencias historicas. Estado mais recente: [[07-HOMOLOGACAO-ESTADO-ATUAL]].
+
 # Relatorios automatizados - MRA Vet
 
 ## Fonte

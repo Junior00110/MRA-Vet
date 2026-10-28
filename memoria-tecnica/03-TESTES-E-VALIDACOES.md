@@ -1,3 +1,5 @@
+> AVISO DE CONTINUIDADE: este resumo pode conter referencias historicas. Estado mais recente: [[07-HOMOLOGACAO-ESTADO-ATUAL]].
+
 # Testes e validacoes
 
 ## Fase 3 - Permissoes para anexos
