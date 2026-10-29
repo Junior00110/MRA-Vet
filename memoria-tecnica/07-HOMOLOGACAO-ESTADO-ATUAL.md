@@ -22,7 +22,7 @@ Os identificadores de revisao abaixo sao resumos criptograficos de arquivos de c
 - Pagina exclusiva de Internacao: nao encontrado nesse caminho (nao comprova ausencia da funcionalidade)
 - Administracao de leitos: nao encontrado nesse caminho (nao comprova ausencia da funcionalidade)
 - Ficha de paciente (codigo): nao encontrado nesse caminho (nao comprova ausencia da funcionalidade)
-- Estilo global: arquivo encontrado; revisao b96176fbf665; modificado 2026-10-27 17:57
+- Estilo global: arquivo encontrado; revisao d054540895be; modificado 2026-10-29 10:46
 - Layout compartilhado: arquivo encontrado; revisao 80b99f9e9aa0; modificado 2026-09-22 14:28
 - Sidebar (caminho conhecido): nao encontrado nesse caminho (nao comprova ausencia da funcionalidade)
 - Rotas de API de Internacao: 2 arquivo(s) tecnico(s) encontrado(s); funcionamento nao inferido.
@@ -32,8 +32,8 @@ Os identificadores de revisao abaixo sao resumos criptograficos de arquivos de c
 - Pastas de backup de Internacao/tema claro encontradas: 18; mais recente: 2026-10-28 15:57. A existencia nao comprova instalacao correta.
 
 ## Estado do monitor
-- Assinatura resumida do conjunto de codigo: 77fc7064b3d7a88c
-- Ultima observacao de mudanca: Mudanca tecnica observada em 2026-10-28 15:59:04
+- Assinatura resumida do conjunto de codigo: f1da3b42aa414cc4
+- Ultima observacao de mudanca: Mudanca tecnica observada em 2026-10-29 10:49:03
 - Frequencia pretendida da verificacao local: 5 minutos (gerenciada pelo Agendador do Windows).
 - A publicacao GitHub usa uma segunda tarefa independente, com sua propria agenda.
 
